@@ -1,0 +1,8 @@
+include ~/.config/newsboat/colors/flexoki
+
+browser "open -a Safari %u"
+
+bind-key j next
+bind-key k prev
+bind-key o open-in-browser-and-mark-read
+bind-key O open-all-unread-in-browser-and-mark-read

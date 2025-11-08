@@ -1,0 +1,38 @@
+# my lovely helix config
+ 
+theme = "flexoki_dark"
+
+[editor]
+line-number = 'relative'
+true-color = true
+auto-info	= true
+soft-wrap.enable = true
+color-modes = true
+cursor-shape = { insert = 'bar', normal = 'block', select = 'block' }
+
+[editor.lsp]
+display-inlay-hints	= true
+
+[editor.statusline]
+left = [ 'mode', 'spinner', 'register' ]
+center = [ 'file-name', 'file-modification-indicator' ]
+right = [ 'position', 'separator', 'total-line-numbers', 'separator', 'position-percentage' ]
+
+[editor.auto-save]
+focus-lost = true 
+
+[editor.inline-diagnostics]
+cursor-line = 'info'
+other-lines = 'warning'
+
+[keys.normal]
+'}' = 'goto_next_paragraph'
+'{' = 'goto_prev_paragraph'
+'C-p' = ':lsp-workspace-command'
+
+[keys.select]
+'}' = 'goto_next_paragraph'
+'{' = 'goto_prev_paragraph'
+
+[keys.insert]
+j = { j = 'normal_mode', k = 'normal_mode' }

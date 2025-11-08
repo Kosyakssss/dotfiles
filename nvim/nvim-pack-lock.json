@@ -1,0 +1,64 @@
+{
+  "plugins": {
+    "flexoki-neovim": {
+      "rev": "c3e2251",
+      "src": "https://github.com/kepano/flexoki-neovim"
+    },
+    "lazygit.nvim": {
+      "rev": "2305dee",
+      "src": "https://github.com/kdheepak/lazygit.nvim"
+    },
+    "mason-lspconfig.nvim": {
+      "rev": "d7b5feb",
+      "src": "https://github.com/mason-org/mason-lspconfig.nvim"
+    },
+    "mason.nvim": {
+      "rev": "ad7146a",
+      "src": "https://github.com/mason-org/mason.nvim"
+    },
+    "mini.clue": {
+      "rev": "98716f2",
+      "src": "https://github.com/nvim-mini/mini.clue"
+    },
+    "mini.comment": {
+      "rev": "a0c7211",
+      "src": "https://github.com/nvim-mini/mini.comment"
+    },
+    "mini.completion": {
+      "rev": "581934b",
+      "src": "https://github.com/nvim-mini/mini.completion"
+    },
+    "mini.files": {
+      "rev": "dce9a4e",
+      "src": "https://github.com/nvim-mini/mini.files"
+    },
+    "mini.pairs": {
+      "rev": "b316e68",
+      "src": "https://github.com/nvim-mini/mini.pairs"
+    },
+    "mini.pick": {
+      "rev": "08a7220",
+      "src": "https://github.com/nvim-mini/mini.pick"
+    },
+    "mini.surround": {
+      "rev": "88c5229",
+      "src": "https://github.com/nvim-mini/mini.surround"
+    },
+    "nvim": {
+      "rev": "234fc04",
+      "src": "https://github.com/catppuccin/nvim"
+    },
+    "oil.nvim": {
+      "rev": "7e1cd77",
+      "src": "https://github.com/stevearc/oil.nvim"
+    },
+    "sidekick.nvim": {
+      "rev": "c2bdf8c",
+      "src": "https://github.com/folke/sidekick.nvim"
+    },
+    "which-key.nvim": {
+      "rev": "3aab214",
+      "src": "https://github.com/folke/which-key.nvim"
+    }
+  }
+}

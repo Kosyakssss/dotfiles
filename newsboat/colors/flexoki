@@ -1,0 +1,29 @@
+# Requires terminal set to a Flexoki theme.
+
+# Base
+color background        default default
+color article           default default
+color end-of-text-marker default default dim
+
+# Lists
+color listnormal        default default
+color listnormal_unread yellow  default bold
+color listfocus         default  default reverse
+color listfocus_unread  yellow   default reverse bold
+
+# Bars
+color title             cyan     default bold
+color info              default  default dim
+color hint-key          cyan     default
+color hint-keys-delimiter default default dim
+color hint-separator    default  default dim
+color hint-description  default  default dim
+
+# Search + highlights
+search-highlight-colors black yellow bold
+highlight all "https?://[^ ]+" cyan default underline
+highlight article "^(Feed|Title|Author|Link|Date):" default default underline
+
+# Optional feed emphasis
+highlight-feed "unread_count > 0"   yellow default
+highlight-feed "unread_count > 100" red    default bold

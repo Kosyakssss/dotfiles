@@ -1,0 +1,72 @@
+after-startup-command = []
+start-at-login = false
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+accordion-padding = 30
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+automatically-unhide-macos-hidden-apps = false
+
+[key-mapping]
+    preset = 'qwerty'
+
+[gaps]
+    inner.horizontal = 6
+    inner.vertical =   6
+    outer.left =       4
+    outer.bottom =     4
+    outer.top =        4
+    outer.right =      4
+
+[mode.main.binding]
+    alt-slash = 'layout tiles horizontal'
+    alt-comma = 'layout accordion horizontal'
+
+    alt-h = 'move left'
+    alt-j = 'focus left'
+    alt-k = 'focus right'
+    alt-l = 'move right'
+
+    alt-minus = 'resize smart -50'
+    alt-equal = 'resize smart +50'
+    alt-enter = 'fullscreen'
+    alt-cmd-ctrl-enter = 'macos-native-fullscreen'
+    alt-shift-f= 'layout tiling floating'
+
+    alt-1 = 'workspace 1'
+    alt-2 = 'workspace 2'
+    alt-3 = 'workspace 3'
+    alt-4 = 'workspace 4'
+    alt-5 = 'workspace 5'
+     
+    alt-shift-1 = 'move-node-to-workspace 1'
+    alt-shift-2 = 'move-node-to-workspace 2'
+    alt-shift-3 = 'move-node-to-workspace 3'
+    alt-shift-4 = 'move-node-to-workspace 4'
+    alt-shift-5 = 'move-node-to-workspace 5'
+
+    alt-tab = 'workspace-back-and-forth'
+
+    alt-shift-semicolon = 'mode service'
+
+    "alt-b" = "exec-and-forget open -a /Applications/Safari.app"
+    # "alt-b" = "exec-and-forget open -a /Applications/Helium.app"
+    "alt-o" = "exec-and-forget open -a /Applications/Obsidian.app"
+    "alt-x" = "exec-and-forget open -a /Applications/Ghostty.app"
+    "alt-t" = "exec-and-forget open -a /Applications/Telegram.app"
+    
+    [[on-window-detected]]
+        if.app-name-regex-substring = 'Finder'
+        run = ['layout floating']
+
+    [[on-window-detected]]
+        if.app-name-regex-substring = 'keePassXC'
+        run = ['layout floating']
+
+    [[on-window-detected]]
+        if.app-name-regex-substring = 'Claude'
+        run = ['layout floating']
+    
+[mode.service.binding]
+    esc = ['reload-config', 'mode main']
