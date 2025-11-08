@@ -41,6 +41,13 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 vim.api.nvim_create_autocmd('BufEnter', {
+  pattern = vim.fn.expand('~') .. '/dotfiles/nvim/init.lua',
+  callback = function()
+    vim.diagnostic.enable(false)
+  end,
+})
+
+vim.api.nvim_create_autocmd('BufEnter', {
   pattern = vim.fn.stdpath('config') .. '/init.lua',
   callback = function()
     vim.diagnostic.enable(false)
@@ -160,6 +167,7 @@ vim.keymap.set('n', '<leader>/', ':Pick grep_live<CR>')
 vim.keymap.set('n', '<leader>b', ':Pick buffers<CR>')
 vim.keymap.set('n', '<leader>s', ':%s/')
 vim.keymap.set('v', '<leader>s', ':s/')
+vim.keymap.set('n', '<leader>g', ':LazyGit<CR>')
 
 --LSP keymap
 
@@ -185,6 +193,7 @@ vim.keymap.set('n', '<leader>а', ':Pick files<CR>')
 vim.keymap.set('n', '<leader>и', ':Pick buffers<CR>')
 vim.keymap.set('n', '<leader>ы', ':%s/')
 vim.keymap.set('v', '<leader>ы', ':s/')
+vim.keymap.set('n', '<leader>п', ':LazyGit<CR>')
 
 --LSP keymap (Russian)
 vim.keymap.set('n', 'пв', vim.lsp.buf.definition)
