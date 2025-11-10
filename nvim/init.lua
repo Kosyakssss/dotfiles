@@ -69,8 +69,11 @@ vim.pack.add({
   { src = 'https://github.com/nvim-mini/mini.statusline' },
   { src = 'https://github.com/nvim-mini/mini.starter' },
   { src = 'https://github.com/nvim-mini/mini.files' },
+  { src = 'https://github.com/sourcegraph/amp.nvim' },
   { src = 'https://github.com/nvim-neo-tree/neo-tree.nvim' },
 })
+
+require('amp').setup({ auto_start = true, log_level = "info" })
 
 require('catppuccin').setup({
   flavour = 'auto',
