@@ -1,5 +1,18 @@
---General settings
+-- General keymap
+vim.cmd(
+  "set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯЖ;ABCDEFGHIJKLMNOPQRSTUVWXYZ:,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz")
 
+vim.g.mapleader = ' '
+vim.keymap.set('i', 'jk', '<Esc>')
+vim.keymap.set('n', '<Esc><Esc>', ':noh<CR>')
+vim.keymap.set('n', '<leader>w', ':write<CR>')
+vim.keymap.set('n', '<leader>q', ':quit<CR>')
+--(Russian)
+vim.keymap.set('n', '<leader>ц', ':write<CR>')
+vim.keymap.set('n', '<leader>й', ':quit<CR>')
+
+
+-- General settings
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.signcolumn = 'yes:1'
@@ -32,6 +45,28 @@ vim.opt.winborder = 'rounded'
 vim.opt.pumborder = 'rounded'
 vim.opt.termguicolors = true
 
+vim.api.nvim_create_autocmd('BufEnter', {
+  pattern = vim.fn.expand('~') .. '/dotfiles/nvim/init.lua',
+  callback = function()
+    vim.diagnostic.enable(false)
+  end,
+})
+
+vim.pack.add({
+  { src = 'https://github.com/nvim-lua/plenary.nvim' },
+  { src = 'https://github.com/nvim-mini/mini.pairs' },
+  { src = 'https://github.com/nvim-mini/mini.surround' },
+  { src = 'https://github.com/nvim-mini/mini.completion' },
+  { src = 'https://github.com/nvim-mini/mini.comment' },
+})
+
+require('mini.pairs').setup()
+require('mini.surround').setup()
+require('mini.completion').setup()
+require('mini.comment').setup()
+
+
+-- Theming and looks
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlights text when yanking',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -40,40 +75,23 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-vim.api.nvim_create_autocmd('BufEnter', {
-  pattern = vim.fn.expand('~') .. '/dotfiles/nvim/init.lua',
-  callback = function()
-    vim.diagnostic.enable(false)
-  end,
-})
-
-vim.cmd(
-  "set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯЖ;ABCDEFGHIJKLMNOPQRSTUVWXYZ:,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz")
-
---Plugins
-
 vim.pack.add({
-  { src = 'https://github.com/mason-org/mason.nvim' },
-  { src = 'https://github.com/mason-org/mason-lspconfig.nvim' },
-  { src = 'https://github.com/kdheepak/lazygit.nvim' },
-  { src = 'https://github.com/catppuccin/nvim' },
-  { src = 'https://github.com/kepano/flexoki-neovim' },
-  { src = 'https://github.com/nvim-lua/plenary.nvim' },
   { src = 'https://github.com/MunifTanjim/nui.nvim' },
   { src = 'https://github.com/nvim-tree/nvim-web-devicons' },
-  { src = 'https://github.com/nvim-mini/mini.pick' },
-  { src = 'https://github.com/nvim-mini/mini.pairs' },
-  { src = 'https://github.com/nvim-mini/mini.surround' },
-  { src = 'https://github.com/nvim-mini/mini.completion' },
-  { src = 'https://github.com/nvim-mini/mini.comment' },
   { src = 'https://github.com/nvim-mini/mini.statusline' },
   { src = 'https://github.com/nvim-mini/mini.starter' },
-  { src = 'https://github.com/nvim-mini/mini.files' },
-  { src = 'https://github.com/sourcegraph/amp.nvim' },
-  { src = 'https://github.com/nvim-neo-tree/neo-tree.nvim' },
+  { src = 'https://github.com/catppuccin/nvim' },
+  { src = 'https://github.com/kepano/flexoki-neovim' },
 })
 
-require('amp').setup({ auto_start = true, log_level = "info" })
+require('mini.statusline').setup()
+local starter = require('mini.starter')
+starter.setup({
+  items = {
+    starter.sections.recent_files(5, true, false),
+  },
+  footer = '',
+})
 
 require('catppuccin').setup({
   flavour = 'auto',
@@ -82,33 +100,51 @@ require('catppuccin').setup({
     dark = 'mocha',
   },
 })
-vim.cmd.colorscheme 'flexoki'
 
-require('mason').setup()
+vim.cmd.colorscheme 'catppuccin'
+
+
+-- File sidebar
+vim.pack.add({
+  { src = 'https://github.com/nvim-mini/mini.files' },
+  { src = 'https://github.com/nvim-neo-tree/neo-tree.nvim' },
+})
+require('mini.files').setup()
+
+vim.keymap.set('n', '<leader>e', ':lua MiniFiles.open()<CR>')
+-- vim.keymap.set('n', '<leader>e', ':Neotree toggle<CR>')
+--(Russian)
+vim.keymap.set('n', '<leader>у', ':lua MiniFiles.open()<CR>')
+-- vim.keymap.set('n', '<leader>у', ':Neotree toggle<CR>')
+
+
+-- Search stuff
+vim.pack.add({
+  { src = 'https://github.com/nvim-mini/mini.pick' },
+})
+
 require('mini.pick').setup({
   options = {
     content_from_bottom = true,
     use_cache = true,
   },
 })
-require('mini.pairs').setup()
-require('mini.surround').setup()
-require('mini.completion').setup()
-require('mini.comment').setup()
-require('mini.statusline').setup()
-require('mini.files').setup()
 
-local starter = require('mini.starter')
+vim.keymap.set('n', '<leader>/', ':Pick grep_live<CR>')
+vim.keymap.set('n', '<leader>f', ':Pick files<CR>')
+vim.keymap.set('n', '<leader>b', ':Pick buffers<CR>')
+--(Russian)
+vim.keymap.set('n', '<leader>а', ':Pick files<CR>')
+vim.keymap.set('n', '<leader>и', ':Pick buffers<CR>')
 
-starter.setup({
-  items = {
-    starter.sections.recent_files(5, true, false),
-  },
-  footer = '',
+
+-- LSP
+vim.pack.add({
+  { src = 'https://github.com/mason-org/mason.nvim' },
+  { src = 'https://github.com/mason-org/mason-lspconfig.nvim' },
 })
 
---LSP
-
+require('mason').setup()
 require('mason-lspconfig').setup({
   ensure_installed = {
     'lua_ls',
@@ -134,33 +170,43 @@ vim.lsp.config('marksman', {
 })
 
 vim.lsp.config('tsgo', {
-  cmd = { 'tsgo', 'lsp', '--stdio' },
-  filetypes = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
+  cmd = { 'tsgo', 'lsp', '--stdio' },  filetypes = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
   root_markers = { 'package.json', 'tsconfig.json', 'jsconfig.json', '.git' },
 })
 
 vim.lsp.config('html', {
-  cmd = { 'html-lsp', '--stdio' },
-  filetypes = { 'html' },
+  cmd = { 'html-lsp', '--stdio' },  filetypes = { 'html' },
   root_markers = { 'package.json', '.git' },
   fallback = true,
 })
 
 vim.lsp.config('cssls', {
-  cmd = { 'css-lsp', '--stdio' },
-  filetypes = { 'css', 'scss', 'less' },
+  cmd = { 'css-lsp', '--stdio' },  filetypes = { 'css', 'scss', 'less' },
   root_markers = { 'package.json', '.git' },
   fallback = true,
 })
 
 vim.lsp.config('tailwindcss', {
-  cmd = { 'tailwindcss-language-server', '--stdio' },
-  filetypes = { 'html', 'css', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
+  cmd = { 'tailwindcss-language-server', '--stdio' },  filetypes = { 'html', 'css', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
   root_markers = { 'tailwind.config.js', 'tailwind.config.ts', 'tailwind.config.mjs', 'package.json', '.git' },
 })
 
---Diagnostics
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition)
+vim.keymap.set('n', 'gr', vim.lsp.buf.references)
+vim.keymap.set('n', 'K', vim.lsp.buf.hover)
+vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action)
+vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename)
+vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format)
+--(Russian)
+vim.keymap.set('n', 'пв', vim.lsp.buf.definition)
+vim.keymap.set('n', 'пк', vim.lsp.buf.references)
+vim.keymap.set('n', 'Л', vim.lsp.buf.hover)
+vim.keymap.set('n', '<leader>сф', vim.lsp.buf.code_action)
+vim.keymap.set('n', '<leader>кт', vim.lsp.buf.rename)
+vim.keymap.set('n', '<leader>да', vim.lsp.buf.format)
 
+
+--Diagnostics
 vim.diagnostic.config({
   virtual_text = true,
   virtual_lines = false,
@@ -170,54 +216,27 @@ vim.diagnostic.config({
   severity_sort = true,
 })
 
---Keymap
-
-vim.g.mapleader = ' '
-vim.keymap.set('i', 'jk', '<Esc>')
-vim.keymap.set('n', '<Esc><Esc>', ':noh<CR>')
-vim.keymap.set('n', '<leader>w', ':write<CR>')
-vim.keymap.set('n', '<leader>q', ':quit<CR>')
-vim.keymap.set('n', '<leader>e', ':lua MiniFiles.open()<CR>')
--- vim.keymap.set('n', '<leader>e', ':Neotree toggle<CR>')
-vim.keymap.set('n', '<leader>f', ':Pick files<CR>')
-vim.keymap.set('n', '<leader>/', ':Pick grep_live<CR>')
-vim.keymap.set('n', '<leader>b', ':Pick buffers<CR>')
-vim.keymap.set('n', '<leader>g', ':LazyGit<CR>')
-
---LSP keymap
-
-vim.keymap.set('n', 'gd', vim.lsp.buf.definition)
-vim.keymap.set('n', 'gr', vim.lsp.buf.references)
-vim.keymap.set('n', 'K', vim.lsp.buf.hover)
-vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action)
-vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename)
-vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format)
-
---Diagnostics keymap
-
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float)
-
---Keymap (Russian)
-
-vim.keymap.set('n', '<leader>ц', ':write<CR>')
-vim.keymap.set('n', '<leader>й', ':quit<CR>')
-vim.keymap.set('n', '<leader>у', ':lua MiniFiles.open()<CR>')
--- vim.keymap.set('n', '<leader>у', ':Neotree toggle<CR>')
-vim.keymap.set('n', '<leader>а', ':Pick files<CR>')
-vim.keymap.set('n', '<leader>и', ':Pick buffers<CR>')
-vim.keymap.set('n', '<leader>п', ':LazyGit<CR>')
-
---LSP keymap (Russian)
-vim.keymap.set('n', 'пв', vim.lsp.buf.definition)
-vim.keymap.set('n', 'пк', vim.lsp.buf.references)
-vim.keymap.set('n', 'Л', vim.lsp.buf.hover)
-vim.keymap.set('n', '<leader>сф', vim.lsp.buf.code_action)
-vim.keymap.set('n', '<leader>кт', vim.lsp.buf.rename)
-vim.keymap.set('n', '<leader>да', vim.lsp.buf.format)
-
---Diagnostics keymap (Russian)
+--(Russian)
 vim.keymap.set('n', 'хв', vim.diagnostic.goto_prev)
 vim.keymap.set('n', 'ъв', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>в', vim.diagnostic.open_float)
+
+
+-- Git
+vim.pack.add({
+  { src = 'https://github.com/kdheepak/lazygit.nvim' },
+})
+
+vim.keymap.set('n', '<leader>g', ':LazyGit<CR>')
+--(Russian)
+vim.keymap.set('n', '<leader>п', ':LazyGit<CR>')
+
+
+-- AI
+vim.pack.add({
+  { src = 'https://github.com/sourcegraph/amp.nvim' },
+})
+require('amp').setup({ auto_start = true, log_level = "info" })

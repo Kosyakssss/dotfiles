@@ -62,6 +62,10 @@ automatically-unhide-macos-hidden-apps = false
         run = ['layout floating']
 
     [[on-window-detected]]
+        if.app-name-regex-substring = 'Weather'
+        run = ['layout floating']
+
+    [[on-window-detected]]
         if.app-name-regex-substring = 'Mail'
         run = ['layout floating']
 
