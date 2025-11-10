@@ -1,6 +1,6 @@
 include ~/.config/newsboat/colors/terminal
 
-browser "open -a Safari %u"
+browser "open -a Helium %u"
 
 bind-key j next
 bind-key k prev

@@ -179,8 +179,6 @@ vim.keymap.set('n', '<leader>e', ':lua MiniFiles.open()<CR>')
 vim.keymap.set('n', '<leader>f', ':Pick files<CR>')
 vim.keymap.set('n', '<leader>/', ':Pick grep_live<CR>')
 vim.keymap.set('n', '<leader>b', ':Pick buffers<CR>')
-vim.keymap.set('n', '<leader>s', ':%s/')
-vim.keymap.set('v', '<leader>s', ':s/\\(.*\\)/')
 vim.keymap.set('n', '<leader>g', ':LazyGit<CR>')
 
 --LSP keymap
@@ -206,8 +204,6 @@ vim.keymap.set('n', '<leader>у', ':lua MiniFiles.open()<CR>')
 -- vim.keymap.set('n', '<leader>у', ':Neotree toggle<CR>')
 vim.keymap.set('n', '<leader>а', ':Pick files<CR>')
 vim.keymap.set('n', '<leader>и', ':Pick buffers<CR>')
-vim.keymap.set('n', '<leader>ы', ':%s/')
-vim.keymap.set('v', '<leader>ы', ':s/\\(.*\\)/')
 vim.keymap.set('n', '<leader>п', ':LazyGit<CR>')
 
 --LSP keymap (Russian)
