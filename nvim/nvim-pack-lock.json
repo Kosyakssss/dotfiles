@@ -1,0 +1,26 @@
+{
+  "plugins": {
+    "amp.nvim": [],
+    "flexoki-neovim": [],
+    "lazygit.nvim": [],
+    "mason-lspconfig.nvim": [],
+    "mason.nvim": [],
+    "mini.comment": [],
+    "mini.completion": [],
+    "mini.files": [],
+    "mini.pairs": [],
+    "mini.pick": [],
+    "mini.starter": [],
+    "mini.statusline": [],
+    "mini.surround": [],
+    "nui.nvim": [],
+    "nvim": [],
+    "nvim-colorizer.lua": {
+      "rev": "81e676d",
+      "src": "https://github.com/catgoose/nvim-colorizer.lua"
+    },
+    "nvim-lspconfig": [],
+    "nvim-web-devicons": [],
+    "plenary.nvim": []
+  }
+}

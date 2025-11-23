@@ -1,8 +1,0 @@
-include ~/.config/newsboat/colors/terminal
-
-browser "open -a Helium %u"
-
-bind-key j next
-bind-key k prev
-bind-key o open-in-browser-and-mark-read
-bind-key O open-all-unread-in-browser-and-mark-read

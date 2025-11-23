@@ -1,6 +1,7 @@
+-- written for nvim 0.12
 -- General keymap
 vim.cmd(
-  "set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯЖ;ABCDEFGHIJKLMNOPQRSTUVWXYZ:,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz")
+    "set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯЖ;ABCDEFGHIJKLMNOPQRSTUVWXYZ:,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz")
 
 vim.g.mapleader = ' '
 vim.keymap.set('i', 'jk', '<Esc>')
@@ -20,7 +21,7 @@ vim.keymap.set('v', '<Space>н', '"+y')
 
 -- General settings
 vim.opt.number = true
-vim.opt.relativenumber = false
+vim.opt.relativenumber = true
 vim.opt.signcolumn = 'yes:1'
 vim.opt.scrolloff = 8
 vim.opt.wrap = true
@@ -29,9 +30,9 @@ vim.opt.breakindent = true
 vim.opt.showbreak = '↪ '
 vim.opt.cursorline = true
 
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.autoindent = true
 vim.opt.smartindent = true
@@ -51,18 +52,18 @@ vim.opt.pumborder = 'rounded'
 vim.opt.termguicolors = true
 
 vim.api.nvim_create_autocmd('BufEnter', {
-  pattern = vim.fn.expand('~') .. '/dotfiles/nvim/init.lua',
-  callback = function()
-    vim.diagnostic.enable(false)
-  end,
+    pattern = vim.fn.expand('~') .. '/dotfiles/nvim/init.lua',
+    callback = function()
+        vim.diagnostic.enable(false)
+    end,
 })
 
 vim.pack.add({
-  { src = 'https://github.com/nvim-lua/plenary.nvim' },
-  { src = 'https://github.com/nvim-mini/mini.pairs' },
-  { src = 'https://github.com/nvim-mini/mini.surround' },
-  { src = 'https://github.com/nvim-mini/mini.completion' },
-  { src = 'https://github.com/nvim-mini/mini.comment' },
+    { src = 'https://github.com/nvim-lua/plenary.nvim' },
+    { src = 'https://github.com/nvim-mini/mini.pairs' },
+    { src = 'https://github.com/nvim-mini/mini.surround' },
+    { src = 'https://github.com/nvim-mini/mini.completion' },
+    { src = 'https://github.com/nvim-mini/mini.comment' },
 })
 
 require('mini.pairs').setup()
@@ -73,37 +74,37 @@ require('mini.comment').setup()
 
 -- Theming and looks
 vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlights text when yanking',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
+    desc = 'Highlights text when yanking',
+    group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+    callback = function()
+        vim.highlight.on_yank()
+    end,
 })
 
 vim.pack.add({
-  { src = 'https://github.com/MunifTanjim/nui.nvim' },
-  { src = 'https://github.com/nvim-tree/nvim-web-devicons' },
-  { src = 'https://github.com/nvim-mini/mini.statusline' },
-  { src = 'https://github.com/nvim-mini/mini.starter' },
-  { src = 'https://github.com/catppuccin/nvim' },
-  { src = 'https://github.com/kepano/flexoki-neovim' },
+    { src = 'https://github.com/MunifTanjim/nui.nvim' },
+    { src = 'https://github.com/nvim-tree/nvim-web-devicons' },
+    { src = 'https://github.com/nvim-mini/mini.statusline' },
+    { src = 'https://github.com/nvim-mini/mini.starter' },
+    { src = 'https://github.com/catppuccin/nvim' },
+    { src = 'https://github.com/kepano/flexoki-neovim' },
 })
 
 require('mini.statusline').setup()
 local starter = require('mini.starter')
 starter.setup({
-  items = {
-    starter.sections.recent_files(5, true, false),
-  },
-  footer = '',
+    items = {
+        starter.sections.recent_files(5, true, false),
+    },
+    footer = '',
 })
 
 require('catppuccin').setup({
-  flavour = 'auto',
-  background = {
-    light = 'latte',
-    dark = 'mocha',
-  },
+    flavour = 'auto',
+    background = {
+        light = 'latte',
+        dark = 'mocha',
+    },
 })
 
 vim.cmd.colorscheme 'flexoki'
@@ -111,7 +112,7 @@ vim.cmd.colorscheme 'flexoki'
 
 -- File sidebar
 vim.pack.add({
-  { src = 'https://github.com/nvim-mini/mini.files' },
+    { src = 'https://github.com/nvim-mini/mini.files' },
 })
 require('mini.files').setup()
 
@@ -122,14 +123,14 @@ vim.keymap.set('n', '<leader>у', ':lua MiniFiles.open()<CR>')
 
 -- Search stuff
 vim.pack.add({
-  { src = 'https://github.com/nvim-mini/mini.pick' },
+    { src = 'https://github.com/nvim-mini/mini.pick' },
 })
 
 require('mini.pick').setup({
-  options = {
-    content_from_bottom = true,
-    use_cache = true,
-  },
+    options = {
+        content_from_bottom = true,
+        use_cache = true,
+    },
 })
 
 vim.keymap.set('n', '<leader>/', ':Pick grep_live<CR>')
@@ -142,59 +143,52 @@ vim.keymap.set('n', '<leader>и', ':Pick buffers<CR>')
 
 -- LSP
 vim.pack.add({
-  { src = 'https://github.com/mason-org/mason.nvim' },
-  { src = 'https://github.com/mason-org/mason-lspconfig.nvim' },
+    { src = 'https://github.com/neovim/nvim-lspconfig' },
+    { src = 'https://github.com/mason-org/mason.nvim' },
+    { src = 'https://github.com/mason-org/mason-lspconfig.nvim' },
 })
 
 require('mason').setup()
+local mason_lspconfig = require('mason-lspconfig')
+
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+
 require('mason-lspconfig').setup({
-  ensure_installed = {
-    'lua_ls',
-    'marksman',
-    'tsgo',
-    'cssls',
-    'html',
-    'tailwindcss',
-  }
+    ensure_installed = {
+        'lua_ls',
+        'marksman',
+        'ts_ls',
+        'cssls',
+        'html',
+        'tailwindcss',
+    },
+    handlers = {
+        function(server_name)
+            require('lspconfig')[server_name].setup({
+                capabilities = capabilities,
+            })
+        end,
+
+        ['lua_ls'] = function()
+            require('lspconfig').lua_ls.setup({
+                capabilities = capabilities,
+                settings = {
+                    Lua = {
+                        diagnostics = {
+                            globals = { 'vim' },
+                        },
+                    },
+                },
+            })
+        end,
+    },
 })
 
-vim.lsp.config('lua_ls', {
-  cmd = { 'lua-language-server' },
-  filetypes = { 'lua' },
-  root_markers = { 'init.lua', '.luarc.json', '.git' },
-})
-
-vim.lsp.config('marksman', {
-  cmd = { 'marksman' },
-  filetypes = { 'md', 'markdown' },
-  root_markers = {},
-  fallback = true,
-})
-
-vim.lsp.config('tsgo', {
-  cmd = { 'tsgo', 'lsp', '--stdio' },
-	filetypes = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
-  root_markers = { 'package.json', 'tsconfig.json', 'jsconfig.json', '.git' },
-})
-
-vim.lsp.config('html', {
-  cmd = { 'html-lsp', '--stdio' },
-	filetypes = { 'html' },
-  root_markers = { 'package.json', '.git' },
-  fallback = true,
-})
-
-vim.lsp.config('cssls', {
-  cmd = { 'css-lsp', '--stdio' },
-	filetypes = { 'css', 'scss', 'less' },
-  root_markers = { 'package.json', '.git' },
-  fallback = true,
-})
-
-vim.lsp.config('tailwindcss', {
-  cmd = { 'tailwindcss-language-server', '--stdio' },
-	filetypes = { 'html', 'css', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
-  root_markers = { 'tailwind.config.js', 'tailwind.config.ts', 'tailwind.config.mjs', 'package.json', '.git' },
+vim.api.nvim_create_autocmd('LspAttach', {
+    group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+    callback = function(ev)
+        vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    end,
 })
 
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition)
@@ -214,12 +208,12 @@ vim.keymap.set('n', '<leader>да', vim.lsp.buf.format)
 
 --Diagnostics
 vim.diagnostic.config({
-  virtual_text = true,
-  virtual_lines = false,
-  signs = true,
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
+    virtual_text = true,
+    virtual_lines = false,
+    signs = true,
+    underline = true,
+    update_in_insert = false,
+    severity_sort = true,
 })
 
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
@@ -233,7 +227,7 @@ vim.keymap.set('n', '<leader>в', vim.diagnostic.open_float)
 
 -- Git
 vim.pack.add({
-  { src = 'https://github.com/kdheepak/lazygit.nvim' },
+    { src = 'https://github.com/kdheepak/lazygit.nvim' },
 })
 
 vim.keymap.set('n', '<leader>g', ':LazyGit<CR>')
@@ -243,6 +237,6 @@ vim.keymap.set('n', '<leader>п', ':LazyGit<CR>')
 
 -- AI
 vim.pack.add({
-  { src = 'https://github.com/sourcegraph/amp.nvim' },
+    { src = 'https://github.com/sourcegraph/amp.nvim' },
 })
 require('amp').setup({ auto_start = true, log_level = "info" })
