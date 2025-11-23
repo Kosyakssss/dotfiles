@@ -12,11 +12,17 @@ vim.keymap.set('n', '<leader>w', ':write<CR>')
 vim.keymap.set('n', '<leader>q', ':quit<CR>')
 vim.keymap.set('n', '<Space>y', '"+y')
 vim.keymap.set('v', '<Space>y', '"+y')
+vim.keymap.set('n', '<Space>o', ':!open % <CR><esc>')
+vim.keymap.set('n', '<Tab>', ':bnext<CR>')
+vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>')
+vim.keymap.set('n', '<leader>dd', ':bd<CR>')
 --(Russian)
 vim.keymap.set('n', '<leader>ц', ':write<CR>')
 vim.keymap.set('n', '<leader>й', ':quit<CR>')
 vim.keymap.set('n', '<Space>н', '"+y')
 vim.keymap.set('v', '<Space>н', '"+y')
+vim.keymap.set('n', '<Space>щ', ':!open % <CR><esc>')
+vim.keymap.set('n', '<leader>вв', ':bd<CR>')
 
 
 -- General settings
@@ -157,11 +163,12 @@ require('mason-lspconfig').setup({
     ensure_installed = {
         'lua_ls',
         'marksman',
-        'ts_ls',
-        'cssls',
         'html',
+        'cssls',
         'tailwindcss',
+        'ts_ls',
     },
+
     handlers = {
         function(server_name)
             require('lspconfig')[server_name].setup({
