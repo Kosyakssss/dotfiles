@@ -5,8 +5,8 @@ if status is-interactive
     end
 
     alias vim="nvim"
-    alias n="cd ~/Documents/Notes; vim"
-    alias p="cd ~/projects/static-website; vim"
+    alias n="cd ~/Documents/Notes; hx ."
+    alias p="cd ~/projects/static-website; hx ."
 
     function fish_prompt
         echo
