@@ -29,6 +29,15 @@ other-lines = 'warning'
 '}' = 'goto_next_paragraph'
 '{' = 'goto_prev_paragraph'
 'C-p' = ':lsp-workspace-command'
+'tab' = ':buffer-next'
+'S-tab' = ':buffer-previous'
+
+[keys.normal.space.d]
+'d' = ':buffer-close!'
+
+[keys.normal.space]
+'w' = ':write'
+'q' = ':quit'
 
 [keys.select]
 '}' = 'goto_next_paragraph'
