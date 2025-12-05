@@ -4,8 +4,6 @@ theme = "flexoki_light"
 
 [editor]
 line-number = 'absolute'
-true-color = true
-auto-info	= true
 soft-wrap.enable = true
 color-modes = true
 cursor-shape = { insert = 'bar', normal = 'block', select = 'block' }
@@ -26,8 +24,6 @@ cursor-line = 'info'
 other-lines = 'warning'
 
 [keys.normal]
-'}' = 'goto_next_paragraph'
-'{' = 'goto_prev_paragraph'
 'C-p' = ':lsp-workspace-command'
 'tab' = ':buffer-next'
 'S-tab' = ':buffer-previous'
@@ -45,10 +41,6 @@ C-g = [
 [keys.normal.space]
 'w' = ':write'
 'q' = ':quit'
-
-[keys.select]
-'}' = 'goto_next_paragraph'
-'{' = 'goto_prev_paragraph'
 
 [keys.insert]
 j = { j = 'normal_mode', k = 'normal_mode' }
