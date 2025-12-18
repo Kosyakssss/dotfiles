@@ -7,7 +7,9 @@ if status is-interactive
     alias vim="nvim"
     alias g="lazygit"
     alias n="cd ~/Documents/Notes; hx ."
+    alias dot="cd ~/dotfiles; hx ."
     alias p="cd ~/projects; ls"
+    alias ll="ls -lah"
 
     function fish_prompt
         echo
@@ -19,6 +21,7 @@ if status is-interactive
 
     set -gx PATH $PATH /Users/kote/Library/pnpm
     set -gx PATH $PATH ~/.local/share/bob/nvim-bin
+    set -gx PATH $PATH ~/.bun/bin
     set -gx RIPGREP_CONFIG_PATH "$HOME/dotfiles/.ripgreprc"
 
     # Helix automatic theme sync script
