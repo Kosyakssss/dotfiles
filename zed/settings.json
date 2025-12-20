@@ -1,0 +1,39 @@
+{
+  "helix_mode": true,
+  "buffer_font_family": "Google Sans Code",
+  "rounded_selection": true,
+  "icon_theme": "Zed (Default)",
+  "tab_size": 2,
+  "disable_ai": false,
+  "minimap": {
+    "thumb_border": "full",
+    "thumb": "always",
+    "show": "auto",
+  },
+  "terminal": {
+    "shell": {
+      "program": "/opt/homebrew/bin/fish",
+    },
+  },
+  "edit_predictions": {
+    "mode": "subtle",
+  },
+  "show_edit_predictions": true,
+  "soft_wrap": "editor_width",
+  "relative_line_numbers": "enabled",
+  "autosave": "on_focus_change",
+  "ui_font_family": "Input Mono Narrow",
+  "telemetry": {
+    "diagnostics": true,
+    "metrics": true,
+  },
+  "vim_mode": true,
+  "base_keymap": "Cursor",
+  "ui_font_size": 14,
+  "buffer_font_size": 14.0,
+  "theme": {
+    "mode": "system",
+    "light": "Flexoki Light",
+    "dark": "Flexoki Dark",
+  },
+}

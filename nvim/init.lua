@@ -111,10 +111,11 @@ starter.setup({
 vim.cmd.colorscheme 'flexoki'
 
 
--- File sidebar
+-- File system
 vim.pack.add({
     { src = 'https://github.com/nvim-mini/mini.files' },
 })
+
 require('mini.files').setup({
     content = {
         filter = function(fs_entry)

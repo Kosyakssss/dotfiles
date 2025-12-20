@@ -3,7 +3,7 @@
 theme = "flexoki_dark"
 
 [editor]
-line-number = 'absolute'
+line-number = 'relative'
 soft-wrap.enable = true
 color-modes = true
 cursor-shape = { insert = 'bar', normal = 'block', select = 'block' }
@@ -24,10 +24,9 @@ cursor-line = 'info'
 other-lines = 'error'
 
 [keys.normal]
-'C-p' = ':lsp-workspace-command'
 'tab' = ':buffer-next'
 'S-tab' = ':buffer-previous'
-'ret' = 'goto_word'
+'C-p' = ':lsp-workspace-command'
 
 [keys.normal.space.d]
 'd' = ':buffer-close!'
@@ -36,7 +35,6 @@ other-lines = 'error'
 [keys.normal.space]
 'w' = ':write'
 'q' = ':quit'
-'o' = ':sh open %{buffer_name}'
 
 [keys.insert]
 j = { j = 'normal_mode', k = 'normal_mode' }

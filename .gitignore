@@ -2,5 +2,7 @@
 nvim/undodir/
 qBittorrent/
 raycast/
-zed/
 linearmouse/
+zed/conversations/
+zed/prompts/
+themes

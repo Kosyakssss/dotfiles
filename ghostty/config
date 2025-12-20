@@ -7,6 +7,9 @@ font-family = "Google Sans Code"
 window-height = 32
 window-width = 68
 
+window-position-x = 1009
+window-position-y = 436
+
 macos-titlebar-style = tabs
 macos-option-as-alt = true
 
@@ -15,4 +18,4 @@ macos-option-as-alt = true
 
 theme = dark:Flexoki Dark,light:Flexoki Light
 
-auto-update-channel = stable
+auto-update-channel = tip

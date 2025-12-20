@@ -1,0 +1,5 @@
+dailynote = "%Y-%m-%d"
+title_headings = false
+new_file_folder_path = ""
+daily_notes_folder = "Daily"
+
