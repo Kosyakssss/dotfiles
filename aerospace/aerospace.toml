@@ -1,5 +1,5 @@
 after-startup-command = []
-start-at-login = false
+start-at-login = true
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 accordion-padding = 30
@@ -12,20 +12,20 @@ automatically-unhide-macos-hidden-apps = false
     preset = 'qwerty'
 
 [gaps]
-    inner.horizontal = 6
-    inner.vertical =   6
-    outer.left =       4
-    outer.bottom =     4
-    outer.top =        4
-    outer.right =      4
+    inner.horizontal = 6 # 0 
+    inner.vertical =   6 # 0
+    outer.left =       4 # 0
+    outer.bottom =     4 # 0
+    outer.top =        4 # 0
+    outer.right =      4 # 0
 
 [mode.main.binding]
     alt-slash = 'layout tiles horizontal'
     alt-comma = 'layout accordion horizontal'
 
-    alt-h = 'move left'
     alt-j = 'focus left'
     alt-k = 'focus right'
+    alt-h = 'move left'
     alt-l = 'move right'
 
     alt-minus = 'resize smart -50'
@@ -51,12 +51,6 @@ automatically-unhide-macos-hidden-apps = false
 
     alt-shift-semicolon = 'mode service'
 
-    # "alt-b" = "exec-and-forget open -a /Applications/Safari.app"
-    # "alt-b" = "exec-and-forget open -a /Applications/Helium.app"
-    # "alt-o" = "exec-and-forget open -a /Applications/Obsidian.app"
-    # "alt-x" = "exec-and-forget open -a /Applications/Ghostty.app"
-    # "alt-t" = "exec-and-forget open -a /Applications/Telegram.app"
-    
     [[on-window-detected]]
         if.app-name-regex-substring = 'Finder'
         run = ['layout floating']
@@ -71,10 +65,6 @@ automatically-unhide-macos-hidden-apps = false
 
     [[on-window-detected]]
         if.app-name-regex-substring = 'Calendar'
-        run = ['layout floating']
-
-    [[on-window-detected]]
-        if.app-name-regex-substring = 'keePassXC'
         run = ['layout floating']
 
 [mode.service.binding]
