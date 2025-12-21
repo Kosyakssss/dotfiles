@@ -4,6 +4,7 @@ theme = "flexoki_dark"
 
 [editor]
 line-number = 'relative'
+cursorline = true
 soft-wrap.enable = true
 color-modes = true
 cursor-shape = { insert = 'bar', normal = 'block', select = 'block' }

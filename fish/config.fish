@@ -6,7 +6,7 @@ if status is-interactive
 
     alias vim="nvim"
     alias g="lazygit"
-    alias n="cd ~/Documents/Notes; hx ."
+    alias n="cd ~/Documents/Notes; hx todo.md"
     alias dot="cd ~/dotfiles; hx ."
     alias p="cd ~/projects; ls"
     alias ll="ls -lah"
@@ -19,10 +19,22 @@ if status is-interactive
         echo -n "> "
     end
 
+    set -gx EDITOR hx
     set -gx PATH $PATH /Users/kote/Library/pnpm
     set -gx PATH $PATH ~/.local/share/bob/nvim-bin
     set -gx PATH $PATH ~/.bun/bin
     set -gx RIPGREP_CONFIG_PATH "$HOME/dotfiles/.ripgreprc"
+
+    # Yazi
+
+    function y
+        set tmp (mktemp -t "yazi-cwd.XXXXXX")
+        yazi $argv --cwd-file="$tmp"
+        if read -z cwd <"$tmp"; and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]
+            builtin cd -- "$cwd"
+        end
+        rm -f -- "$tmp"
+    end
 
     # Helix automatic theme sync script
 
