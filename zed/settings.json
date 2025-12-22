@@ -8,7 +8,7 @@
   "minimap": {
     "thumb_border": "full",
     "thumb": "always",
-    "show": "auto",
+    "show": "never",
   },
   "terminal": {
     "shell": {
@@ -27,7 +27,7 @@
     "diagnostics": true,
     "metrics": true,
   },
-  "vim_mode": true,
+  "vim_mode": false,
   "base_keymap": "Cursor",
   "ui_font_size": 14,
   "buffer_font_size": 14.0,

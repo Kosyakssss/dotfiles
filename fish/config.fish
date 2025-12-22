@@ -1,7 +1,7 @@
 if status is-interactive
 
     function fish_greeting
-        echo "🐟"
+        echo fih
     end
 
     alias vim="nvim"
@@ -13,10 +13,11 @@ if status is-interactive
 
     function fish_prompt
         echo
-        set_color $fish_color_cwd
-        echo -n (prompt_pwd)
-        set_color normal
-        echo -n "> "
+        # set_color $fish_color_cwd
+        # echo -n (prompt_pwd)
+        # set_color normal
+        # echo -n "> "
+        echo -n " > "
     end
 
     set -gx EDITOR hx
@@ -64,5 +65,7 @@ if status is-interactive
     function __helix_theme_check --on-event fish_preexec
         sync_helix_theme
     end
+
+    zoxide init fish | source
 
 end

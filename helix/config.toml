@@ -28,6 +28,13 @@ other-lines = 'error'
 'tab' = ':buffer-next'
 'S-tab' = ':buffer-previous'
 'C-p' = ':lsp-workspace-command'
+C-y = [
+  ':sh rm -f /tmp/unique-file',
+  ':insert-output yazi %{buffer_name} --chooser-file=/tmp/unique-file',
+  ':insert-output echo "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+  ':open %sh{cat /tmp/unique-file}',
+  ':redraw',
+]
 
 [keys.normal.space.d]
 'd' = ':buffer-close!'
@@ -36,6 +43,10 @@ other-lines = 'error'
 [keys.normal.space]
 'w' = ':write'
 'q' = ':quit'
+'f' = 'file_picker_in_current_directory'
+'F' = 'file_picker_in_current_buffer_directory'
+'e' = 'file_explorer_in_current_directory'
+'E' = 'file_explorer_in_current_buffer_directory'
 
 [keys.insert]
 j = { j = 'normal_mode', k = 'normal_mode' }
