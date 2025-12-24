@@ -4,7 +4,6 @@ if status is-interactive
         echo fih
     end
 
-    alias vim="nvim"
     alias g="lazygit"
     alias n="cd ~/Documents/Notes; hx todo.md"
     alias dot="cd ~/dotfiles; hx ."
