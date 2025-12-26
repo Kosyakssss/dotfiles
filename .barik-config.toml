@@ -1,0 +1,49 @@
+theme = "system" 
+
+[widgets]
+displayed = [ 
+    "default.spaces",
+    "spacer",
+    "default.network",
+    "default.battery",
+    "divider",
+    "default.time"
+]
+
+[widgets.default.spaces]
+space.show-key = true        
+window.show-title = true
+window.title.max-length = 25
+
+[widgets.default.battery]
+show-percentage = true
+warning-level = 20
+critical-level = 10
+
+[widgets.default.time]
+format = "E d, J:mm"
+calendar.format = "J:mm"
+calendar.show-events = true
+
+[popup.default.time]
+view-variant = "vertical"
+
+[background]
+enabled = true
+
+[experimental.background] 
+displayed = true          
+height = 26
+blur = 1
+
+[experimental.foreground] 
+height = 26
+horizontal-padding = 16
+spacing = 16
+
+# [experimental.foreground.widgets-background] 
+# displayed = false                            
+# blur = 3                                     
+
+[widgets.default.time.popup]
+view-variant = "vertical"

@@ -1,7 +1,7 @@
 shell-integration = fish
 command = "/opt/homebrew/bin/fish"
 
-font-size = 20
+font-size = 18
 font-family = "Google Sans Code"
 
 window-height = 32

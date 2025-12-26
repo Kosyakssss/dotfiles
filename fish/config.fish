@@ -5,7 +5,7 @@ if status is-interactive
     end
 
     alias g="lazygit"
-    alias n="cd ~/Documents/Notes; hx todo.md"
+    alias n="cd ~/Documents/Notes; hx ."
     alias dot="cd ~/dotfiles; hx ."
     alias p="cd ~/projects; ls"
     alias ll="ls -lah"
