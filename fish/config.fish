@@ -4,10 +4,11 @@ if status is-interactive
         echo fih
     end
 
+    alias a="tmux a"
     alias g="lazygit"
     alias n="cd ~/Documents/Notes; hx ."
-    alias dot="cd ~/dotfiles; hx ."
     alias p="cd ~/projects; ls"
+    alias dot="cd ~/dotfiles; hx ."
     alias ll="ls -lah"
 
     function fish_prompt

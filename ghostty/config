@@ -11,8 +11,8 @@ window-padding-y = 4,0
 macos-titlebar-style = hidden
 macos-option-as-alt = true
 
-background-opacity = 0.90
-# background-blur = macos-glass-regular
+background-opacity = 0.85
+background-blur = true
 
 theme = dark:Flexoki Dark,light:Flexoki Light
 
