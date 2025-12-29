@@ -4,8 +4,8 @@ command = "/opt/homebrew/bin/fish"
 font-size = 18
 font-family = "Google Sans Code"
 
-window-height = 32
-window-width = 54
+window-height = 24
+window-width = 36
 
 window-padding-y = 4,0
 macos-titlebar-style = tabs
