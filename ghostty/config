@@ -1,11 +1,11 @@
 shell-integration = fish
 command = "/opt/homebrew/bin/fish"
 
-font-size = 18
+font-size = 16
 font-family = "Google Sans Code"
 
 window-height = 24
-window-width = 36
+window-width = 48
 
 window-padding-y = 4,0
 macos-titlebar-style = tabs
@@ -17,3 +17,5 @@ background-blur = true
 theme = dark:Flexoki Dark,light:Flexoki Light
 
 auto-update-channel = tip
+
+keybind = global:ctrl+enter=toggle_quick_terminal
