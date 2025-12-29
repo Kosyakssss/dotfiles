@@ -5,10 +5,10 @@ font-size = 18
 font-family = "Google Sans Code"
 
 window-height = 32
-window-width = 68
+window-width = 54
 
 window-padding-y = 4,0
-macos-titlebar-style = hidden
+macos-titlebar-style = tabs
 macos-option-as-alt = true
 
 background-opacity = 0.85
