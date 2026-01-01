@@ -21,20 +21,24 @@ input {
 
     mouse {
         // off
-        // natural-scroll
-        // accel-speed 0.2
-        // accel-profile "flat"
-        // scroll-method "no-scroll"
+        accel-speed -0.35
+        scroll-factor 0.8
     }
+
     // warp-mouse-to-focus
-    // focus-follows-mouse max-scroll-amount="95%"
+    focus-follows-mouse max-scroll-amount="95%"
 }
 
 output "eDP-1" {
-    mode "2560x1600@60.030"
+    mode "2560x1600@60.000"
     scale 1.5
     transform "normal"
     position x=1280 y=0
+}
+
+cursor {
+    hide-when-typing
+    hide-after-inactive-ms 5000
 }
 
 layout {
@@ -52,8 +56,8 @@ layout {
     focus-ring {
         width 2
 
-        active-color "#7fc8ff"
-        inactive-color "#505050"
+        active-color "#E6E4D9"
+        inactive-color "#100F0F"
     }
 
     border {
@@ -69,10 +73,8 @@ layout {
     }
 }
 
+spawn-sh-at-startup "swaybg -i ~/Documents/Wallpapers/wall20.png"
 spawn-at-startup "waybar"
-
-// To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
-// spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
 hotkey-overlay {
     skip-at-startup
@@ -80,9 +82,6 @@ hotkey-overlay {
 
 prefer-no-csd
 
-// You can change the path where screenshots are saved.
-// A ~ at the front will be expanded to the home directory.
-// The path is formatted with strftime(3) to give you the screenshot date and time.
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 animations {
@@ -93,6 +92,8 @@ animations {
 window-rule {
     match app-id=r#"firefox$"# title="^Picture-in-Picture$"
     open-floating true
+    open-focused false
+    default-floating-position x=12 y=12 relative-to="bottom-right"
 }
 
 window-rule {
@@ -116,8 +117,8 @@ binds {
     Mod+Space { spawn "fuzzel"; }
     Super+Alt+L { spawn "swaylock"; }
 
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+ -l 1.0"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
     XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 

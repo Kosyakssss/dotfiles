@@ -2,7 +2,8 @@ shell-integration = fish
 command = "$(which fish)"
 
 font-size = 14
-font-family = "Google Sans Code"
+# font-family = "Google Sans Code"
+font-family = "IosevkaTerm Nerd Font"
 
 window-height = 24
 window-width = 48
