@@ -1,25 +1,22 @@
 input {
     keyboard {
+
         xkb {
             layout "us,ru"
-            options "ctrl:nocaps"
+            options "ctrl:nocaps,altwin:swap_alt_win"
         }
+
+        repeat-delay 200
+        repeat-rate 35
         track-layout "global"
         numlock
     }
 
     touchpad {
-        // off
         tap
-        // dwt
-        // dwtp
-        // drag false
-        // drag-lock
+        dwt
         natural-scroll
-        // accel-speed 0.2
-        // accel-profile "flat"
-        // scroll-method "two-finger"
-        // disabled-on-external-mouse
+        scroll-factor 0.5
     }
 
     mouse {

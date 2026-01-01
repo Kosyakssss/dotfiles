@@ -1,3 +1,0 @@
---glob=!Library/*
---glob=!.git/
---glob=!node_modules/
