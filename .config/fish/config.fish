@@ -21,6 +21,7 @@ if status is-interactive
     set -gx EDITOR hx
     set -gx PATH $PATH ~/.bun/bin
     set -gx PATH $PATH ~/.cargo/bin
+    set -gx PATH $PATH /home/kote/.amp/bin
     set -gx PNPM_HOME "/home/kote/.local/share/pnpm"
     set -gx PATH $PATH "$PNPM_HOME"
     set -gx RIPGREP_CONFIG_PATH "$HOME/dotfiles/.ripgreprc"

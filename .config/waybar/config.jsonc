@@ -8,8 +8,8 @@
     "wireplumber#source"
   ],
   "modules-center": [
-    "niri/workspaces",
-    "mpris"
+    "niri/workspaces"
+    // "mpris"
   ],
   "modules-right": [
     "network",
@@ -20,14 +20,15 @@
   ],
   // Settings
   "battery": {
-    "format": "{capacity}% {icon}",
+    "format": "{icon}  {capacity}%",
     "format-icons": [
       "",
       "",
       "",
       "",
       ""
-    ]
+    ],
+    "interval": 10
   },
   "clock": {
     "format-alt": "{:%F %H:%M}"
@@ -55,19 +56,20 @@
     "device": " intel_backlight | ",
     "format": " {icon} {percent}% | ",
     "format-icons": [
-      "",
-      ""
+      "",
+      ""
     ]
   },
   "bluetooth": {
     "format": " {status} | ",
     "format-connected": " {device_alias} | ",
-    "format-connected-battery": " {device_alias} {device_battery_percentage}% | "
+    "format-connected-battery": " {device_alias} {device_battery_percentage}% | ",
+    "on-click-right": "bluetoothctl power $(bluetoothctl show | grep -q 'Powered: yes' && echo off || echo on)"
   },
   "network": {
     "format": "{ifname}",
     "format-wifi": "  {essid} | ",
-    "format-disconnected": "WIFI DED",
+    "format-disconnected": "WIFI DED ",
     "max-length": 50
   },
   "niri/language": {

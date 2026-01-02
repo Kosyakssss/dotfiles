@@ -74,6 +74,8 @@ layout {
 }
 
 spawn-sh-at-startup "swaybg -i ~/Documents/Wallpapers/wall20.png"
+spawn-sh-at-startup "dunst"
+spawn-sh-at-startup "swayidle"
 spawn-at-startup "waybar"
 
 hotkey-overlay {
@@ -114,6 +116,7 @@ window-rule {
 binds {
 
     Mod+x { spawn "ghostty"; }
+    Mod+b { spawn "firefox"; }
     Mod+Space { spawn "fuzzel"; }
     Super+Alt+L { spawn "swaylock"; }
 
@@ -130,8 +133,10 @@ binds {
     XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
     XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
 
-    Mod+O repeat=false { toggle-overview; }
+    Super+XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "-d" "kbd_backlight" "set" "+10%"; }
+    Super+XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "-d" "kbd_backlight" "set" "10%-"; }
 
+    Mod+O repeat=false { toggle-overview; }
     Mod+Q repeat=false { close-window; }
 
     Mod+J     { focus-column-left; }
