@@ -8,7 +8,7 @@ if status is-interactive
     alias g="lazygit"
     alias n="cd ~/Documents/Notes; hx ."
     alias p="cd ~/projects; ls"
-    alias dot="cd ~/dotfiles"
+    alias dot="cd ~/dotfiles/.config"
     alias ll="ls -lah"
 
     function fish_prompt

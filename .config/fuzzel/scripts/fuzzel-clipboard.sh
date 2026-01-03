@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 cliphist list | \
-    fuzzel --dmenu --prompt="📋 Clipboard: " --with-nth=2 | \
+    fuzzel --dmenu --prompt="📋 Clipboard: " | \
     cliphist decode | \
     wl-copy

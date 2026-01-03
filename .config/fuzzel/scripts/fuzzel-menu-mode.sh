@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
- options="😀 Emoji Picker
-🔍 Web Search
-📁 File Search
+ options="🔍 Web Search
+😀 Emoji Picker
 📋 Clipboard History
 ⚙️ Power Menu"
 
@@ -10,7 +9,6 @@
  case "$selected" in
      "😀 Emoji Picker") ~/.config/fuzzel/scripts/fuzzel-emoji.sh ;;
      "🔍 Web Search") ~/.config/fuzzel/scripts/fuzzel-web-search.sh ;;
-     "📁 File Search") ~/.config/fuzzel/scripts/fuzzel-file-search.sh ;;
      "📋 Clipboard History") ~/.config/fuzzel/scripts/fuzzel-clipboard.sh ;;
      "⚙️ Power Menu") ~/.config/fuzzel/scripts/fuzzel-logout.sh ;;
  esac

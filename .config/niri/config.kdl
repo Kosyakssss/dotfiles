@@ -77,9 +77,9 @@ layout {
 spawn-sh-at-startup "swaybg -i ~/Documents/Wallpapers/wall20.png"
 spawn-sh-at-startup "dunst"
 spawn-sh-at-startup "swayidle -w"
+spawn-sh-at-startup "wl-paste --type text --watch cliphist store"
+spawn-sh-at-startup "wl-paste --type image --watch cliphist store"
 spawn-at-startup "waybar"
-spawn-at-startup "wl-paste --type text --watch cliphist store"
-spawn-at-startup "wl-paste --type image --watch cliphist store"
 
 hotkey-overlay {
     skip-at-startup
@@ -114,6 +114,7 @@ window-rule {
 window-rule {
     geometry-corner-radius 0
     clip-to-geometry true
+    draw-border-with-background true
 }
 
 binds {
