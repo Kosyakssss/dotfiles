@@ -8,7 +8,7 @@ if status is-interactive
     alias g="lazygit"
     alias n="cd ~/Documents/Notes; hx ."
     alias p="cd ~/projects; ls"
-    alias dot="cd ~/dotfiles; hx ."
+    alias dot="cd ~/dotfiles"
     alias ll="ls -lah"
 
     function fish_prompt
@@ -22,6 +22,7 @@ if status is-interactive
     set -gx PATH $PATH ~/.bun/bin
     set -gx PATH $PATH ~/.cargo/bin
     set -gx PATH $PATH /home/kote/.amp/bin
+    set -gx PATH $PATH /home/kote/.local/bin
     set -gx PNPM_HOME "/home/kote/.local/share/pnpm"
     set -gx PATH $PATH "$PNPM_HOME"
     set -gx RIPGREP_CONFIG_PATH "$HOME/dotfiles/.ripgreprc"

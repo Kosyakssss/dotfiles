@@ -16,7 +16,8 @@ input {
         tap
         dwt
         natural-scroll
-        scroll-factor 0.5
+        scroll-factor 0.4
+        accel-speed -0.05
     }
 
     mouse {
@@ -75,8 +76,10 @@ layout {
 
 spawn-sh-at-startup "swaybg -i ~/Documents/Wallpapers/wall20.png"
 spawn-sh-at-startup "dunst"
-spawn-sh-at-startup "swayidle"
+spawn-sh-at-startup "swayidle -w"
 spawn-at-startup "waybar"
+spawn-at-startup "wl-paste --type text --watch cliphist store"
+spawn-at-startup "wl-paste --type image --watch cliphist store"
 
 hotkey-overlay {
     skip-at-startup
@@ -119,6 +122,17 @@ binds {
     Mod+b { spawn "firefox"; }
     Mod+Space { spawn "fuzzel"; }
     Super+Alt+L { spawn "swaylock"; }
+    // 
+    // Open menu mode (hub for all scripts)
+    Mod+m { spawn "sh" "-c" "~/.config/fuzzel/scripts/fuzzel-menu-mode.sh"; }
+    // Clipboard history
+    Mod+v { spawn "sh" "-c" "~/.config/fuzzel/scripts/fuzzel-clipboard.sh"; }
+    // Emoji picker
+    Mod+e { spawn "sh" "-c" "~/.config/fuzzel/scripts/fuzzel-emoji.sh"; }
+    // Web search
+    Mod+s { spawn "sh" "-c" "~/.config/fuzzel/scripts/fuzzel-web-search.sh"; }
+    // Power menu
+    Mod+Shift+E { spawn "sh" "-c" "~/.config/fuzzel/scripts/fuzzel-logout.sh"; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+ -l 1.0"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
@@ -130,8 +144,8 @@ binds {
     XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
     XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
 
-    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+5%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "5%-"; }
 
     Super+XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "-d" "kbd_backlight" "set" "+10%"; }
     Super+XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "-d" "kbd_backlight" "set" "10%-"; }
@@ -202,6 +216,5 @@ binds {
     // which ensures niri always processes them, even when an inhibitor is active.
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
 
-    Mod+Shift+E { quit; }
     Mod+Shift+P { power-off-monitors; }
 }
