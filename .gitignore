@@ -6,3 +6,5 @@ linearmouse/
 zed/conversations/
 zed/prompts/
 themes
+.config/zed/prompts/prompts-library-db.0.mdb/data.mdb
+.config/zed/prompts/prompts-library-db.0.mdb/lock.mdb
