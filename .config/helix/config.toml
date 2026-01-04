@@ -1,6 +1,6 @@
 # my lovely helix config
  
-theme = "flexoki_dark"
+theme = "flexoki_light"
 
 [editor]
 line-number = 'relative'

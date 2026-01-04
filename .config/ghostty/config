@@ -1,12 +1,12 @@
 shell-integration = fish
-command = "$(which fish)"
+command = /opt/homebrew/bin/fish
 
-font-size = 14
+font-size = 16
 font-family = "Google Sans Code"
 # font-family = "IosevkaTerm Nerd Font"
 
-window-height = 24
-window-width = 48
+window-height = 28
+window-width = 56
 
 window-padding-y = 4,0
 macos-titlebar-style = tabs
@@ -15,8 +15,8 @@ macos-option-as-alt = true
 # background-opacity = 0.85
 # background-blur = true
 
-# theme = dark:Flexoki Dark,light:Flexoki Light
-theme = Flexoki Dark
+theme = dark:Flexoki Dark,light:Flexoki Light
+# theme = Flexoki Dark
 
 auto-update-channel = tip
 
