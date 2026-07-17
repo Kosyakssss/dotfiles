@@ -1,0 +1,40 @@
+# Operating-system metadata
+.DS_Store
+**/.DS_Store
+._*
+**/._*
+
+# Repository and editor runtime state
+.jj/
+*.swp
+*.swo
+*~
+.config/nvim/undo/
+.config/nvim/undodir/
+.config/nvim/spell/
+.config/zsh/local.zsh
+.local/
+
+# Credentials and private machine state
+.env
+.env.*
+!.env.example
+!.env.*.example
+**/auth.json
+**/hosts.yml
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*.kdbx
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Applications whose configuration is private or runtime-heavy
+qBittorrent/
+raycast/
+linearmouse/

@@ -1,0 +1,53 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+$username\
+$hostname\
+$directory\
+${custom.jj}\
+$git_state\
+$cmd_duration\
+$line_break\
+$python\
+$character"""
+
+[username]
+show_always = true
+
+[hostname]
+ssh_only = false
+
+[directory]
+style = "blue"
+
+[character]
+success_symbol = "[❯](purple)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](green)"
+
+[git_branch]
+disabled = true
+
+[git_status]
+disabled = true
+
+[custom.jj]
+description = "Jujutsu/Git repository status"
+command = "jj-starship --no-jj-prefix --no-git-prefix"
+detect_folders = [".jj", ".git"]
+shell = ["sh"]
+format = "$output "
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bright-black"
+
+[cmd_duration]
+format = "[$duration]($style) "
+style = "yellow"
+
+[python]
+format = "[$virtualenv]($style) "
+style = "bright-black"
+detect_extensions = []
+detect_files = []

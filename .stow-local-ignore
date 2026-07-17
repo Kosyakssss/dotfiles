@@ -1,0 +1,26 @@
+# GNU Stow's built-in ignore list is replaced when this file exists.
+# Keep the built-ins, and also ignore Jujutsu repo metadata.
+
+RCS
+.+,v
+
+CVS
+\.\#.+
+\.cvsignore
+
+\.svn
+_darcs
+\.hg
+
+\.git
+\.jj
+\.gitignore
+\.gitmodules
+\.DS_Store
+
+.+~
+\#.*\#
+
+^/README.*
+^/docs
+^/manifests

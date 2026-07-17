@@ -1,0 +1,6 @@
+--smart-case
+# --hidden
+
+--glob=!**/Library/**
+--glob=!**/node_modules/**
+--glob=!**/.git/**

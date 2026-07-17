@@ -1,0 +1,3 @@
+# Private, machine-specific shell configuration belongs in local.zsh.
+# local.zsh is ignored by Git and must never contain committed secrets.
+# Prefer command-scoped secret lookup over exporting credentials globally.

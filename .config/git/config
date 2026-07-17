@@ -1,0 +1,9 @@
+[user]
+	name = kote
+	email = krkharchilava@gmail.com
+
+[init]
+	defaultBranch = main
+
+[core]
+	excludesFile = ~/.config/git/ignore

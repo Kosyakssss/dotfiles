@@ -1,0 +1,3 @@
+[mgr]
+sort_by = "btime"
+sort_reverse = true
