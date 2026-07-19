@@ -3,14 +3,14 @@ shell-integration = zsh
 font-size = 16
 font-family = "Iosevka Term"
 
-macos-titlebar-style = native
+macos-titlebar-style = tabs
 macos-option-as-alt = true
 
 notify-on-command-finish = unfocused
 
-theme = dark:Catppuccin Mocha, light:Catppuccin Latte
+theme = dark:Flexoki Dark, light:Flexoki Light
 
-background-opacity = 0.96
+# background-opacity = 0.96
 background-blur = true
 
 auto-update-channel = tip

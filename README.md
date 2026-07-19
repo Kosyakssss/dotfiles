@@ -12,4 +12,4 @@ This repository is descriptive rather than self-bootstrapping:
 
 Zsh is the active login shell. Standalone shell scripts should prefer portable POSIX shell.
 
-Apply the public configuration from the repository root with `stow --target="$HOME" .`. Private portable application settings live separately in `~/PrivateConf`; see `docs/security.md`.
+Apply the public configuration from the repository root with `stow --target="$HOME" .`. Portable Pi configuration is tracked under `.pi/agent/`; credentials, memory, sessions, caches, and generated dependencies remain local. See `docs/security.md`.

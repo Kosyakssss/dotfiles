@@ -6,6 +6,7 @@
 
 # Repository and editor runtime state
 .jj/
+node_modules/
 *.swp
 *.swo
 *~

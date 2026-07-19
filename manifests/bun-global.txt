@@ -1,2 +1,0 @@
-# npm-registry CLIs installed globally with Bun.
-@earendil-works/pi-coding-agent@0.80.10

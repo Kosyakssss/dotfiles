@@ -1,0 +1,28 @@
+{
+  "lastChangelogVersion": "0.80.10",
+  "theme": "light/dark",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "low",
+  "enabledModels": [
+    "openai-codex/gpt-5.6-sol"
+  ],
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "followUpMode": "one-at-a-time",
+  "packages": [
+    "npm:@narumitw/pi-codex-usage",
+    "git:github.com/tmustier/pi-queue-steer@50e7db60d7f9f2b9a8c9a42e9e151a976137f13b",
+    "npm:pi-web-access",
+    "npm:pi-ask-user",
+    "npm:pi-interactive-shell",
+    "npm:@ff-labs/pi-fff",
+    "npm:pi-subagents",
+    "npm:pi-tool-display",
+    "npm:pi-btw",
+    "npm:pi-chrome",
+    "npm:pi-patty-bg-tasks"
+  ],
+  "outputPad": 0
+}

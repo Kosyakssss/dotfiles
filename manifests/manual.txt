@@ -1,9 +1,0 @@
-# Software whose installation is not adequately represented by a package manager on every target.
-Feedreader | clone under ~/Code/feedreader; macOS LaunchAgent helper is in the repository; design Linux user service on Fedora
-Helium | upstream release
-Hermes Agent | official installer; private state under ~/.hermes
-Handy | use upstream Linux package; macOS is owned by Homebrew Cask
-Obsidian | use a reviewed Linux upstream package or Flatpak; macOS is owned by Homebrew Cask
-offline.tldraw.com | browser-installed PWA
-Stremio | use upstream Linux distribution; macOS is owned by Homebrew Cask
-Tailscale | use official Linux repository; macOS is owned by Homebrew Cask

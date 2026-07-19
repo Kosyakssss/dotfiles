@@ -20,7 +20,7 @@ opt.wrap = true
 opt.linebreak = true
 opt.breakindent = true
 opt.cursorline = true
-opt.scrolloff = 8
+opt.scrolloff = 4
 opt.inccommand = "nosplit"
 opt.winborder = "rounded"
 opt.hlsearch = true
@@ -68,6 +68,9 @@ vim.api.nvim_create_user_command("Fmt", function()
     vim.fn.winrestview(view)
 end, { desc = "Format the current buffer with dprint" })
 
+-- User commands must start with an uppercase letter, so transparently expand :fmt.
+vim.cmd([[cnoreabbrev <expr> fmt getcmdtype() ==# ':' && getcmdline() ==# 'fmt' ? 'Fmt' : 'fmt']])
+
 
 -- ── Inlay hints ──────────────────────────────────────────────────
 vim.lsp.inlay_hint.enable(true)
@@ -96,6 +99,65 @@ opt.spellcapcheck = ""
 opt.spellfile = spell_dir .. "/words.utf-8.add"
 
 vim.fn.mkdir(spell_dir, "p")
+
+-- Tree-sitter parses most raw Markdown URLs as plain inline text, so an
+-- @nospell query cannot target them. Mark URL byte ranges directly instead.
+local url_nospell_namespace = vim.api.nvim_create_namespace("url_nospell")
+local url_nospell_pending = {}
+
+local function mark_urls_nospell(buf)
+    if not vim.api.nvim_buf_is_valid(buf) then return end
+
+    vim.api.nvim_buf_clear_namespace(buf, url_nospell_namespace, 0, -1)
+
+    for row, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
+        local offset = 1
+        while offset <= #line do
+            local scheme_start, scheme_end = line:find("%a[%w+.-]*://%S+", offset)
+            local www_start, www_end = line:find("www%.%S+", offset)
+            local url_start, url_end
+
+            if scheme_start and (not www_start or scheme_start <= www_start) then
+                url_start, url_end = scheme_start, scheme_end
+            else
+                url_start, url_end = www_start, www_end
+            end
+
+            if not url_start then break end
+
+            vim.api.nvim_buf_set_extmark(buf, url_nospell_namespace, row - 1, url_start - 1, {
+                end_row = row - 1,
+                end_col = url_end,
+                spell = false,
+            })
+            offset = url_end + 1
+        end
+    end
+end
+
+local function schedule_url_nospell(buf)
+    if url_nospell_pending[buf] then return end
+    url_nospell_pending[buf] = true
+    vim.schedule(function()
+        url_nospell_pending[buf] = nil
+        if vim.api.nvim_buf_is_valid(buf) then mark_urls_nospell(buf) end
+    end)
+end
+
+local url_nospell_group = vim.api.nvim_create_augroup("url_nospell", { clear = true })
+vim.api.nvim_create_autocmd("FileType", {
+    group = url_nospell_group,
+    pattern = { "markdown", "text" },
+    callback = function(args) schedule_url_nospell(args.buf) end,
+})
+vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "TextChangedI" }, {
+    group = url_nospell_group,
+    callback = function(args)
+        if vim.tbl_contains({ "markdown", "text" }, vim.bo[args.buf].filetype) then
+            schedule_url_nospell(args.buf)
+        end
+    end,
+})
 
 vim.keymap.set("n", "z=", function()
     local bad = vim.fn.spellbadword()
@@ -141,7 +203,6 @@ end, { desc = "Spell suggestions" })
 
 vim.pack.add({
     'https://github.com/nvim-lua/plenary.nvim',
-    { src = 'https://github.com/catppuccin/nvim', name = 'catppuccin' },
     'https://github.com/mikavilpas/yazi.nvim',
     'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/nvim-tree/nvim-web-devicons',
@@ -153,7 +214,6 @@ vim.pack.add({
     { src = 'https://github.com/Saghen/blink.cmp', version = 'v1.*' },
     'https://github.com/echasnovski/mini.pairs',
     'https://github.com/nvim-lualine/lualine.nvim',
-    'https://github.com/folke/zen-mode.nvim',
     'https://github.com/nvim-mini/mini.surround',
 })
 
@@ -163,17 +223,7 @@ vim.pack.add({
 -- ╚══════════════════════════════════════════════════════════════════╝
 
 -- ── Theme ────────────────────────────────────────────────────────
-require("catppuccin").setup({
-    flavour = "auto",
-    background = {
-        light = "latte",
-        dark = "mocha",
-    },
-    transparent_background = true,
-    float = {
-        transparent = true,
-    },
-})
+vim.cmd.colorscheme "flexoki"
 
 local function is_writing_file()
     return vim.tbl_contains({ "asciidoc", "gitcommit", "markdown", "rst", "text" }, vim.bo.filetype)
@@ -188,11 +238,9 @@ local function words_or_location()
 end
 
 
-vim.cmd.colorscheme "catppuccin-nvim"
-
 require('lualine').setup {
     options = {
-        theme = "catppuccin-nvim",
+        theme = "auto",
     },
     sections = {
         lualine_a = {'mode'},
@@ -215,7 +263,6 @@ require('lualine').setup {
 
 -- ── Bufferline ───────────────────────────────────────────────────
 require("bufferline").setup{
-    highlights = require("catppuccin.special.bufferline").get_theme(),
     options = {
         always_show_bufferline = false,
     }
@@ -270,24 +317,6 @@ require('blink.cmp').setup({
 -- ── Autopairs & surround ─────────────────────────────────────────
 require('mini.pairs').setup()
 require('mini.surround').setup()
-
-
--- ── Zen mode ─────────────────────────────────────────────────────
-require("zen-mode").setup({
-    window = {
-        backdrop = 1,
-        width = 0.50,
-        options = {
-            signcolumn = "no",
-            number = true,
-            relativenumber = true,
-            cursorline = false,
-        },
-    },
-    plugins = {
-        twilight = { enabled = false },
-    },
-})
 
 
 -- ╔══════════════════════════════════════════════════════════════════╗
@@ -378,7 +407,6 @@ map("i", "jk", "<Esc>", {desc = "Esc"})
 map("n", "<Esc><Esc>", ":noh<CR>", {desc = "noh"})
 
 map("n", "<leader>y", ":Yazi<CR>", {desc = "Yazi"})
-map("n", "<leader>z", ":ZenMode<CR>", { desc = "Zen mode" })
 
 map("n", "<leader>f", ":FzfLua files<CR>", {desc = "Find"})
 map("n", "<leader>/", ":FzfLua live_grep<CR>", {desc = "Grep"})
