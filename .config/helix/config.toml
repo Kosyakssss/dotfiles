@@ -1,0 +1,35 @@
+# Keep the base setup small and fast.
+[editor]
+true-color = true
+color-modes = true
+
+[editor.cursor-shape]
+normal = "block"
+insert = "bar"
+select = "underline"
+
+# Restore the last insert-mode input source on every standard route into
+# insert mode. This covers the same keys in normal and select modes.
+[keys.normal]
+i = [":sh ~/.config/helix/input-source enter", "insert_mode"]
+I = [":sh ~/.config/helix/input-source enter", "insert_at_line_start"]
+a = [":sh ~/.config/helix/input-source enter", "append_mode"]
+A = [":sh ~/.config/helix/input-source enter", "insert_at_line_end"]
+o = [":sh ~/.config/helix/input-source enter", "open_below"]
+O = [":sh ~/.config/helix/input-source enter", "open_above"]
+c = [":sh ~/.config/helix/input-source enter", "change_selection"]
+A-c = [":sh ~/.config/helix/input-source enter", "change_selection_noyank"]
+
+[keys.select]
+i = [":sh ~/.config/helix/input-source enter", "insert_mode"]
+I = [":sh ~/.config/helix/input-source enter", "insert_at_line_start"]
+a = [":sh ~/.config/helix/input-source enter", "append_mode"]
+A = [":sh ~/.config/helix/input-source enter", "insert_at_line_end"]
+o = [":sh ~/.config/helix/input-source enter", "open_below"]
+O = [":sh ~/.config/helix/input-source enter", "open_above"]
+c = [":sh ~/.config/helix/input-source enter", "change_selection"]
+A-c = [":sh ~/.config/helix/input-source enter", "change_selection_noyank"]
+
+[keys.insert]
+esc = [":sh ~/.config/helix/input-source leave", "normal_mode"]
+j = { k = [":sh ~/.config/helix/input-source leave", "normal_mode"] }

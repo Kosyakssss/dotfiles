@@ -1,0 +1,8 @@
+# Use the installed language servers and Helix's built-in server definitions.
+[[language]]
+name = "markdown"
+language-servers = ["markdown-oxide"]
+
+[[language]]
+name = "typst"
+language-servers = ["tinymist"]

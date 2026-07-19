@@ -1,0 +1,46 @@
+#!/bin/sh
+# Preserve ABC/Russian across Helix insert-mode changes.
+set -eu
+
+macism=${MACISM:-macism}
+abc=com.apple.keylayout.ABC
+russian=com.apple.keylayout.Russian
+state_dir=${XDG_STATE_HOME:-"$HOME/.local/state"}/helix
+state=$state_dir/insert-input-source
+
+case ${1-} in
+  enter)
+    if IFS= read -r wanted < "$state"; then
+      case $wanted in
+        "$abc"|"$russian") ;;
+        *) wanted=$abc ;;
+      esac
+    else
+      wanted=$abc
+    fi
+
+    # The final 0 disables macism's CJK workaround. ABC and Russian are plain
+    # keyboard layouts, so they do not need its wait window.
+    exec "$macism" "$wanted" 0 >/dev/null
+    ;;
+
+  leave)
+    current=$("$macism")
+    case $current in
+      "$abc"|"$russian") ;;
+      *) current=$abc ;;
+    esac
+
+    mkdir -p "$state_dir"
+    printf '%s\n' "$current" > "$state"
+
+    if [ "$current" != "$abc" ]; then
+      exec "$macism" "$abc" 0 >/dev/null
+    fi
+    ;;
+
+  *)
+    printf 'usage: %s enter|leave\n' "$0" >&2
+    exit 2
+    ;;
+esac
