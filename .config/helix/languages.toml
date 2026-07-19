@@ -2,6 +2,8 @@
 [[language]]
 name = "markdown"
 language-servers = ["markdown-oxide"]
+formatter = { command = "dprint", args = ["fmt", "--stdin", "md"] }
+auto-format = false
 
 [[language]]
 name = "typst"
