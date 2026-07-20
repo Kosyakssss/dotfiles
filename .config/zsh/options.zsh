@@ -5,8 +5,8 @@ setopt auto_pushd
 setopt pushd_ignore_dups
 setopt no_beep
 
-export EDITOR=nvim
-export VISUAL=nvim
+export EDITOR=hx
+export VISUAL=hx
 export STARSHIP_CONFIG="$HOME/.config/starship.toml"
 export RIPGREP_CONFIG_PATH="$HOME/.config/.ripgreprc"
 export DPRINT_CONFIG_DIR="$HOME/.config/dprint"
