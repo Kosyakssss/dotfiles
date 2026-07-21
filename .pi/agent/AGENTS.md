@@ -9,13 +9,15 @@
 
 ## User environment
 
-- Shell: Zsh
+- Interactive and login shell: Fish
 - VCS: jj (Jujutsu) colocated with Git — use `jj` commands, not `git`
 - Notes: `~/Notes`
 
 ## Conventions
 
-- Write interactive shell configuration in Zsh; use portable POSIX shell for standalone scripts unless Zsh-specific features are required.
+- Keep all tracked Fish setup in `.config/fish/config.fish`; do not create tracked Fish functions, snippets, or generated state.
+- Use Fish only for interactive shell configuration. Never write standalone scripts in Fish.
+- Use portable POSIX shell for standalone scripts by default. Use Bash only when a script needs Bash features.
 - Configs in `~/Dotfiles` are symlinked via Stow. Respect the directory structure.
 - Code repositories live under `~/Code`. Synced non-repository project material lives under `~/Projects`.
 - Use `$HOME`, `~`, XDG paths, or paths derived at runtime. Never commit a user-specific home path such as `/Users/name` or `/home/name`.

@@ -10,7 +10,6 @@ notify-on-command-finish = unfocused
 
 theme = dark:Flexoki Dark, light:Flexoki Light
 
-# background-opacity = 0.96
 background-blur = true
 
 auto-update-channel = tip
