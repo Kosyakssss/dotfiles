@@ -35,6 +35,10 @@ id_ed25519
 *.sqlite
 *.sqlite3
 
+# Fish configuration is allowlisted; all generated and local state stays private.
+.config/fish/*
+!.config/fish/config.fish
+
 # Applications whose configuration is private or runtime-heavy
 qBittorrent/
 raycast/

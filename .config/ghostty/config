@@ -1,4 +1,4 @@
-shell-integration = zsh
+shell-integration = fish
 
 font-size = 16
 font-family = "Iosevka Term"

@@ -1,15 +1,13 @@
 # Dotfiles
 
-Public, reviewable configuration for macOS and Linux.
+Public, reviewable configuration for macOS.
 
-This repository is descriptive rather than self-bootstrapping:
+Fish is the login and interactive shell. Its full tracked setup lives in `.config/fish/config.fish`; other Fish files are ignored. Standalone shell scripts use portable POSIX `sh` by default and Bash only when needed. Fish is not used for scripts.
 
-- `manifests/` records intended software and installation ownership;
-- `.config/zsh/` contains modular, side-effect-light Zsh configuration;
-- `docs/security.md` defines public, private, secret, and local state;
-- `docs/application-portability.md` maps current macOS applications to Linux equivalents or evaluation plans;
-- an agent reconciles these files with each real machine.
+Apply the configuration from the repository root with GNU Stow:
 
-Zsh is the active login shell. Standalone shell scripts should prefer portable POSIX shell.
+```sh
+stow --target="$HOME" .
+```
 
-Apply the public configuration from the repository root with `stow --target="$HOME" .`. Portable Pi configuration is tracked under `.pi/agent/`; credentials, memory, sessions, caches, and generated dependencies remain local. See `docs/security.md`.
+Portable Pi configuration is tracked under `.pi/agent/`. Credentials, memory, sessions, caches, generated dependencies, and other machine-local state remain outside this public repository.
