@@ -1,9 +1,9 @@
 {
-  "lastChangelogVersion": "0.80.10",
-  "theme": "stargazing-gallery-plaster-light",
+  "lastChangelogVersion": "0.81.0",
+  "theme": "stargazing-mineral-paper-light",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "low",
+  "defaultThinkingLevel": "high",
   "enabledModels": [
     "openai-codex/gpt-5.6-sol"
   ],

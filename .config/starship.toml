@@ -1,4 +1,4 @@
-palette = "stargazing_gallery_plaster_light"
+palette = "stargazing_mineral_paper_light"
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
