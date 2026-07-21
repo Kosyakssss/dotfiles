@@ -1,6 +1,6 @@
 {
   "lastChangelogVersion": "0.80.10",
-  "theme": "light/dark",
+  "theme": "stargazing-gallery-plaster-light",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "low",

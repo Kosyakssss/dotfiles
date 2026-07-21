@@ -1,7 +1,4 @@
-[theme]
-dark = "flexoki_dark"
-light = "flexoki_light"
-
+theme = "stargazing_mineral_paper_light"
 [editor]
 true-color = true
 color-modes = true
@@ -44,6 +41,7 @@ S-tab = ":bp"
 "}" = "goto_next_paragraph"
 "{" = "goto_prev_paragraph"
 C-r = ":reload"
+C-S-r = ":config-reload"
 
 i = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "insert_mode"]
 I = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "insert_at_line_start"]
@@ -60,7 +58,7 @@ q = ":quit"
 d = ":bc"
 y = [
   ':sh rm -f /tmp/unique-file',
-  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/unique-file',
+  ':insert-output env -u YAZI_CONFIG_HOME yazi "%{buffer_name}" --chooser-file=/tmp/unique-file',
   ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
   ':open %sh{cat /tmp/unique-file}',
   ':redraw',

@@ -1,0 +1,23 @@
+# Stargazing Soft Parchment Light
+background = #F2EBDD
+foreground = #100F0F
+cursor-color = #100F0F
+cursor-text = #F2EBDD
+selection-background = #C5BFB4
+selection-foreground = #100F0F
+palette = 0=#272524
+palette = 1=#AF3029
+palette = 2=#66800B
+palette = 3=#AD8301
+palette = 4=#205EA6
+palette = 5=#A02F6F
+palette = 6=#24837B
+palette = 7=#DBD5C8
+palette = 8=#6B6762
+palette = 9=#D14D41
+palette = 10=#879A39
+palette = 11=#D0A215
+palette = 12=#4385BE
+palette = 13=#CE5D97
+palette = 14=#3AA99F
+palette = 15=#F2EBDD

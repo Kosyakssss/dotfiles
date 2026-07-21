@@ -1,0 +1,23 @@
+# Stargazing Mineral Paper Dark
+background = #0F1111
+foreground = #C1C4C3
+cursor-color = #C1C4C3
+cursor-text = #0F1111
+selection-background = #3B3E3E
+selection-foreground = #C1C4C3
+palette = 0=#262828
+palette = 1=#D14D41
+palette = 2=#879A39
+palette = 3=#D0A215
+palette = 4=#4385BE
+palette = 5=#CE5D97
+palette = 6=#3AA99F
+palette = 7=#C1C4C3
+palette = 8=#7E8080
+palette = 9=#D14D41
+palette = 10=#879A39
+palette = 11=#D0A215
+palette = 12=#4385BE
+palette = 13=#CE5D97
+palette = 14=#3AA99F
+palette = 15=#C1C4C3

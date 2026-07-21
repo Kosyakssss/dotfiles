@@ -8,7 +8,7 @@ macos-option-as-alt = true
 
 notify-on-command-finish = unfocused
 
-theme = dark:Flexoki Dark, light:Flexoki Light
+theme = dark:Stargazing Gallery Plaster Dark, light:Stargazing Gallery Plaster Light
 
 background-blur = true
 
