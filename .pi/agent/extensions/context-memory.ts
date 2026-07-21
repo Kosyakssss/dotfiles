@@ -1,8 +1,9 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { withFileMutationQueue } from "@earendil-works/pi-coding-agent";
 import { StringEnum } from "@earendil-works/pi-ai";
+import { complete } from "@earendil-works/pi-ai/compat";
 import { Type } from "typebox";
-import { access, mkdir, readFile, rename, stat, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, readdir, rename, stat, unlink, writeFile } from "node:fs/promises";
 import { existsSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
@@ -14,6 +15,8 @@ const ENVIRONMENT_FILE = join(MEMORY_DIR, "ENVIRONMENT.md");
 const CONTEXT_NAME = "CONTEXT.md";
 const GLOBAL_LIMITS = { user: 2_000, environment: 3_500 } as const;
 const PROJECT_LIMIT = 8_000;
+const STATE_DIR = join(process.env.XDG_STATE_HOME ?? join(HOME, ".local", "state"), "pi", "context-memory");
+const BACKUP_LIMIT = 20;
 
 // Immediate, non-hidden children of these directories are projects.
 const PROJECT_CONTAINERS = [join(HOME, "Projects")];
@@ -109,7 +112,30 @@ async function readBounded(path: string, limit: number): Promise<string> {
   try {
     const value = await readFile(path, "utf8");
     return value.length <= limit ? value.trim() : `${value.slice(0, limit).trim()}\n[Memory truncated: file exceeds ${limit} characters]`;
-  } catch { return ""; }
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return "";
+    throw error;
+  }
+}
+
+function backupKey(path: string): string {
+  return path.replace(/[^a-zA-Z0-9._-]+/g, "_").replace(/^_+|_+$/g, "");
+}
+
+async function backupMemory(path: string, content: string): Promise<void> {
+  if (!content) return;
+  const dir = join(STATE_DIR, "backups", backupKey(path));
+  await mkdir(dir, { recursive: true, mode: 0o700 });
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  await writeFile(join(dir, `${stamp}.md`), `${content.trim()}\n`, { encoding: "utf8", mode: 0o600 });
+  const files = (await readdir(dir)).filter((name) => name.endsWith(".md")).sort();
+  await Promise.all(files.slice(0, -BACKUP_LIMIT).map((name) => unlink(join(dir, name))));
+}
+
+function messageText(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) return "";
+  return content.flatMap((part) => part && typeof part === "object" && "text" in part && typeof part.text === "string" ? [part.text] : []).join("\n");
 }
 
 export default function contextMemory(pi: ExtensionAPI) {
@@ -250,6 +276,7 @@ export default function contextMemory(pi: ExtensionAPI) {
         const nextEntries = applyOperations(parseEntries(current), params.operations as Operation[]);
         const serialized = serializeEntries(nextEntries);
         if (serialized.length > limit) throw new Error(`Final memory would be ${serialized.length}/${limit} characters. Consolidate with replace/remove in the same batch; nothing was written.`);
+        if (serialized !== serializeEntries(parseEntries(current))) await backupMemory(path, current);
         await atomicWrite(path, serialized);
         memoryChangedThisRun = true;
         if (projectRoot) {
@@ -261,6 +288,48 @@ export default function contextMemory(pi: ExtensionAPI) {
           details: { scope, path, characters: serialized.length, limit, entries: nextEntries.length, memoryChangedThisRun },
         };
       });
+    },
+  });
+
+  pi.registerCommand("context-audit", {
+    description: "Review current durable context and conversation for omissions, duplication, and stale facts",
+    handler: async (_args, ctx) => {
+      if (!ctx.model) {
+        ctx.ui.notify("No active model is available", "warning");
+        return;
+      }
+      const auth = await ctx.modelRegistry.getApiKeyAndHeaders(ctx.model);
+      if (!auth.ok || !auth.apiKey) {
+        ctx.ui.notify(auth.ok ? "No API key is available for the active model" : auth.error, "warning");
+        return;
+      }
+
+      const memory = await memoryBlock(ctx.cwd);
+      const conversation = ctx.sessionManager.getBranch()
+        .filter((entry) => entry.type === "message" && ["user", "assistant"].includes(entry.message.role))
+        .map((entry) => `${entry.message.role}: ${messageText(entry.message.content)}`)
+        .filter((text) => text.trim() && !text.includes("# Private durable context"))
+        .join("\n\n")
+        .slice(-60_000);
+      const prompt = [
+        "Audit this private durable memory against the current conversation.",
+        "Return a concise read-only report with: useful entries, duplicates or wrong scope, stale or cheaply rediscoverable entries, and high-confidence omissions.",
+        "Do not propose task progress, secrets, inferred personality traits, or facts already supplied by project files unless they encode intent, rationale, constraints, or explicit exclusions.",
+        "For every proposed change, name the scope and give an exact add, replace, or remove operation. Say 'No change' when evidence is weak.",
+        "Do not claim that any change was applied.",
+        "\n<MEMORY>\n", memory, "\n</MEMORY>\n<CONVERSATION>\n", conversation, "\n</CONVERSATION>",
+      ].join("\n");
+
+      ctx.ui.notify("Auditing durable context...", "info");
+      const response = await complete(ctx.model, {
+        messages: [{ role: "user", content: [{ type: "text", text: prompt }], timestamp: Date.now() }],
+      }, { apiKey: auth.apiKey, headers: auth.headers, env: auth.env });
+      const report = response.content.filter((part): part is { type: "text"; text: string } => part.type === "text").map((part) => part.text).join("\n");
+      await mkdir(join(STATE_DIR, "audits"), { recursive: true, mode: 0o700 });
+      const reportPath = join(STATE_DIR, "audits", `${new Date().toISOString().replace(/[:.]/g, "-")}.md`);
+      await writeFile(reportPath, `${report.trim()}\n`, { encoding: "utf8", mode: 0o600 });
+      if (ctx.hasUI) await ctx.ui.editor("Durable context audit (read-only)", report);
+      ctx.ui.notify(`Saved read-only audit: ${reportPath}`, "info");
     },
   });
 
