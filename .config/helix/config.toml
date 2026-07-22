@@ -61,6 +61,7 @@ A-c = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "change_selecti
 w = ":write"
 q = ":quit"
 d = ":bc"
+p = ":lsp-workspace-command"
 y = [
   ':sh rm -f /tmp/unique-file',
   ':insert-output env -u YAZI_CONFIG_HOME yazi "%{buffer_name}" --chooser-file=/tmp/unique-file',
