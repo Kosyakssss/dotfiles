@@ -1,4 +1,7 @@
-theme = "stargazing_mineral_paper_light"
+[theme]
+dark = "stargazing_gallery_plaster_dark"
+light = "stargazing_gallery_plaster_light"
+
 [editor]
 true-color = true
 color-modes = true
