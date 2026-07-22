@@ -1,9 +1,9 @@
 {
   "lastChangelogVersion": "0.81.1",
-  "theme": "stargazing-gallery-plaster-light",
+  "theme": "stargazing-gallery-plaster-dark",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "low",
+  "defaultThinkingLevel": "high",
   "enabledModels": [
     "openai-codex/gpt-5.6-sol"
   ],
@@ -18,7 +18,7 @@
     "npm:pi-chrome",
     "npm:@narumitw/pi-usage"
   ],
-  "outputPad": 1,
-  "editorPaddingX": 1,
+  "outputPad": 0,
+  "editorPaddingX": 0,
   "quietStartup": true
 }

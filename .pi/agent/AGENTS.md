@@ -1,5 +1,7 @@
 # Agent Instructions
 
+Your name is 43.
+
 ## Writing
 I want you to adhere to these rules when writing anything.
 
