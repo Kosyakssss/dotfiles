@@ -45,6 +45,8 @@ S-tab = ":bp"
 "{" = "goto_prev_paragraph"
 C-r = ":reload"
 C-S-r = ":config-reload"
+w = "@miw"
+W = "@miW"
 
 i = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "insert_mode"]
 I = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "insert_at_line_start"]

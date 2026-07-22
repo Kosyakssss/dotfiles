@@ -19,5 +19,6 @@
     "npm:@narumitw/pi-usage"
   ],
   "outputPad": 1,
-  "editorPaddingX": 1
+  "editorPaddingX": 1,
+  "quietStartup": true
 }
