@@ -14,12 +14,8 @@
   "packages": [
     "git:github.com/tmustier/pi-queue-steer@50e7db60d7f9f2b9a8c9a42e9e151a976137f13b",
     "npm:pi-web-access",
-    "npm:pi-ask-user",
     "npm:@ff-labs/pi-fff",
-    "npm:pi-subagents",
-    "npm:pi-btw",
     "npm:pi-chrome",
-    "npm:pi-patty-bg-tasks",
     "npm:@narumitw/pi-usage"
   ],
   "outputPad": 1,
