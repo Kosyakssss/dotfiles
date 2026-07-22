@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "@ff-labs/pi-fff": "^0.10.1",
-    "@narumitw/pi-codex-usage": "^0.20.0",
+    "@narumitw/pi-usage": "^0.25.0",
     "pi-ask-user": "^0.13.0",
     "pi-btw": "^0.4.1",
     "pi-chrome": "^0.15.46",

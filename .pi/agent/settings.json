@@ -1,9 +1,9 @@
 {
-  "lastChangelogVersion": "0.81.0",
-  "theme": "stargazing-mineral-paper-light",
+  "lastChangelogVersion": "0.81.1",
+  "theme": "stargazing-gallery-plaster-light",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "low",
   "enabledModels": [
     "openai-codex/gpt-5.6-sol"
   ],
@@ -12,7 +12,6 @@
   },
   "followUpMode": "one-at-a-time",
   "packages": [
-    "npm:@narumitw/pi-codex-usage",
     "git:github.com/tmustier/pi-queue-steer@50e7db60d7f9f2b9a8c9a42e9e151a976137f13b",
     "npm:pi-web-access",
     "npm:pi-ask-user",
@@ -20,7 +19,9 @@
     "npm:pi-subagents",
     "npm:pi-btw",
     "npm:pi-chrome",
-    "npm:pi-patty-bg-tasks"
+    "npm:pi-patty-bg-tasks",
+    "npm:@narumitw/pi-usage"
   ],
-  "outputPad": 0
+  "outputPad": 1,
+  "editorPaddingX": 1
 }
