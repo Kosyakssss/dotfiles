@@ -15,17 +15,23 @@ opt.shiftwidth = 4
 opt.shiftround = true
 opt.number = true
 opt.relativenumber = true
-opt.numberwidth = 2
+opt.numberwidth = 3
 opt.wrap = true
 opt.linebreak = true
 opt.breakindent = true
 opt.cursorline = true
+opt.cursorlineopt = "both"
 opt.scrolloff = 4
 opt.inccommand = "nosplit"
-opt.winborder = "rounded"
+opt.winborder = "single"
 opt.hlsearch = true
 opt.guicursor = "n-v-c-sm:block-Cursor,i-ci-ve:ver25-Cursor,r-cr-o:hor20-Cursor"
 opt.clipboard = 'unnamedplus'
+opt.mousescroll = "ver:1,hor:1"
+opt.statuscolumn = "%s%=%{v:relnum ? v:relnum : v:lnum} "
+opt.laststatus = 2
+opt.showtabline = 0
+opt.fixendofline = true
 
 -- ── Mutable state ──────────────────────────────────────────
 local state_dir = vim.fn.stdpath("state")
@@ -78,9 +84,10 @@ vim.lsp.inlay_hint.enable(true)
 
 -- ── Diagnostics ──────────────────────────────────────────────────
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = false,
     signs = true,
     underline = true,
+    severity_sort = true,
 })
 
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -180,7 +187,6 @@ vim.keymap.set("n", "z=", function()
 
     require("fzf-lua").fzf_exec(suggestions, {
         prompt = "Spell fix ❯ ",
-        winopts = { height = 0.4, width = 0.35 },
         actions = {
             ["default"] = function(sel)
                 if sel and sel[1] then
@@ -205,15 +211,12 @@ vim.pack.add({
     'https://github.com/nvim-lua/plenary.nvim',
     'https://github.com/mikavilpas/yazi.nvim',
     'https://github.com/ibhagwan/fzf-lua',
-    'https://github.com/nvim-tree/nvim-web-devicons',
-    'https://github.com/akinsho/bufferline.nvim',
     'https://github.com/nvim-treesitter/nvim-treesitter',
     'https://github.com/neovim/nvim-lspconfig',
     'https://github.com/mason-org/mason.nvim',
     'https://github.com/mason-org/mason-lspconfig.nvim',
     { src = 'https://github.com/Saghen/blink.cmp', version = 'v1.*' },
     'https://github.com/echasnovski/mini.pairs',
-    'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/nvim-mini/mini.surround',
 })
 
@@ -225,69 +228,206 @@ vim.pack.add({
 -- ── Theme ────────────────────────────────────────────────────────
 vim.cmd.colorscheme "stargazing-gallery-plaster-light"
 
-local function is_writing_file()
-    return vim.tbl_contains({ "asciidoc", "gitcommit", "markdown", "rst", "text" }, vim.bo.filetype)
+local function is_writing_file(buf)
+    return vim.tbl_contains({ "asciidoc", "gitcommit", "markdown", "rst", "text" }, vim.bo[buf or 0].filetype)
 end
 
-local function words_or_location()
-    if is_writing_file() then
-        return vim.fn.wordcount().words .. " words"
-    end
-
-    return string.format("%3d:%-2d", vim.fn.line("."), vim.fn.charcol("."))
-end
-
-
-require('lualine').setup {
-    options = {
-        theme = "auto",
-    },
-    sections = {
-        lualine_a = {'mode'},
-        lualine_b = {'diagnostics'},
-        lualine_c = {'filename'},
-        lualine_x = {'filetype'},
-        lualine_y = {'progress'},
-        lualine_z = { words_or_location }
-    },
-    inactive_sections = {
-        lualine_a = {},
-        lualine_b = {},
-        lualine_c = {'filename'},
-        lualine_x = {'location'},
-        lualine_y = {},
-        lualine_z = {}
-    },
+-- ── Native statusline and bufferline ─────────────────────────────
+local mode_styles = {
+    n = { "NOR", "StargazingModeNormal" },
+    i = { "INS", "StargazingModeInsert" },
+    R = { "REP", "StargazingModeInsert" },
+    v = { "SEL", "StargazingModeSelect" },
+    V = { "SEL", "StargazingModeSelect" },
+    ["\22"] = { "SEL", "StargazingModeSelect" },
+    s = { "SEL", "StargazingModeSelect" },
+    S = { "SEL", "StargazingModeSelect" },
+    ["\19"] = { "SEL", "StargazingModeSelect" },
+    c = { "CMD", "StargazingModeNormal" },
+    t = { "TER", "StargazingModeNormal" },
 }
 
+local function status_filename(buf)
+    local name = vim.api.nvim_buf_get_name(buf)
+    name = name == "" and "[scratch]" or vim.fn.fnamemodify(name, ":t")
+    return name:gsub("%%", "%%%%")
+end
 
--- ── Bufferline ───────────────────────────────────────────────────
-require("bufferline").setup{
-    options = {
-        always_show_bufferline = false,
+local function statusline_buffer()
+    local win = tonumber(vim.g.statusline_winid)
+    if win and vim.api.nvim_win_is_valid(win) then return vim.api.nvim_win_get_buf(win) end
+    return vim.api.nvim_get_current_buf()
+end
+
+function _G.stargazing_statusline()
+    local buf = statusline_buffer()
+    local mode = vim.api.nvim_get_mode().mode:sub(1, 1)
+    local style = mode_styles[mode] or mode_styles.n
+    local modified = vim.bo[buf].modified and " [+]" or ""
+    local diagnostics = {}
+    local levels = {
+        { vim.diagnostic.severity.ERROR, "E", "DiagnosticError" },
+        { vim.diagnostic.severity.WARN, "W", "DiagnosticWarn" },
+        { vim.diagnostic.severity.INFO, "I", "DiagnosticInfo" },
+        { vim.diagnostic.severity.HINT, "H", "DiagnosticHint" },
     }
-}
+    for _, level in ipairs(levels) do
+        local count = #vim.diagnostic.get(buf, { severity = level[1] })
+        if count > 0 then
+            diagnostics[#diagnostics + 1] = string.format("%%#%s#%s:%d%%#StatusLine#", level[3], level[2], count)
+        end
+    end
+    local right
+    if is_writing_file(buf) then
+        right = vim.fn.wordcount().words .. " words"
+    else
+        right = string.format("%d:%d %d", vim.fn.line("."), vim.fn.charcol("."), vim.fn.line("$"))
+    end
+    local diag = #diagnostics > 0 and (" " .. table.concat(diagnostics, " ")) or ""
+    return string.format("%%#%s# %s %%#StatusLine# %s%s%s%%= %s ",
+        style[2], style[1], status_filename(buf), modified, diag, right)
+end
 
+function _G.stargazing_inactive_statusline()
+    return "%#StatusLineNC# " .. status_filename(statusline_buffer()) .. " %="
+end
+
+vim.opt.statusline = "%!v:lua.stargazing_statusline()"
+vim.opt_local.statusline = "%!v:lua.stargazing_statusline()"
+vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
+    callback = function() vim.wo.statusline = "%!v:lua.stargazing_statusline()" end,
+})
+vim.api.nvim_create_autocmd("WinLeave", {
+    callback = function() vim.wo.statusline = "%!v:lua.stargazing_inactive_statusline()" end,
+})
+
+function _G.stargazing_select_buffer(minwid)
+    if vim.api.nvim_buf_is_valid(minwid) then vim.api.nvim_set_current_buf(minwid) end
+end
+
+function _G.stargazing_tabline()
+    local buffers = vim.fn.getbufinfo({ buflisted = 1 })
+    local current = vim.api.nvim_get_current_buf()
+    local parts = { "%#TabLineFill#" }
+    for _, info in ipairs(buffers) do
+        local group = info.bufnr == current and "TabLineSel" or "TabLine"
+        local changed = info.changed == 1 and " [+]" or ""
+        parts[#parts + 1] = string.format("%%%d@v:lua.stargazing_select_buffer@%%#%s# %s%s %%X",
+            info.bufnr, group, status_filename(info.bufnr), changed)
+    end
+    parts[#parts + 1] = "%#TabLineFill#%="
+    return table.concat(parts)
+end
+
+vim.opt.tabline = "%!v:lua.stargazing_tabline()"
+local function update_tabline_visibility()
+    vim.opt.showtabline = #vim.fn.getbufinfo({ buflisted = 1 }) > 1 and 2 or 0
+end
+vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete", "BufEnter" }, {
+    callback = function() vim.schedule(update_tabline_visibility) end,
+})
+update_tabline_visibility()
 
 -- ── Fzf ──────────────────────────────────────────────────────────
-require("fzf-lua").setup {
-    file_ignore_patterns = { "%.obsidian/" },
-    defaults = {
-        file_icons = true,
+local function picker_root()
+    local buffer_path = vim.api.nvim_buf_get_name(0)
+    local start = buffer_path ~= "" and vim.fs.dirname(buffer_path) or vim.uv.cwd()
+    local roots = {}
+    for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+        if client.config.root_dir then roots[#roots + 1] = client.config.root_dir end
+        for _, folder in ipairs(client.workspace_folders or {}) do
+            local path = vim.uri_to_fname(folder.uri)
+            if buffer_path == "" or vim.startswith(buffer_path, path .. "/") then roots[#roots + 1] = path end
+        end
+    end
+    table.sort(roots, function(a, b) return #a > #b end)
+    if roots[1] then return roots[1] end
+    local marker = vim.fs.find({ ".jj", ".git" }, { path = start, upward = true })[1]
+    return marker and vim.fs.dirname(marker) or start
+end
+
+local function helix_ignore_args(root)
+    local args = {}
+    for _, path in ipairs({ vim.fn.expand("~/.config/helix/ignore"), root .. "/.helix/ignore" }) do
+        if vim.fn.filereadable(path) == 1 then
+            args[#args + 1] = "--ignore-file"
+            args[#args + 1] = vim.fn.shellescape(path)
+        end
+    end
+    return table.concat(args, " ")
+end
+
+local fzf = require("fzf-lua")
+fzf.setup {
+    winopts = {
+        fullscreen = true,
+        border = "single",
+        backdrop = 100,
+        title = false,
+        title_flags = false,
+        preview = {
+            layout = "horizontal",
+            horizontal = "right:50%",
+            border = "single",
+            title = false,
+            wrap = true,
+            scrollbar = false,
+            winopts = { cursorline = false, number = false, relativenumber = false, signcolumn = "no", wrap = true },
+        },
+    },
+    defaults = { file_icons = false, git_icons = false, color_icons = false },
+    fzf_opts = {
+        ["--pointer"] = ">",
+        ["--marker"] = ">",
+        ["--info"] = "right",
+        ["--separator"] = "─",
+        ["--scrollbar"] = "",
+        ["--no-bold"] = true,
+    },
+    fzf_colors = {
+        ["fg"] = { "fg", "Normal" }, ["bg"] = { "bg", "Normal" },
+        ["hl"] = { "fg", "Normal" }, ["fg+"] = { "fg", "Normal" },
+        ["bg+"] = { "bg", "PmenuSel" }, ["hl+"] = { "fg", "Normal" },
+        ["info"] = { "fg", "Comment" }, ["prompt"] = { "fg", "Normal" },
+        ["pointer"] = { "fg", "Normal" }, ["marker"] = { "fg", "Normal" },
+        ["spinner"] = { "fg", "Normal" }, ["header"] = { "fg", "Comment" },
+        ["border"] = { "fg", "FloatBorder" },
     },
     files = {
-        fd_opts = "--type f --hidden --exclude .obsidian --exclude .DS_Store --exclude Library",
-    },
-    grep = {
-        rg_opts = "--column --line-number --no-heading --color=always --smart-case --glob '!.obsidian/' --glob '!.DS_Store' --glob '!Library/'",
+        cwd_prompt = false,
+        hidden = false,
+        prompt = "",
+        winopts = { title = false },
     },
 }
+
+local function helix_files()
+    local root = picker_root()
+    local ignore = helix_ignore_args(root)
+    fzf.files({
+        cwd = root,
+        prompt = "",
+        hidden = false,
+        winopts = { title = false },
+        fd_opts = "--type f --type l --follow --color=never --exclude .git --exclude .jj " .. ignore,
+    })
+end
+
+local function helix_grep()
+    local root = picker_root()
+    local ignore = helix_ignore_args(root)
+    fzf.live_grep({
+        cwd = root,
+        prompt = "",
+        rg_opts = "--column --line-number --no-heading --color=always --smart-case --follow " .. ignore,
+    })
+end
 
 
 -- ── LSP ──────────────────────────────────────────────────────────
 require('nvim-treesitter').setup{}
 require("mason").setup({
-    ui = { border = "rounded" },
+    ui = { border = "single" },
 })
 require("mason-lspconfig").setup({
     automatic_enable = true,
@@ -306,11 +446,23 @@ require("mason-lspconfig").setup({
 require('blink.cmp').setup({
     keymap = { preset = 'default' },
     completion = {
-        documentation = { auto_show = true },
+        menu = {
+            border = "single",
+            draw = { columns = { { "label", "label_description", gap = 1 }, { "kind" } } },
+        },
+        documentation = { auto_show = true, window = { border = "single" } },
     },
+    signature = { window = { border = "single" } },
     sources = {
         default = { 'lsp', 'path', 'buffer' },
     },
+})
+
+
+-- ── File manager ─────────────────────────────────────────────────
+require("yazi").setup({
+    floating_window_scaling_factor = 1,
+    yazi_floating_window_border = "single",
 })
 
 
@@ -408,8 +560,8 @@ map("n", "<Esc><Esc>", ":noh<CR>", {desc = "noh"})
 
 map("n", "<leader>y", ":Yazi<CR>", {desc = "Yazi"})
 
-map("n", "<leader>f", ":FzfLua files<CR>", {desc = "Find"})
-map("n", "<leader>/", ":FzfLua live_grep<CR>", {desc = "Grep"})
+map("n", "<leader>f", helix_files, {desc = "Find"})
+map("n", "<leader>/", helix_grep, {desc = "Grep"})
 map("n", "<leader>b", ":FzfLua buffers<CR>", {desc = "Buffers"})
 map("n", "<leader>s", ":FzfLua lsp_document_symbols<CR>", {desc = "Symbols"})
 map("n", "<leader>r", ":FzfLua lsp_references<CR>", {desc = "References"})
@@ -483,7 +635,7 @@ map("n", "<leader>p", function()
     require("fzf-lua").fzf_exec(
         vim.tbl_map(function(item) return item.label end, items),
         {
-            prompt = "LSP Command> ",
+            prompt = "workspace command: ",
             actions = {
                 ["default"] = function(selected)
                     for _, item in ipairs(items) do
@@ -499,12 +651,79 @@ map("n", "<leader>p", function()
 end, { desc = "LSP command palette" })
 
 
--- ── Trim trailing whitespace ─────────────────────────────────────
+-- ── Indent guides ────────────────────────────────────────────────
+local indent_namespace = vim.api.nvim_create_namespace("stargazing_indent_guides")
+local indent_pending = {}
+
+local function refresh_indent_guides(buf)
+    if not vim.api.nvim_buf_is_valid(buf) or vim.bo[buf].buftype ~= "" then return end
+    vim.api.nvim_buf_clear_namespace(buf, indent_namespace, 0, -1)
+    local width = vim.bo[buf].shiftwidth > 0 and vim.bo[buf].shiftwidth or vim.bo[buf].tabstop
+    if width < 1 then return end
+    for row, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
+        local leading = line:match("^( +)")
+        if leading then
+            for col = width, #leading - 1, width do
+                vim.api.nvim_buf_set_extmark(buf, indent_namespace, row - 1, col, {
+                    virt_text = { { "╎", "IndentGuide" } },
+                    virt_text_pos = "overlay",
+                    hl_mode = "combine",
+                    priority = 1,
+                })
+            end
+        end
+    end
+end
+
+local function schedule_indent_guides(buf)
+    if indent_pending[buf] then return end
+    indent_pending[buf] = true
+    vim.defer_fn(function()
+        indent_pending[buf] = nil
+        refresh_indent_guides(buf)
+    end, 80)
+end
+
+vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "TextChangedI", "BufWritePost" }, {
+    callback = function(args) schedule_indent_guides(args.buf) end,
+})
+
+-- ── Helix-style save cleanup ─────────────────────────────────────
+local function cleanup_buffer(buf)
+    if vim.bo[buf].buftype ~= "" or not vim.bo[buf].modifiable then return end
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+    local changed = false
+    for index, line in ipairs(lines) do
+        local clean = line:gsub("%s+$", "")
+        if clean ~= line then
+            lines[index] = clean
+            changed = true
+        end
+    end
+    while #lines > 1 and lines[#lines] == "" do
+        table.remove(lines)
+        changed = true
+    end
+    if changed then
+        local view = buf == vim.api.nvim_get_current_buf() and vim.fn.winsaveview() or nil
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+        if view then vim.fn.winrestview(view) end
+    end
+end
+
 vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*",
+    callback = function(args) cleanup_buffer(args.buf) end,
+})
+
+vim.api.nvim_create_autocmd("FocusLost", {
     callback = function()
-        local pos = vim.api.nvim_win_get_cursor(0)
-        vim.cmd([[%s/\s\+$//e]])
-        vim.api.nvim_win_set_cursor(0, pos)
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if vim.api.nvim_buf_is_loaded(buf)
+                and vim.bo[buf].modified
+                and vim.bo[buf].buftype == ""
+                and vim.api.nvim_buf_get_name(buf) ~= "" then
+                vim.api.nvim_buf_call(buf, function() vim.cmd("silent update") end)
+            end
+        end
     end,
 })
