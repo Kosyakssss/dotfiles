@@ -346,15 +346,12 @@ local function picker_root()
     return marker and vim.fs.dirname(marker) or start
 end
 
-local function helix_ignore_args(root)
-    local args = {}
-    for _, path in ipairs({ vim.fn.expand("~/.config/helix/ignore"), root .. "/.helix/ignore" }) do
-        if vim.fn.filereadable(path) == 1 then
-            args[#args + 1] = "--ignore-file"
-            args[#args + 1] = vim.fn.shellescape(path)
-        end
+local function nvim_ignore_args()
+    local path = vim.fn.stdpath("config") .. "/ignore"
+    if vim.fn.filereadable(path) == 1 then
+        return "--ignore-file " .. vim.fn.shellescape(path)
     end
-    return table.concat(args, " ")
+    return ""
 end
 
 local fzf = require("fzf-lua")
@@ -395,31 +392,31 @@ fzf.setup {
     },
     files = {
         cwd_prompt = false,
-        hidden = false,
+        hidden = true,
         prompt = "",
         winopts = { title = false },
     },
 }
 
-local function helix_files()
+local function find_files()
     local root = picker_root()
-    local ignore = helix_ignore_args(root)
+    local ignore = nvim_ignore_args()
     fzf.files({
         cwd = root,
         prompt = "",
-        hidden = false,
+        hidden = true,
         winopts = { title = false },
-        fd_opts = "--type f --type l --follow --color=never --exclude .git --exclude .jj " .. ignore,
+        fd_opts = "--type f --type l --follow --hidden --color=never " .. ignore,
     })
 end
 
-local function helix_grep()
+local function live_grep()
     local root = picker_root()
-    local ignore = helix_ignore_args(root)
+    local ignore = nvim_ignore_args()
     fzf.live_grep({
         cwd = root,
         prompt = "",
-        rg_opts = "--column --line-number --no-heading --color=always --smart-case --follow " .. ignore,
+        rg_opts = "--column --line-number --no-heading --color=always --smart-case --follow --hidden " .. ignore,
     })
 end
 
@@ -560,8 +557,8 @@ map("n", "<Esc><Esc>", ":noh<CR>", {desc = "noh"})
 
 map("n", "<leader>y", ":Yazi<CR>", {desc = "Yazi"})
 
-map("n", "<leader>f", helix_files, {desc = "Find"})
-map("n", "<leader>/", helix_grep, {desc = "Grep"})
+map("n", "<leader>f", find_files, {desc = "Find"})
+map("n", "<leader>/", live_grep, {desc = "Grep"})
 map("n", "<leader>b", ":FzfLua buffers<CR>", {desc = "Buffers"})
 map("n", "<leader>s", ":FzfLua lsp_document_symbols<CR>", {desc = "Symbols"})
 map("n", "<leader>r", ":FzfLua lsp_references<CR>", {desc = "References"})

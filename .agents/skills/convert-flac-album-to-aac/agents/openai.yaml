@@ -1,0 +1,4 @@
+interface:
+  display_name: "Convert FLAC Album to AAC"
+  short_description: "Repair album metadata and create verified AAC files"
+  default_prompt: "Use $convert-flac-album-to-aac to clean up and convert this downloaded FLAC album into my AAC music library."
