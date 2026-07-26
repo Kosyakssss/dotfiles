@@ -223,7 +223,7 @@ vim.pack.add({
 -- ╚══════════════════════════════════════════════════════════════════╝
 
 -- ── Theme ────────────────────────────────────────────────────────
-vim.cmd.colorscheme "flexoki"
+vim.cmd.colorscheme "stargazing-gallery-plaster-light"
 
 local function is_writing_file()
     return vim.tbl_contains({ "asciidoc", "gitcommit", "markdown", "rst", "text" }, vim.bo.filetype)
