@@ -28,7 +28,7 @@ opt.hlsearch = true
 opt.guicursor = "n-v-c-sm:block-Cursor,i-ci-ve:ver25-Cursor,r-cr-o:hor20-Cursor"
 opt.clipboard = 'unnamedplus'
 opt.mousescroll = "ver:1,hor:1"
-opt.statuscolumn = "%s%=%{v:relnum ? v:relnum : v:lnum} "
+opt.statuscolumn = "%s%=%{v:virtnum > 0 ? '' : (v:relnum ? v:relnum : v:lnum)} "
 opt.laststatus = 2
 opt.showtabline = 0
 opt.fixendofline = true
@@ -608,47 +608,50 @@ map("n", "<leader>P", ":FzfLua diagnostics_workspace<CR>", { desc = "Diagnostics
 
 
 
--- ── LSP command palette ──────────────────────────────────────────
+-- ── Generated key tree and LSP commands ──────────────────────────
+local keytree = require("stargazing.keytree")
+
 map("n", "<leader>p", function()
-    local items = {}
-    local actions = {
-        { name = "Code Action",      fn = vim.lsp.buf.code_action },
-        { name = "Rename",           fn = vim.lsp.buf.rename },
-        { name = "Format",           fn = function() vim.lsp.buf.format({ async = true }) end },
-        { name = "Hover",            fn = vim.lsp.buf.hover },
-        { name = "Signature Help",   fn = vim.lsp.buf.signature_help },
-        { name = "Type Definition",  fn = vim.lsp.buf.type_definition },
-        { name = "Implementation",   fn = vim.lsp.buf.implementation },
-        { name = "Workspace Symbol", fn = vim.lsp.buf.workspace_symbol },
-    }
-    for _, a in ipairs(actions) do
-        table.insert(items, { label = a.name, fn = a.fn })
-    end
-    -- Server-advertised workspace commands
+    local commands = {}
     for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
-        local cmds = (client.server_capabilities or {}).executeCommandProvider or {}
-        for _, cmd in ipairs(cmds.commands or {}) do
-            local c, cl = cmd, client
-            table.insert(items, { label = cmd .. " [" .. cl.name .. "]", fn = function() cl:exec_cmd({ command = c }) end })
+        local provider = (client.server_capabilities or {}).executeCommandProvider or {}
+        for _, command in ipairs(provider.commands or {}) do
+            local attached_client = client
+            local command_name = command
+            commands[#commands + 1] = {
+                label = command_name .. " [" .. attached_client.name .. "]",
+                run = function() attached_client:exec_cmd({ command = command_name }) end,
+            }
         end
     end
+    if #commands == 0 then
+        vim.notify("No LSP workspace commands are available", vim.log.levels.INFO)
+        return
+    end
+    table.sort(commands, function(a, b) return a.label < b.label end)
+    local by_label = {}
+    local labels = {}
+    for _, command in ipairs(commands) do
+        labels[#labels + 1] = command.label
+        by_label[command.label] = command
+    end
     require("fzf-lua").fzf_exec(
-        vim.tbl_map(function(item) return item.label end, items),
+        labels,
         {
-            prompt = "workspace command: ",
+            prompt = "",
+            winopts = { title = false, preview = { hidden = true } },
             actions = {
                 ["default"] = function(selected)
-                    for _, item in ipairs(items) do
-                        if item.label == selected[1] then
-                            item.fn()
-                            return
-                        end
-                    end
+                    local command = selected and by_label[selected[1]]
+                    if command then command.run() end
                 end,
             },
         }
     )
-end, { desc = "LSP command palette" })
+end, { desc = "LSP workspace commands" })
+
+map("n", "<leader>?", keytree.pick, { desc = "Command palette" })
+keytree.setup()
 
 
 -- ── Indent guides ────────────────────────────────────────────────
