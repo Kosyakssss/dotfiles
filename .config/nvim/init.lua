@@ -556,6 +556,7 @@ map("i", "jk", "<Esc>", {desc = "Esc"})
 map("n", "<Esc><Esc>", ":noh<CR>", {desc = "noh"})
 
 map("n", "<leader>y", ":Yazi<CR>", {desc = "Yazi"})
+map("n", "<leader>.", ":Yazi cwd<CR>", {desc = "Yazi"})
 
 map("n", "<leader>f", find_files, {desc = "Find"})
 map("n", "<leader>/", live_grep, {desc = "Grep"})
