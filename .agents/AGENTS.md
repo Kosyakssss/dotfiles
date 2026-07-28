@@ -49,7 +49,7 @@ Article 2, by George Orwell:
 ## User environment
 
 - Interactive and login shell: Fish
-- VCS: jj (Jujutsu) colocated with Git
+- VCS: Git
 - Notes: `~/Notes`
 
 ## Conventions
@@ -65,7 +65,7 @@ Article 2, by George Orwell:
 
 `~/Dotfiles` is public. Treat every commit and every reachable historical blob as published permanently.
 
-- Before committing, inspect `jj status`, the complete diff, and every newly tracked file. Before pushing, inspect every commit that is not already on the remote.
+- Before committing, inspect `git status`, the complete working-tree and staged diffs, and every newly tracked file. Before pushing, fetch and inspect every local commit that is not already on the upstream branch.
 - Never commit credentials, tokens, cookies, private hosts, `.env` files, authentication files, password stores, private keys, session data, databases, logs, shell history, editor undo files, caches, runtime lock files, or machine-generated runtime state. Dependency lockfiles intended for repeatable installs may be committed after review.
 - Keep mutable state out of the Dotfiles source tree even when it is ignored. Put it under XDG state/cache/data directories or a deliberate machine-local path.
 - Do not rely on `.gitignore` as a security boundary, and never use `git add -f` to bypass a safety ignore without explicit user review.

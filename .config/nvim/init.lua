@@ -342,7 +342,7 @@ local function picker_root()
     end
     table.sort(roots, function(a, b) return #a > #b end)
     if roots[1] then return roots[1] end
-    local marker = vim.fs.find({ ".jj", ".git" }, { path = start, upward = true })[1]
+    local marker = vim.fs.find(".git", { path = start, upward = true })[1]
     return marker and vim.fs.dirname(marker) or start
 end
 

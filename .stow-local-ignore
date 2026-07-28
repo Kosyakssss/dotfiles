@@ -1,5 +1,5 @@
 # GNU Stow's built-in ignore list is replaced when this file exists.
-# Keep the built-ins, and also ignore Jujutsu repo metadata.
+# Keep the built-ins.
 
 RCS
 .+,v
@@ -13,7 +13,6 @@ _darcs
 \.hg
 
 \.git
-\.jj
 \.gitignore
 \.gitmodules
 \.DS_Store

@@ -5,7 +5,8 @@ format = """
 $username\
 $hostname\
 $directory\
-${custom.jj}\
+$git_branch\
+$git_status\
 $git_state\
 $cmd_duration\
 $line_break\
@@ -27,17 +28,10 @@ error_symbol = "[❯](red)"
 vimcmd_symbol = "[❮](green)"
 
 [git_branch]
-disabled = true
+disabled = false
 
 [git_status]
-disabled = true
-
-[custom.jj]
-description = "Jujutsu/Git repository status"
-command = "jj-starship --no-jj-prefix --no-git-prefix"
-detect_folders = [".jj", ".git"]
-shell = ["sh"]
-format = "$output "
+disabled = false
 
 [git_state]
 format = '\([$state( $progress_current/$progress_total)]($style)\) '
