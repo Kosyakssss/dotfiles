@@ -38,6 +38,9 @@ skip-levels = 1
 [editor.soft-wrap]
 enable = true
 
+[editor.file-picker]
+hidden = false
+
 [keys.normal]
 tab = ":bn"
 S-tab = ":bp"
