@@ -3,7 +3,7 @@
   "theme": "stargazing-gallery-plaster-light",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "medium",
   "enabledModels": [
     "openai-codex/gpt-5.6-sol"
   ],
@@ -15,7 +15,6 @@
     "git:github.com/tmustier/pi-queue-steer@50e7db60d7f9f2b9a8c9a42e9e151a976137f13b",
     "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
-    "npm:pi-chrome",
     "npm:@narumitw/pi-usage",
     "npm:pi-mcp-adapter"
   ],

@@ -3,9 +3,8 @@
   "private": true,
   "dependencies": {
     "@ff-labs/pi-fff": "^0.10.1",
-    "@narumitw/pi-usage": "^0.31.0",
-    "pi-chrome": "^0.15.46",
+    "@narumitw/pi-usage": "^0.34.0",
     "pi-mcp-adapter": "^2.15.0",
-    "pi-web-access": "^0.14.0"
+    "pi-web-access": "^0.15.0"
   }
 }
