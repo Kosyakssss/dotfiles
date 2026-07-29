@@ -9,8 +9,8 @@ fish_add_path --global --move \
     "$HOME/.bun/bin" \
     "$HOME/.cargo/bin"
 
-set --global --export EDITOR nvim
-set --global --export VISUAL nvim
+set --global --export EDITOR hx
+set --global --export VISUAL hx
 set --global --export STARSHIP_CONFIG "$HOME/.config/starship.toml"
 set --global --export RIPGREP_CONFIG_PATH "$HOME/.config/.ripgreprc"
 set --global --export DPRINT_CONFIG_DIR "$HOME/.config/dprint"
@@ -26,15 +26,15 @@ if status is-interactive
     abbr --add --command git st 'status -sb'
 
     function t
-        cd "$HOME/Notes"; and nvim todo.md
+        cd "$HOME/Notes"; and hx todo.md
     end
 
     function n
-        cd "$HOME/Notes"; and nvim
+        cd "$HOME/Notes"; and hx
     end
 
     function dot
-        cd "$HOME/Dotfiles"; and nvim
+        cd "$HOME/Dotfiles"; and hx
     end
 
     # Open Yazi and adopt its final working directory.
