@@ -7,7 +7,8 @@ eval (/opt/homebrew/bin/brew shellenv fish)
 fish_add_path --global --move \
     "$HOME/.local/bin" \
     "$HOME/.bun/bin" \
-    "$HOME/.cargo/bin"
+    "$HOME/.cargo/bin"\
+    "$HOME/.optmem"
 
 set --global --export EDITOR nvim
 set --global --export VISUAL nvim

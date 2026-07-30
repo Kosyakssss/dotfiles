@@ -1,56 +1,40 @@
 ---
 name: convert-flac-album-to-aac
-description: Clean up downloaded FLAC albums and convert them to verified AAC-LC M4A albums in the user's Music AAC library. Use when Codex needs to identify a downloaded lossless album, repair or complete its metadata and cover art to match the existing library, transcode it through a temporary directory, validate every output track, and finalize the album without deleting the source.
+description: Convert a downloaded FLAC album to a clean AAC-LC M4A album in the user's Music AAC library, repairing metadata and artwork when needed.
 ---
 
 # Convert a FLAC album to AAC
 
-Create a clean, consistent album in `${HOME}/Music AAC`. Treat metadata repair and verification as required parts of conversion.
+Convert a lossless album into `${HOME}/Music AAC` without changing or deleting the source.
 
-## Inspect
+## Prepare
 
-1. Locate the exact downloaded album. Prefer read-only inspection of recently modified directories under `${HOME}/Soulseek Downloads` and `${HOME}/Downloads`.
-2. Require lossless source audio. Do not transcode MP3, AAC, or another lossy source.
-3. Inspect every FLAC file with `ffprobe`. Record titles, artists, featured artists, album artist, album, release date, track and disc positions, genre, composer, identifiers, duration, sample rate, and embedded artwork.
-4. Sample finished albums in `${HOME}/Music AAC` to confirm current naming and tag conventions. Do not assume old conventions remain current.
-5. Check whether the intended final directory or its `.tmp` directory exists. Never overwrite either without explicit user direction.
+1. Find the intended album under `${HOME}/Soulseek Downloads` or `${HOME}/Downloads` and confirm that its audio files are FLAC.
+2. Inspect its tags, track order, disc structure, and artwork. Check existing albums in `${HOME}/Music AAC` only when needed to resolve a naming or tagging convention.
+3. Research metadata only when it is missing, contradictory, or suspicious. Prefer release identifiers in the source, MusicBrainz, Cover Art Archive, and official artist or label sources. Ask before proceeding if uncertainty would change the release, track list, or credits.
+4. Use a reliable square front cover, preferably at least 1000×1000. Do not upscale poor artwork when a better source is available.
 
-## Repair metadata
-
-Use reliable release-specific evidence. Prefer MusicBrainz release identifiers already present in the source, Cover Art Archive, official artist or label data, and major music services. Cross-check uncertain credits or release variants.
-
-Normalize the output to these conventions:
+Use these output conventions:
 
 - Directory: `Album Artist - Album`
-- File: zero-padded track number, ` - `, title, `.m4a`
-- Codec: AAC-LC in an M4A container
-- Audio target: 256 kb/s
-- Required tags: title, track artist, album artist, album, verified release date, library-consistent genre, `track/total`, and `disc/total`
-- Preserve reliable featured-artist and composer credits.
-- Use the canonical artist spelling and script used by the release.
-- Prefer a correct square front cover of at least 1000×1000. Do not upscale a poor source image when a reliable original is available.
+- File: `01 - Title.m4a`
+- Audio: AAC-LC at 256 kb/s in an M4A container
+- Tags: title, artist, album artist, album, release date, genre, track total, and disc total
+- Preserve verified featured-artist and composer credits.
 
-Do not copy broken tags merely because they exist. Do not invent missing facts. Report unresolved ambiguity before encoding when it would change the release, track list, or credits.
+Do not overwrite an existing final or `.tmp` directory.
 
-## Stage and encode
+## Convert
 
-Create the album as `Album Artist - Album.tmp`. Keep cover downloads inside that temporary directory or in a runtime temporary directory.
-
-Run:
+Stage the album as `Album Artist - Album.tmp` and run:
 
 ```sh
 scripts/transcode_album.sh \
-  SOURCE_DIR \
-  TEMP_OUTPUT_DIR \
-  COVER_FILE \
-  ALBUM_ARTIST \
-  ALBUM \
-  RELEASE_DATE \
-  GENRE \
-  TRACK_METADATA_JSON
+  SOURCE_DIR TEMP_OUTPUT_DIR COVER_FILE \
+  ALBUM_ARTIST ALBUM RELEASE_DATE GENRE [TRACK_METADATA_JSON]
 ```
 
-Omit `TRACK_METADATA_JSON` when all source title, artist, track, and composer tags are already correct. When any are missing or wrong, create a JSON array without modifying the FLAC files:
+Omit the JSON file when source title, artist, track, and composer tags are correct. Otherwise provide one entry per source file:
 
 ```json
 [
@@ -64,24 +48,18 @@ Omit `TRACK_METADATA_JSON` when all source title, artist, track, and composer ta
 ]
 ```
 
-Include one entry for every source track. Use an empty string for a verified absent composer.
+Use an empty composer only when its absence is verified. The helper refuses an existing output directory, writes the supplied metadata and cover, encodes each track, decodes each result, and checks the track count.
 
-The script refuses an existing output directory, writes core tags explicitly, applies repaired per-track data when provided, embeds the cover, and decodes each completed audio stream.
+The helper supports single-disc albums only. For a multi-disc release, stop rather than writing incorrect track and disc totals.
 
-## Validate and finalize
+## Finish
 
-Before renaming the temporary directory:
+Before renaming the staged directory, use `ffprobe` to verify:
 
-1. Confirm the source and output track counts match.
-2. Decode every output audio stream with FFmpeg and require no errors.
-3. Compare each source/output duration; allow at most 0.10 seconds difference.
-4. Require one AAC audio stream with profile `LC`.
-5. Require one attached cover stream with the expected dimensions.
-6. Check every required tag, featured artist, composer when applicable, track total, disc total, and filename.
-7. Confirm the directory contains only intended `.m4a` files after removing temporary cover material.
-8. Rename the `.tmp` directory to its final name only after all checks pass.
-9. Recheck the final path and track count.
+- source and output counts match;
+- every output has AAC-LC audio and the intended cover;
+- durations differ by no more than 0.10 seconds;
+- filenames and required tags are correct;
+- the directory contains only the intended M4A files.
 
-Keep the original FLAC album intact. Never delete it as part of this workflow.
-
-Report the final path, track count, album size, repaired metadata, validation result, and source status.
+Rename the directory only after all checks pass. Report the final path, track count, repaired metadata, validation result, and that the source remains intact.

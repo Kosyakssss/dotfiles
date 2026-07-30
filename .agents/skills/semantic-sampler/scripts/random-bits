@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+count=${1:-1}
+case "$count" in *[!0-9]*|'') echo "usage: random-bits [count]" >&2; exit 2;; esac
+[ "$count" -gt 0 ] || exit 2
+
+while [ "$count" -gt 0 ]; do
+    od -An -N 2 -tu2 /dev/urandom | awk 'NF { for (i=15; i>=0; i--) printf "%d", int($1/(2^i))%2; print "" }'
+    count=$((count - 1))
+done
