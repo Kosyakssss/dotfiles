@@ -3,7 +3,7 @@
   "theme": "stargazing-gallery-plaster-dark",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "low",
   "enabledModels": [
     "openai-codex/gpt-5.6-sol"
   ],
@@ -17,7 +17,7 @@
     "npm:@ff-labs/pi-fff",
     "npm:@narumitw/pi-usage"
   ],
-  "outputPad": 0,
-  "editorPaddingX": 0,
+  "outputPad": 1,
+  "editorPaddingX": 1,
   "quietStartup": true
 }

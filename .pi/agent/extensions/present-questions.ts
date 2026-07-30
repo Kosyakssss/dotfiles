@@ -1,4 +1,8 @@
-import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
+import type {
+  ExtensionAPI,
+  ExtensionContext,
+  Theme,
+} from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
 
@@ -63,9 +67,49 @@ export default function presentQuestions(pi: ExtensionAPI) {
     active = false;
   }
 
-  pi.on("session_start", (_event, ctx) => clear(ctx));
+  function show(ctx: ExtensionContext, questions: Question[]): void {
+    if (ctx.mode !== "tui") return;
+    ctx.ui.setWidget(
+      WIDGET_ID,
+      (_tui, theme) => questionWidget(questions, theme),
+      { placement: "aboveEditor" },
+    );
+    active = true;
+  }
+
+  function pendingQuestions(ctx: ExtensionContext): Question[] | undefined {
+    const branch = ctx.sessionManager.getBranch();
+    for (let index = branch.length - 1; index >= 0; index--) {
+      const entry = branch[index];
+      if (entry?.type !== "message") continue;
+      const message = entry.message;
+      if (message.role === "user") return undefined;
+      if (message.role !== "toolResult" || message.toolName !== "present_questions") {
+        continue;
+      }
+
+      const details = message.details as { questions?: unknown } | undefined;
+      if (!Array.isArray(details?.questions)) return undefined;
+      const questions = details.questions.filter(
+        (item): item is Question =>
+          item !== null &&
+          typeof item === "object" &&
+          typeof (item as Question).question === "string",
+      );
+      return questions.length > 0 ? questions : undefined;
+    }
+    return undefined;
+  }
+
+  function restore(ctx: ExtensionContext): void {
+    clear(ctx);
+    const questions = pendingQuestions(ctx);
+    if (questions) show(ctx, questions);
+  }
+
+  pi.on("session_start", (_event, ctx) => restore(ctx));
   pi.on("session_shutdown", (_event, ctx) => clear(ctx));
-  pi.on("session_tree", (_event, ctx) => clear(ctx));
+  pi.on("session_tree", (_event, ctx) => restore(ctx));
 
   pi.on("input", (_event, ctx) => {
     clear(ctx);
@@ -113,14 +157,7 @@ export default function presentQuestions(pi: ExtensionAPI) {
       }));
 
       const interactive = ctx.mode === "tui";
-      if (interactive) {
-        ctx.ui.setWidget(
-          WIDGET_ID,
-          (_tui, theme) => questionWidget(questions, theme),
-          { placement: "aboveEditor" },
-        );
-        active = true;
-      }
+      if (interactive) show(ctx, questions);
 
       return {
         content: [
