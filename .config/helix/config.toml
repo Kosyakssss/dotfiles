@@ -15,6 +15,7 @@ bufferline = "multiple"
 trim-final-newlines = true
 trim-trailing-whitespace = true
 popup-border = "all"
+rainbow-brackets = true
 
 [editor.statusline]
 left = ["mode", "spinner", "file-base-name", "file-modification-indicator"]
@@ -64,6 +65,7 @@ A-c = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "change_selecti
 w = ":write"
 q = ":quit"
 d = ":bc"
+D = ":wbc"
 p = ":lsp-workspace-command"
 y = [
   ':sh rm -f /tmp/unique-file',
