@@ -179,6 +179,45 @@ function toolTitle(component: ToolComponentLike, theme: ThemeLike): string {
   return `${statusFor(component, theme)} ${theme.fg("toolTitle", displayTextFor(component))}`;
 }
 
+function isToolComponent(component: Component): component is Component & ToolComponentLike {
+  const value = component as Component & Partial<ToolComponentLike>;
+  return (
+    component instanceof ToolExecutionComponent ||
+    (typeof value.toolName === "string" &&
+      typeof value.toolCallId === "string" &&
+      value.args !== null &&
+      typeof value.args === "object" &&
+      typeof value.setExpanded === "function")
+  );
+}
+
+function isBoxShell(component: Component): component is Component & { children: Component[] } {
+  const value = component as Component & {
+    children?: unknown;
+    paddingX?: unknown;
+    paddingY?: unknown;
+  };
+  return (
+    component.constructor?.name === "Box" &&
+    Array.isArray(value.children) &&
+    typeof value.paddingX === "number" &&
+    typeof value.paddingY === "number"
+  );
+}
+
+class ShelllessResult implements Component {
+  constructor(private readonly component: Component) {}
+
+  render(width: number): string[] {
+    if (!isBoxShell(this.component)) return this.component.render(width);
+    return this.component.children.flatMap((child) => child.render(width));
+  }
+
+  invalidate(): void {
+    this.component.invalidate();
+  }
+}
+
 function outputPadding(children: Component[]): 0 | 1 | undefined {
   for (const child of children) {
     const value = (child as Component & { outputPad?: unknown }).outputPad;
@@ -238,7 +277,7 @@ function expandedToolBody(
   );
 
   if (component.resultRendererComponent) {
-    content.addChild(component.resultRendererComponent);
+    content.addChild(new ShelllessResult(component.resultRendererComponent));
   } else {
     const output = resultText(component.result);
     const details = component.result?.details;
@@ -444,7 +483,7 @@ function installRenderPatch(
     const children = this.children;
     const configuredPadding = outputPadding(children);
     if (configuredPadding !== undefined) latestPadding = configuredPadding;
-    if (!theme || !children.some((child) => child instanceof ToolExecutionComponent)) {
+    if (!theme || !children.some(isToolComponent)) {
       return originalContainerRender.call(this, width);
     }
 
@@ -467,8 +506,8 @@ function installRenderPatch(
     };
 
     for (const child of children) {
-      if (child instanceof ToolExecutionComponent) {
-        const tool = child as unknown as ToolComponentLike;
+      if (isToolComponent(child)) {
+        const tool = child;
         pendingTools.push(tool);
         seenTools.add(tool);
         if (getLevel() === 2) expandAfterRender(tool);

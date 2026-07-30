@@ -1,6 +1,6 @@
 [theme]
-dark = "stargazing_gallery_plaster_dark"
-light = "stargazing_gallery_plaster_light"
+dark = "stargazing_grey_fruit_dark"
+light = "stargazing_grey_fruit_light"
 
 [editor]
 true-color = true
