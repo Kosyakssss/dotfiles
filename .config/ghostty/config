@@ -3,7 +3,7 @@ shell-integration = fish
 font-size = 16
 font-family = "Iosevka Term"
 
-macos-titlebar-style = tabs
+macos-titlebar-style = transparent
 macos-option-as-alt = true
 
 notify-on-command-finish = unfocused
