@@ -15,8 +15,7 @@
     "git:github.com/tmustier/pi-queue-steer@50e7db60d7f9f2b9a8c9a42e9e151a976137f13b",
     "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
-    "npm:@narumitw/pi-usage",
-    "npm:pi-mcp-adapter"
+    "npm:@narumitw/pi-usage"
   ],
   "outputPad": 0,
   "editorPaddingX": 0,
