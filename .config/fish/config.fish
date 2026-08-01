@@ -6,7 +6,6 @@ eval (/opt/homebrew/bin/brew shellenv fish)
 # User-managed tools override Homebrew tools with the same name.
 fish_add_path --global --move \
     "$HOME/.local/bin" \
-    "$HOME/.bun/bin" \
     "$HOME/.cargo/bin"\
     "$HOME/.optmem"
 
