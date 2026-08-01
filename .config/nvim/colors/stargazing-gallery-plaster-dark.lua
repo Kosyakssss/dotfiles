@@ -1,5 +1,5 @@
 -- Stargazing Gallery Plaster Dark for Neovim
--- Syntax and UI roles mirror the Stargazing Helix themes.
+-- Syntax and UI roles follow the Stargazing palette.
 
 vim.cmd.highlight("clear")
 
@@ -107,7 +107,7 @@ for i, color in ipairs({
     vim.g["terminal_color_" .. (i - 1)] = color
 end
 
--- Editor UI. These roles follow the Helix theme one for one where Neovim has
+-- Editor UI. These roles follow the Stargazing palette where Neovim has
 -- an equivalent group.
 hl("Normal", { fg = c.tx, bg = c.bg })
 hl("NormalNC", { fg = c.tx, bg = c.bg })
@@ -204,7 +204,7 @@ hl("Ignore", { fg = c.tx_3 })
 hl("Error", { fg = c.re })
 hl("Todo", { fg = c.ma, bg = c.bg_2 })
 
--- Spell and diagnostics. Helix uses curls without diagnostic background fills.
+-- Spell and diagnostics use curls without diagnostic background fills.
 hl("SpellBad", { sp = c.re, undercurl = true })
 hl("SpellCap", { sp = c.ye, undercurl = true })
 hl("SpellLocal", { sp = c.gr, undercurl = true })
@@ -240,7 +240,7 @@ hl("Added", { fg = c.gr })
 hl("Changed", { fg = c.ye })
 hl("Removed", { fg = c.re })
 
--- Tree-sitter captures translated from the Helix scopes.
+-- Tree-sitter captures translated into Stargazing syntax roles.
 hl("@variable", { fg = c.tx })
 hl("@variable.builtin", { fg = c.ma })
 hl("@variable.parameter", { fg = c.tx })

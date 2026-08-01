@@ -226,7 +226,7 @@ vim.pack.add({
 -- ╚══════════════════════════════════════════════════════════════════╝
 
 -- ── Theme ────────────────────────────────────────────────────────
-vim.cmd.colorscheme "stargazing-grey-fruit-dark"
+vim.cmd.colorscheme "stargazing-grey-fruit-light"
 
 local function is_writing_file(buf)
     return vim.tbl_contains({ "asciidoc", "gitcommit", "markdown", "rst", "text" }, vim.bo[buf or 0].filetype)
