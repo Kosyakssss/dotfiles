@@ -10,4 +10,4 @@ Apply the configuration from the repository root with GNU Stow:
 stow --target="$HOME" .
 ```
 
-Portable Pi configuration is tracked under `.pi/agent/`. Credentials, memory, sessions, caches, generated dependencies, and other machine-local state remain outside this public repository.
+Portable Pi configuration is tracked under `.pi/agent/` and selected files in `.pi/workflows/`. Credentials, memory, sessions, workflow runs, caches, generated dependencies, and other machine-local state remain outside this public repository.

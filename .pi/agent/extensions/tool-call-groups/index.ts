@@ -1,3 +1,4 @@
+import { homedir } from "node:os";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import {
   BranchSummaryMessageComponent,
@@ -12,6 +13,7 @@ import {
   Text,
   truncateToWidth,
   visibleWidth,
+  wrapTextWithAnsi,
   type Component,
   type MarkdownTheme,
 } from "@earendil-works/pi-tui";
@@ -135,7 +137,7 @@ function oneLine(value: unknown, limit = 120): string {
 function displayTextFor(component: ToolComponentLike): string {
   const value = component.args?.[DISPLAY_TEXT];
   if (typeof value === "string" && value.trim()) return value.trim();
-  return `Run ${component.toolName}`;
+  return webToolTitle(component.toolName) ?? `Run ${component.toolName}`;
 }
 
 function isComplete(component: ToolComponentLike, completedCalls: Set<string>): boolean {
@@ -258,6 +260,136 @@ function outlinedBox(
 
   lines.push(`${border("╰")}${border("─".repeat(innerWidth))}${border("╯")}`);
   return lines;
+}
+
+function plainText(text: string): string {
+  return text.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
+}
+
+function isWorkflowPanel(lines: string[]): boolean {
+  return lines.some((line) => plainText(line).trimStart().startsWith("Workflows running ("));
+}
+
+function isWebActivityPanel(lines: string[]): boolean {
+  return lines.some((line) => plainText(line).includes("Web Search Activity"));
+}
+
+function isAlreadyOutlined(lines: string[]): boolean {
+  const first = lines.find((line) => plainText(line).trim().length > 0);
+  return first ? plainText(first).trimStart().startsWith("╭") : false;
+}
+
+function webActivityBody(lines: string[]): string[] {
+  return lines.filter((line) => {
+    const text = plainText(line).trim();
+    return text.length > 0 && !text.includes("Web Search Activity") && !/^─+$/.test(text);
+  });
+}
+
+function specialPanelOutline(
+  lines: string[],
+  width: number,
+  padding: 0 | 1,
+  theme: ThemeLike,
+): string[] | undefined {
+  if (isAlreadyOutlined(lines)) return undefined;
+  if (isWorkflowPanel(lines)) {
+    return outlinedBox(
+      theme.fg("customMessageLabel", "◆ workflows"),
+      wrapOutlinedBody(lines, width, padding),
+      width,
+      padding,
+      theme,
+    );
+  }
+  if (isWebActivityPanel(lines)) {
+    return outlinedBox(
+      theme.fg("customMessageLabel", "◆ web search activity"),
+      wrapOutlinedBody(webActivityBody(lines), width, padding),
+      width,
+      padding,
+      theme,
+    );
+  }
+  return undefined;
+}
+
+function messageText(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) return "";
+  return content
+    .map((part) => {
+      if (!part || typeof part !== "object") return "";
+      const value = part as { type?: string; text?: string };
+      return value.type === "text" && typeof value.text === "string" ? value.text : "";
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
+function webMessageTitle(customType: string, theme: ThemeLike): string {
+  if (customType === "web-search-error") {
+    return `${theme.fg("error", "×")} ${theme.fg("customMessageLabel", "web search · error")}`;
+  }
+  if (customType === "web-search-content-ready") {
+    return `${theme.fg("success", "✓")} ${theme.fg("customMessageLabel", "web search · content ready")}`;
+  }
+  if (customType === "google-account") {
+    return `${theme.fg("accent", "◆")} ${theme.fg("customMessageLabel", "google · account")}`;
+  }
+  if (customType === "curator-config") {
+    return `${theme.fg("accent", "◆")} ${theme.fg("customMessageLabel", "web search · curator")}`;
+  }
+  return `${theme.fg("success", "✓")} ${theme.fg("customMessageLabel", "web search · results")}`;
+}
+
+function renderWebMessage(
+  customType: string,
+  content: unknown,
+  width: number,
+  outputPad: number,
+  theme: ThemeLike,
+): string[] {
+  const padding = outputPad === 0 ? 0 : 1;
+  const body = messageText(content).split("\n").map((line) => {
+    if (customType === "web-search-error") return theme.fg("error", line);
+    return theme.fg("customMessageText", line);
+  });
+  return outlinedBox(
+    webMessageTitle(customType, theme),
+    wrapOutlinedBody(body, width, padding),
+    width,
+    padding,
+    theme,
+  );
+}
+
+function webToolTitle(toolName: string): string | undefined {
+  return {
+    web_search: "Search the web",
+    source_check: "Check source",
+    fetch_content: "Fetch content",
+    get_search_content: "Get search content",
+  }[toolName];
+}
+
+function wrapOutlinedBody(lines: string[], width: number, padding: 0 | 1): string[] {
+  const contentWidth = Math.max(1, width - 2 - padding * 2);
+  return lines.flatMap((line) => line ? wrapTextWithAnsi(line, contentWidth) : [""]);
+}
+
+function workflowResultDisplay(content: string, theme: ThemeLike): { title: string; lines: string[] } {
+  const normalized = content.replaceAll(homedir(), "~");
+  const match = normalized.match(/^✓ Background workflow "([^"]+)" finished \(([^)]+)\)\.\s*/);
+  const name = (match?.[1] ?? "completed").replaceAll("_", " ");
+  const title = `${theme.fg("success", "✓")} ${theme.fg("customMessageLabel", `workflow · ${name}`)}`;
+  const rest = match ? normalized.slice(match[0].length).trim() : normalized.trim();
+  const lines = rest.split("\n").map((line) => {
+    if (line.startsWith("↳ Full result:")) return theme.fg("dim", line);
+    return theme.fg("customMessageText", line);
+  });
+  if (match?.[2]) lines.unshift(theme.fg("dim", match[2]), "");
+  return { title, lines };
 }
 
 function expandedToolBody(
@@ -483,8 +615,12 @@ function installRenderPatch(
     const children = this.children;
     const configuredPadding = outputPadding(children);
     if (configuredPadding !== undefined) latestPadding = configuredPadding;
-    if (!theme || !children.some(isToolComponent)) {
-      return originalContainerRender.call(this, width);
+    const hasTools = children.some(isToolComponent);
+    if (!theme || !hasTools) {
+      const rendered = originalContainerRender.call(this, width);
+      return theme
+        ? specialPanelOutline(rendered, width, latestPadding, theme) ?? rendered
+        : rendered;
     }
 
     const lines: string[] = [];
@@ -517,7 +653,8 @@ function installRenderPatch(
         continue;
       }
 
-      const childLines = child.render(width);
+      let childLines = child.render(width);
+      childLines = specialPanelOutline(childLines, width, latestPadding, theme) ?? childLines;
       if (pendingTools.length > 0 && childLines.length === 0) {
         // A tool-only assistant message renders no lines. Ignore it so calls on
         // either side remain one group until visible assistant text appears.
@@ -649,6 +786,45 @@ export default function toolCallGroups(pi: ExtensionAPI): void {
     () => expansionLevel,
     completedCalls,
   );
+
+  pi.registerMessageRenderer("workflow-result", (message, options, theme) => {
+    const content = typeof message.content === "string" ? message.content : "";
+    return {
+      render(width: number): string[] {
+        const display = workflowResultDisplay(content, theme as unknown as ThemeLike);
+        const padding = options.outputPad === 0 ? 0 : 1;
+        return outlinedBox(
+          display.title,
+          wrapOutlinedBody(display.lines, width, padding),
+          width,
+          padding,
+          theme as unknown as ThemeLike,
+        );
+      },
+      invalidate() {},
+    };
+  });
+
+  for (const customType of [
+    "web-search-results",
+    "web-search-content-ready",
+    "web-search-error",
+    "curator-config",
+    "google-account",
+  ]) {
+    pi.registerMessageRenderer(customType, (message, options, theme) => ({
+      render(width: number): string[] {
+        return renderWebMessage(
+          customType,
+          message.content,
+          width,
+          options.outputPad,
+          theme as unknown as ThemeLike,
+        );
+      },
+      invalidate() {},
+    }));
+  }
 
   pi.registerShortcut("alt+o", {
     description: "Expand grouped tool calls",
