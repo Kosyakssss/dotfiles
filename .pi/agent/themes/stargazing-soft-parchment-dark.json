@@ -17,7 +17,9 @@
     "cyan": "#3AA99F",
     "blue": "#4385BE",
     "purple": "#8B7EC8",
-    "magenta": "#CE5D97"
+    "magenta": "#CE5D97",
+    "thinkingLow": "#66A0C8",
+    "thinkingMedium": "#3171B2"
   },
   "colors": {
     "accent": "cyan",
@@ -66,8 +68,8 @@
     "syntaxPunctuation": "tx2",
     "thinkingOff": "tx3",
     "thinkingMinimal": "tx2",
-    "thinkingLow": "blue",
-    "thinkingMedium": "cyan",
+    "thinkingLow": "thinkingLow",
+    "thinkingMedium": "thinkingMedium",
     "thinkingHigh": "purple",
     "thinkingXhigh": "magenta",
     "thinkingMax": "red",

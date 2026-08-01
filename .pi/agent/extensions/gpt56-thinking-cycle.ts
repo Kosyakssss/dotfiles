@@ -9,7 +9,7 @@ export default function (pi: ExtensionAPI) {
     }
 
     const levels = modelId.includes("luna")
-      ? (["low", "medium", "high", "xhigh", "max"] as const)
+      ? (["medium", "high", "xhigh"] as const)
       : (["low", "medium", "high"] as const);
     const currentIndex = levels.indexOf(pi.getThinkingLevel() as (typeof levels)[number]);
     const nextIndex = Math.max(0, Math.min(levels.length - 1, currentIndex + direction));

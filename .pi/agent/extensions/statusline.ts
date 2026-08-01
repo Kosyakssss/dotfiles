@@ -22,8 +22,8 @@ type AppTheme = ExtensionContext["ui"]["theme"];
 type ContextColor = "muted" | "warning" | "error";
 
 const effortVars = {
-  low: "blue",
-  medium: "cyan",
+  low: "thinkingLow",
+  medium: "thinkingMedium",
   high: "purple",
   xhigh: "magenta",
   max: "red",
