@@ -25,10 +25,6 @@ if status is-interactive
     abbr --add --command git lg 'log --oneline --graph'
     abbr --add --command git st 'status -sb'
 
-    function t
-        cd "$HOME/Notes"; and nvim todo.md
-    end
-
     function n
         cd "$HOME/Notes"; and nvim
     end
