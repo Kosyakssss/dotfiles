@@ -3,8 +3,8 @@
   "private": true,
   "dependencies": {
     "@ff-labs/pi-fff": "^0.10.1",
-    "@narumitw/pi-usage": "^0.43.0",
+    "@narumitw/pi-usage": "^0.46.0",
     "@quintinshaw/pi-dynamic-workflows": "^3.5.0",
-    "pi-web-access": "^0.17.1"
+    "pi-web-access": "^0.18.0"
   }
 }
