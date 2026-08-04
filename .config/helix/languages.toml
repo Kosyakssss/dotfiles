@@ -1,9 +1,9 @@
-# Use the installed language servers and Helix's built-in server definitions.
 [[language]]
 name = "markdown"
 language-servers = ["markdown-oxide"]
 formatter = { command = "dprint", args = ["fmt", "--stdin", "md"] }
 auto-format = false
+comment-tokens = ["-", "+", "*", "- [ ]", ">"]
 
 [[language]]
 name = "typst"

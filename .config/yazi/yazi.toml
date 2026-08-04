@@ -1,3 +1,3 @@
 [mgr]
-sort_by = "btime"
-sort_reverse = true
+sort_by = "alphabetical"
+sort_reverse = false

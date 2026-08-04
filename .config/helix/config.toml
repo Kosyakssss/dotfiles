@@ -1,6 +1,6 @@
 [theme]
-dark = "stargazing_grey_fruit_dark"
-light = "stargazing_grey_fruit_light"
+dark = "acid"
+light = "acid"
 
 [editor]
 true-color = true
@@ -73,6 +73,16 @@ y = [
   ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
   ':open %sh{cat /tmp/unique-file}',
   ':redraw',
+  ":set mouse false",
+  ":set mouse true"
+]
+S = [
+  ":write-all",
+  ":insert-output scooter --no-stdin >/dev/tty",
+  ":redraw",
+  ":reload-all",
+  ":set mouse false",
+  ":set mouse true"
 ]
 
 [keys.select]
