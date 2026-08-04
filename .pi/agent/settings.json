@@ -1,6 +1,5 @@
 {
   "lastChangelogVersion": "0.83.0",
-  "theme": "stargazing-grey-fruit-light/stargazing-grey-fruit-dark",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-luna",
   "defaultThinkingLevel": "high",
@@ -21,5 +20,6 @@
   ],
   "outputPad": 1,
   "editorPaddingX": 1,
-  "quietStartup": true
+  "quietStartup": true,
+  "theme": "dark"
 }
