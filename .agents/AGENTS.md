@@ -43,7 +43,7 @@ two halves, down to the raw memories.
 Parallel sessions on this machine are all you, and may all write memories.
 A subagent is not: it must never run `memo`, because it cannot judge what
 is already known, and its notes would arrive duplicated and incorrectly.
-When you spawn one, write: `You are a subagent. Don't run memo.`
+When you spawn one, write: `You are a subagent. Don't run memo.` Workflow-generated task prompts start with `Task label:`; treat those sessions as subagents too, and skip every OptMem command.
 
 ## Writing
 
