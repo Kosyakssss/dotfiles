@@ -11,6 +11,7 @@ brew update && brew upgrade
 npm outdated -g
 npm update -g
 rustup update
+pi update --all
 curl -fsSL https://raw.githubusercontent.com/VictorTaelin/OptMem/main/install.sh | sh
 ```
 

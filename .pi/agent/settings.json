@@ -14,9 +14,12 @@
   "packages": [
     "git:github.com/tmustier/pi-queue-steer@50e7db60d7f9f2b9a8c9a42e9e151a976137f13b",
     "npm:pi-web-access",
-    "npm:@ff-labs/pi-fff",
     "npm:@narumitw/pi-usage",
-    "npm:@quintinshaw/pi-dynamic-workflows"
+    "npm:@quintinshaw/pi-dynamic-workflows",
+    {
+      "source": "npm:pi-mcp-adapter",
+      "skills": []
+    }
   ],
   "outputPad": 1,
   "editorPaddingX": 1,

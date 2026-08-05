@@ -1,0 +1,15 @@
+{
+  "settings": {
+    "scriptMode": false,
+    "directTools": false,
+    "mcpFooterStatus": "off"
+  },
+  "mcpServers": {
+    "cua-driver": {
+      "command": "cua-driver",
+      "args": ["mcp"],
+      "lifecycle": "lazy",
+      "directTools": false
+    }
+  }
+}
