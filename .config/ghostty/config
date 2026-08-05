@@ -8,6 +8,8 @@ macos-option-as-alt = true
 
 notify-on-command-finish = unfocused
 
+theme = dark:Ghostty Default Style Dark,light:Daybreak
+
 background-blur = true
 
 auto-update-channel = tip

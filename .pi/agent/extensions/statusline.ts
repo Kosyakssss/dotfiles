@@ -1,15 +1,11 @@
-import {
-  CustomEditor,
-  type ExtensionAPI,
-  type ExtensionContext,
-  type KeybindingsManager,
-  type Theme,
+import type {
+  ExtensionAPI,
+  ExtensionContext,
+  Theme,
 } from "@earendil-works/pi-coding-agent";
 import {
   truncateToWidth,
   visibleWidth,
-  type EditorTheme,
-  type TUI,
 } from "@earendil-works/pi-tui";
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -18,7 +14,7 @@ import { isAbsolute, sep } from "node:path";
 const PI_SYMBOL = "π";
 const SEPARATOR = " · ";
 
-type AppTheme = ExtensionContext["ui"]["theme"];
+type FooterTheme = ExtensionContext["ui"]["theme"];
 type ContextColor = "muted" | "warning" | "error";
 
 const effortVars = {
@@ -105,50 +101,8 @@ function compactPath(cwd: string): string {
   return `${prefix}${compacted.join(sep)}`;
 }
 
-function fitBorder(
-  leftCorner: string,
-  rightCorner: string,
-  left: string,
-  right: string,
-  width: number,
-  border: (text: string) => string,
-): string {
-  if (width <= 0) return "";
-  if (width === 1) return border("─");
-
-  const innerWidth = width - 2;
-  let leftText = left;
-  let rightText = right;
-  const minimumGap = leftText && rightText ? 1 : 0;
-
-  while (visibleWidth(leftText) + visibleWidth(rightText) + minimumGap > innerWidth) {
-    if (visibleWidth(leftText) > visibleWidth(rightText)) {
-      leftText = truncateToWidth(leftText, Math.max(0, visibleWidth(leftText) - 1), "");
-    } else if (visibleWidth(rightText) > 0) {
-      rightText = truncateToWidth(rightText, Math.max(0, visibleWidth(rightText) - 1), "");
-    } else {
-      break;
-    }
-  }
-
-  const fillWidth = Math.max(0, innerWidth - visibleWidth(leftText) - visibleWidth(rightText));
-  return `${border(leftCorner)}${leftText}${border("─".repeat(fillWidth))}${rightText}${border(rightCorner)}`;
-}
-
-function findBottomBorder(lines: string[]): number {
-  for (let index = lines.length - 1; index >= 1; index--) {
-    const plain = lines[index]
-      ?.replace(/\x1b\[[0-9;]*[mGKHJ]/g, "")
-      .replace(/\x1b_[^\x07\x1b]*(?:\x07|\x1b\\)/g, "")
-      .replace(/\x1b\]8;;[^\x07]*\x07/g, "");
-    if (plain?.startsWith("─")) return index;
-  }
-  return lines.length - 1;
-}
-
-function padLine(line: string, width: number): string {
-  const clipped = truncateToWidth(line, width, "");
-  return `${clipped}${" ".repeat(Math.max(0, width - visibleWidth(clipped)))}`;
+function join(theme: FooterTheme, parts: string[]): string {
+  return parts.join(theme.fg("dim", SEPARATOR));
 }
 
 export default function statusline(pi: ExtensionAPI): void {
@@ -159,12 +113,7 @@ export default function statusline(pi: ExtensionAPI): void {
   pi.on("session_start", (_event, ctx) => {
     if (ctx.mode !== "tui") return;
 
-    let getBranch: () => string | null = () => null;
-    let getStatuses: () => ReadonlyMap<string, string> = () => new Map();
-
-    ctx.ui.setFooter((tui, _theme, footerData) => {
-      getBranch = () => footerData.getGitBranch();
-      getStatuses = () => footerData.getExtensionStatuses();
+    ctx.ui.setFooter((tui, theme, footerData) => {
       requestRender = () => tui.requestRender();
       const unsubscribe = footerData.onBranchChange(requestRender);
 
@@ -174,93 +123,52 @@ export default function statusline(pi: ExtensionAPI): void {
           requestRender = undefined;
         },
         invalidate() {},
-        render(): string[] {
-          return [];
+        render(width: number): string[] {
+          const branch = footerData.getGitBranch();
+          const path = compactPath(ctx.cwd);
+          const model = ctx.model?.id ?? "no model";
+          const thinking = pi.getThinkingLevel();
+          const effort = (text: string) => effortText(theme, thinking, text);
+          const context = contextText(ctx);
+          const statuses = footerData.getExtensionStatuses();
+          const stashStatus = statuses.get("prompt-stash");
+
+          const leftParts = [
+            effort(theme.bold(` ${PI_SYMBOL}`)),
+            theme.fg("text", path),
+          ];
+          if (stashStatus) leftParts.push(theme.fg("muted", stashStatus));
+          if (branch) leftParts.push(theme.fg("muted", branch));
+
+          const rightParts = [
+            effort(model),
+            effort(thinking),
+            theme.fg(context.color, context.text),
+            ...[...statuses.entries()]
+              .filter(([id]) => id !== "prompt-stash")
+              .map(([, status]) => theme.fg("muted", status)),
+          ];
+
+          let left = join(theme, leftParts);
+          const right = join(theme, rightParts);
+          let gap = width - visibleWidth(left) - visibleWidth(right);
+
+          if (gap < 1 && branch) {
+            left = join(theme, leftParts.slice(0, 2));
+            gap = width - visibleWidth(left) - visibleWidth(right);
+          }
+          if (gap < 1) {
+            left = leftParts[0]!;
+            gap = width - visibleWidth(left) - visibleWidth(right);
+          }
+          if (gap < 1) {
+            return [truncateToWidth(`${left}${theme.fg("dim", " ")}${right}`, width)];
+          }
+
+          return [`${left}${" ".repeat(gap)}${right}`];
         },
       };
     });
-
-    ctx.ui.setEditorComponent(
-      (tui: TUI, editorTheme: EditorTheme, keybindings: KeybindingsManager) => {
-        requestRender = () => tui.requestRender();
-
-        return new (class StatusEditor extends CustomEditor {
-          constructor() {
-            super(tui, editorTheme, keybindings);
-          }
-
-          override render(width: number): string[] {
-            const innerWidth = width - 2;
-            if (innerWidth < 4) return super.render(width);
-
-            const lines = super.render(innerWidth);
-            if (lines.length < 2) return lines;
-
-            const theme: AppTheme = ctx.ui.theme;
-            const branch = getBranch();
-            const path = compactPath(ctx.cwd);
-            const topLeft =
-              theme.fg("text", ` ${path}`) +
-              (branch ? theme.fg("muted", ` (${branch})`) : "") +
-              " ";
-
-            const thinking = pi.getThinkingLevel();
-            const effort = (text: string) => effortText(theme, thinking, text);
-            const model = ctx.model?.id ?? "no model";
-            const topRight = effort(
-              ` ${PI_SYMBOL}${SEPARATOR}${model}${SEPARATOR}${thinking} `,
-            );
-
-            const context = contextText(ctx);
-            const statuses = getStatuses();
-            const stashStatus = statuses.get("prompt-stash");
-            const bottomLeft = stashStatus
-              ? theme.fg("muted", ` ${stashStatus} `)
-              : "";
-            const bottomParts = [theme.fg(context.color, context.text)];
-            for (const [id, status] of statuses) {
-              if (id === "prompt-stash") continue;
-              bottomParts.push(theme.fg("muted", status));
-            }
-            const bottomRight = ` ${bottomParts.join(theme.fg("muted", SEPARATOR))} `;
-            const border = (text: string) => theme.fg("text", text);
-            const bottomIndex = findBottomBorder(lines);
-            const result = [
-              fitBorder("╭", "╮", topLeft, topRight, width, border),
-            ];
-
-            for (let index = 1; index < bottomIndex; index++) {
-              result.push(
-                `${border("│")}${padLine(lines[index] ?? "", innerWidth)}${border("│")}`,
-              );
-            }
-
-            const hasAutocomplete = bottomIndex + 1 < lines.length;
-            result.push(
-              fitBorder(
-                hasAutocomplete ? "├" : "╰",
-                hasAutocomplete ? "┤" : "╯",
-                bottomLeft,
-                bottomRight,
-                width,
-                border,
-              ),
-            );
-
-            if (hasAutocomplete) {
-              for (let index = bottomIndex + 1; index < lines.length; index++) {
-                result.push(
-                  `${border("│")}${padLine(lines[index] ?? "", innerWidth)}${border("│")}`,
-                );
-              }
-              result.push(fitBorder("╰", "╯", "", "", width, border));
-            }
-
-            return result;
-          }
-        })();
-      },
-    );
   });
 
   pi.on("model_select", render);

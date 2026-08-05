@@ -1,6 +1,6 @@
 [theme]
 dark = "acid"
-light = "acid"
+light = "papercolor-light"
 
 [editor]
 true-color = true
