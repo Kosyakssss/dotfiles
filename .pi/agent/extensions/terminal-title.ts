@@ -1,5 +1,8 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
-import { basename } from "node:path";
+import { createHash } from "node:crypto";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { basename, join, resolve } from "node:path";
 
 /**
  * Keep the terminal tab compact and show when Pi is working.
@@ -25,6 +28,61 @@ function threadName(pi: ExtensionAPI, ctx: ExtensionContext): string {
   );
 }
 
+function workflowRunsDir(cwd: string): string {
+  const projectPath = resolve(cwd);
+  const projectName =
+    (basename(projectPath) || "project")
+      .toLowerCase()
+      .replace(/[^a-z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 48) || "project";
+  const projectKey = `${projectName}-${createHash("sha256")
+    .update(projectPath)
+    .digest("hex")
+    .slice(0, 12)}`;
+
+  return join(homedir(), ".pi", "workflows", "projects", projectKey, "runs");
+}
+
+function hasRunningWorkflow(cwd: string): boolean {
+  const runsDir = workflowRunsDir(cwd);
+
+  try {
+    if (!existsSync(runsDir)) return false;
+
+    for (const entry of readdirSync(runsDir)) {
+      if (!entry.endsWith(".lock")) continue;
+
+      try {
+        const lease = JSON.parse(readFileSync(join(runsDir, entry), "utf8")) as {
+          pid?: number;
+          runPath?: string;
+        };
+        if (!lease.pid || !lease.runPath) continue;
+
+        // A lease is the workflow manager's authoritative indication that a
+        // run is executing. Ignore abandoned leases left by a dead Pi process.
+        try {
+          process.kill(lease.pid, 0);
+        } catch {
+          continue;
+        }
+
+        const run = JSON.parse(readFileSync(lease.runPath, "utf8")) as {
+          status?: string;
+        };
+        if (run.status === "running") return true;
+      } catch {
+        // A lock or run record may be mid-write; the next poll will retry.
+      }
+    }
+  } catch {
+    // Workflow state is optional; never let it disrupt the title extension.
+  }
+
+  return false;
+}
+
 function title(
   pi: ExtensionAPI,
   ctx: ExtensionContext,
@@ -36,6 +94,8 @@ function title(
 
 export default function (pi: ExtensionAPI) {
   let spinner: ReturnType<typeof setInterval> | undefined;
+  let workflowPoller: ReturnType<typeof setInterval> | undefined;
+  let workflowRunning = false;
   let frameIndex = 0;
   const userActionToolCalls = new Set<string>();
 
@@ -53,6 +113,10 @@ export default function (pi: ExtensionAPI) {
   };
 
   const showIdle = (ctx: ExtensionContext) => {
+    if (workflowRunning) {
+      startSpinner(ctx);
+      return;
+    }
     clearSpinner();
     setTitle(ctx);
   };
@@ -62,7 +126,7 @@ export default function (pi: ExtensionAPI) {
     setTitle(ctx, USER_ACTION_FRAME);
   };
 
-  const startSpinner = (ctx: ExtensionContext) => {
+  function startSpinner(ctx: ExtensionContext): void {
     if (ctx.mode !== "tui" || spinner) return;
     if (userActionToolCalls.size > 0) {
       showUserAction(ctx);
@@ -75,9 +139,33 @@ export default function (pi: ExtensionAPI) {
       setTitle(ctx, SPINNER_FRAMES[frameIndex]!);
     }, SPINNER_INTERVAL_MS);
     spinner.unref();
+  }
+
+  const syncWorkflowActivity = (ctx: ExtensionContext) => {
+    const running = hasRunningWorkflow(ctx.cwd);
+    if (running === workflowRunning) return;
+
+    workflowRunning = running;
+    if (running) {
+      if (ctx.isIdle()) startSpinner(ctx);
+    } else if (ctx.isIdle()) {
+      showIdle(ctx);
+    }
+  };
+
+  const startWorkflowWatcher = (ctx: ExtensionContext) => {
+    if (ctx.mode !== "tui" || workflowPoller) return;
+
+    syncWorkflowActivity(ctx);
+    workflowPoller = setInterval(
+      () => syncWorkflowActivity(ctx),
+      SPINNER_INTERVAL_MS * 2,
+    );
+    workflowPoller.unref();
   };
 
   pi.on("session_start", async (_event, ctx) => {
+    startWorkflowWatcher(ctx);
     // Pi applies its built-in title after session_start. A timer makes this
     // extension's compact title the final startup update.
     const timer = setTimeout(() => {
@@ -92,6 +180,7 @@ export default function (pi: ExtensionAPI) {
     const timer = setTimeout(() => {
       if (userActionToolCalls.size > 0) showUserAction(ctx);
       else if (spinner) setTitle(ctx, SPINNER_FRAMES[frameIndex]!);
+      else if (workflowRunning) startSpinner(ctx);
       else setTitle(ctx);
     }, 0);
     timer.unref();
@@ -123,6 +212,11 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("session_shutdown", async () => {
     userActionToolCalls.clear();
+    if (workflowPoller) {
+      clearInterval(workflowPoller);
+      workflowPoller = undefined;
+    }
+    workflowRunning = false;
     clearSpinner();
   });
 }
