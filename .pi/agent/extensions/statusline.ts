@@ -7,7 +7,6 @@ import {
   truncateToWidth,
   visibleWidth,
 } from "@earendil-works/pi-tui";
-import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, sep } from "node:path";
 
@@ -17,47 +16,20 @@ const SEPARATOR = " · ";
 type FooterTheme = ExtensionContext["ui"]["theme"];
 type ContextColor = "muted" | "warning" | "error";
 
-const effortVars = {
+const effortColors = {
   low: "thinkingLow",
   medium: "thinkingMedium",
-  high: "purple",
-  xhigh: "magenta",
-  max: "red",
+  high: "thinkingHigh",
+  xhigh: "thinkingXhigh",
+  max: "thinkingMax",
 } as const;
-const themeVars = new WeakMap<Theme, Record<string, string>>();
-
-function rgb(hex: string, text: string): string {
-  const value = hex.startsWith("#") ? hex.slice(1) : hex;
-  if (!/^[0-9a-f]{6}$/i.test(value)) return text;
-  const red = Number.parseInt(value.slice(0, 2), 16);
-  const green = Number.parseInt(value.slice(2, 4), 16);
-  const blue = Number.parseInt(value.slice(4, 6), 16);
-  return `\x1b[38;2;${red};${green};${blue}m${text}\x1b[39m`;
-}
 
 function effortText(theme: Theme, level: string, text: string): string {
   if (level === "off") return theme.fg("dim", text);
   if (level === "minimal") return theme.fg("muted", text);
 
-  let vars = themeVars.get(theme);
-  if (!vars) {
-    vars = {};
-    if (theme.sourcePath) {
-      try {
-        const source = JSON.parse(readFileSync(theme.sourcePath, "utf8")) as {
-          vars?: Record<string, string>;
-        };
-        vars = source.vars ?? {};
-      } catch {
-        // Non-file and malformed themes fall back to the fixed UI accent.
-      }
-    }
-    themeVars.set(theme, vars);
-  }
-
-  const variable = effortVars[level as keyof typeof effortVars];
-  const color = variable ? vars[variable] : undefined;
-  return color ? rgb(color, text) : theme.fg("accent", text);
+  const color = effortColors[level as keyof typeof effortColors];
+  return theme.fg(color ?? "accent", text);
 }
 
 function contextText(ctx: ExtensionContext): { text: string; color: ContextColor } {
