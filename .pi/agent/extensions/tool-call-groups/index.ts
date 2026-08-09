@@ -1,13 +1,21 @@
 import { homedir } from "node:os";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { ToolExecutionComponent } from "@earendil-works/pi-coding-agent";
 import {
-  Box,
+  BranchSummaryMessageComponent,
+  CompactionSummaryMessageComponent,
+  getMarkdownTheme,
+  ToolExecutionComponent,
+  UserMessageComponent,
+} from "@earendil-works/pi-coding-agent";
+import {
   Container,
+  Markdown,
   Text,
   truncateToWidth,
+  visibleWidth,
   wrapTextWithAnsi,
   type Component,
+  type MarkdownTheme,
 } from "@earendil-works/pi-tui";
 
 const PATCH_KEY = Symbol.for("kote.pi-tool-call-groups.patch.v1");
@@ -22,7 +30,6 @@ const DISPLAY_TEXT_SCHEMA = {
 
 type ThemeLike = {
   fg(color: string, text: string): string;
-  bg(color: string, text: string): string;
   bold(text: string): string;
 };
 
@@ -62,9 +69,27 @@ type SchemaSnapshot = {
   requiredValue?: unknown;
 };
 
+type SummaryComponentLike = {
+  expanded: boolean;
+  message: { summary: string; tokensBefore?: number };
+  markdownTheme?: MarkdownTheme;
+  setExpanded(expanded: boolean): void;
+};
+
+type SummaryPrototype = {
+  render(this: SummaryComponentLike, width: number): string[];
+};
+
+type UserMessagePrototype = {
+  render(this: object, width: number): string[];
+};
+
 type PatchState = {
   owner: object;
   originalContainerRender: (this: Container, width: number) => string[];
+  originalCompactionRender: SummaryPrototype["render"];
+  originalBranchRender: SummaryPrototype["render"];
+  originalUserMessageRender: UserMessagePrototype["render"];
 };
 
 type GlobalWithPatch = typeof globalThis & {
@@ -197,21 +222,90 @@ function outputPadding(children: Component[]): 0 | 1 | undefined {
   return undefined;
 }
 
-function plainBlock(
+function outlinedBox(
   title: string,
   body: string[],
   width: number,
   padding: 0 | 1,
-  _theme?: ThemeLike,
+  theme: ThemeLike,
 ): string[] {
-  const sidePadding = " ".repeat(padding);
-  const contentWidth = Math.max(1, width - padding * 2);
-  const lines: string[] = [];
-  if (title) lines.push(`${sidePadding}${truncateToWidth(title, contentWidth, "")}`);
+  if (width < 4) return body.map((line) => truncateToWidth(line, width, ""));
+
+  const border = (text: string) => theme.fg("borderMuted", text);
+  const innerWidth = width - 2;
+  const label = title
+    ? ` ${truncateToWidth(title, Math.max(0, innerWidth - 2), "")} `
+    : "";
+  const topFill = Math.max(0, innerWidth - visibleWidth(label));
+  const horizontalPadding = Math.min(padding, Math.max(0, Math.floor((innerWidth - 1) / 2)));
+  const contentWidth = Math.max(1, innerWidth - horizontalPadding * 2);
+  const sidePadding = " ".repeat(horizontalPadding);
+  const lines = [
+    `${border("╭")}${label}${border("─".repeat(topFill))}${border("╮")}`,
+  ];
+
   for (const line of body.length > 0 ? body : [""]) {
-    lines.push(`${sidePadding}${truncateToWidth(line, contentWidth, "")}`);
+    const clipped = truncateToWidth(line, contentWidth, "");
+    const fill = " ".repeat(Math.max(0, contentWidth - visibleWidth(clipped)));
+    lines.push(
+      `${border("│")}${sidePadding}${clipped}${fill}${sidePadding}${border("│")}`,
+    );
   }
+
+  lines.push(`${border("╰")}${border("─".repeat(innerWidth))}${border("╯")}`);
   return lines;
+}
+
+function plainText(text: string): string {
+  return text.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
+}
+
+function isWorkflowPanel(lines: string[]): boolean {
+  return lines.some((line) => plainText(line).trimStart().startsWith("Workflows running ("));
+}
+
+function isWebActivityPanel(lines: string[]): boolean {
+  return lines.some((line) => plainText(line).includes("Web Search Activity"));
+}
+
+function isAlreadyOutlined(lines: string[]): boolean {
+  const first = lines.find((line) => plainText(line).trim().length > 0);
+  return first ? plainText(first).trimStart().startsWith("╭") : false;
+}
+
+function webActivityBody(lines: string[]): string[] {
+  return lines.filter((line) => {
+    const text = plainText(line).trim();
+    return text.length > 0 && !text.includes("Web Search Activity") && !/^─+$/.test(text);
+  });
+}
+
+function specialPanelOutline(
+  lines: string[],
+  width: number,
+  padding: 0 | 1,
+  theme: ThemeLike,
+): string[] | undefined {
+  if (isAlreadyOutlined(lines)) return undefined;
+  if (isWorkflowPanel(lines)) {
+    return outlinedBox(
+      theme.fg("customMessageLabel", "◆ workflows"),
+      wrapOutlinedBody(lines, width, padding),
+      width,
+      padding,
+      theme,
+    );
+  }
+  if (isWebActivityPanel(lines)) {
+    return outlinedBox(
+      theme.fg("customMessageLabel", "◆ web search activity"),
+      wrapOutlinedBody(webActivityBody(lines), width, padding),
+      width,
+      padding,
+      theme,
+    );
+  }
+  return undefined;
 }
 
 function messageText(content: unknown): string {
@@ -255,9 +349,9 @@ function renderWebMessage(
     if (customType === "web-search-error") return theme.fg("error", line);
     return theme.fg("customMessageText", line);
   });
-  return plainBlock(
+  return outlinedBox(
     webMessageTitle(customType, theme),
-    wrapPlainBody(body, width, padding),
+    wrapOutlinedBody(body, width, padding),
     width,
     padding,
     theme,
@@ -273,8 +367,8 @@ function webToolTitle(toolName: string): string | undefined {
   }[toolName];
 }
 
-function wrapPlainBody(lines: string[], width: number, padding: 0 | 1): string[] {
-  const contentWidth = Math.max(1, width - padding * 2);
+function wrapOutlinedBody(lines: string[], width: number, padding: 0 | 1): string[] {
+  const contentWidth = Math.max(1, width - 2 - padding * 2);
   return lines.flatMap((line) => line ? wrapTextWithAnsi(line, contentWidth) : [""]);
 }
 
@@ -331,16 +425,6 @@ function expandedToolBody(
   return content.render(width);
 }
 
-function groupBackground(
-  components: ToolComponentLike[],
-): "toolPendingBg" | "toolErrorBg" | "toolSuccessBg" {
-  if (components.some((component) => component.isPartial || component.result === undefined)) {
-    return "toolPendingBg";
-  }
-  if (components.some((component) => component.result?.isError)) return "toolErrorBg";
-  return "toolSuccessBg";
-}
-
 function renderToolGroup(
   components: ToolComponentLike[],
   width: number,
@@ -349,38 +433,113 @@ function renderToolGroup(
   theme: ThemeLike,
   padding: 0 | 1,
 ): string[] {
-  const content = new Container();
-  const bodyWidth = Math.max(1, width - padding * 2);
+  const lines: string[] = [""];
+
+  if (level === 0) {
+    return [
+      "",
+      ...outlinedBox(
+        "",
+        components.map((component) => toolTitle(component, theme)),
+        width,
+        padding,
+        theme,
+      ),
+    ];
+  }
 
   for (const [index, component] of components.entries()) {
-    if (index > 0) content.addChild(new Text("", 0, 0));
-    const lines = [toolTitle(component, theme)];
-
+    if (index > 0) lines.push("");
+    const bodyWidth = Math.max(1, width - 2 - padding * 2);
+    let body: string[];
     if (level === 1) {
       const complete = isComplete(component, completedCalls);
       const detail = complete
         ? `${component.toolName} · ${summarizeArguments(component.args)}`
         : `${component.toolName} · preparing input`;
       const output = oneLine(resultText(component.result), 160);
-      lines.push(theme.fg("dim", detail + (output ? ` · ${output}` : "")));
-    } else if (level === 2) {
-      lines.push(...expandedToolBody(component, bodyWidth, theme));
+      body = [theme.fg("dim", detail + (output ? ` · ${output}` : ""))];
+    } else {
+      body = expandedToolBody(component, bodyWidth, theme);
     }
 
-    content.addChild(new Text(lines.join("\n"), 0, 0));
-  }
+    lines.push(...outlinedBox(toolTitle(component, theme), body, width, padding, theme));
 
-  const box = new Box(padding, 1, (text) => theme.bg(groupBackground(components), text));
-  box.addChild(content);
-  const lines = ["", ...box.render(width)];
-
-  if (level === 2) {
-    for (const component of components) {
+    if (level === 2) {
       for (const image of component.imageComponents ?? []) {
         lines.push("", ...image.render(width));
       }
     }
   }
+  return lines;
+}
+
+function renderSummaryBox(
+  component: SummaryComponentLike,
+  kind: "compaction" | "branch",
+  width: number,
+  padding: 0 | 1,
+  theme: ThemeLike,
+): string[] {
+  const tokenText = component.message.tokensBefore?.toLocaleString();
+  const titleText = kind === "compaction"
+    ? `compaction${tokenText ? ` · ${tokenText} tokens` : ""}`
+    : "branch summary";
+  const title = theme.fg("customMessageLabel", titleText);
+  const bodyWidth = Math.max(1, width - 2 - padding * 2);
+
+  if (!component.expanded) {
+    const text = kind === "compaction"
+      ? "Context compacted · Alt+O to expand"
+      : "Previous branch summarized · Alt+O to expand";
+    return outlinedBox(title, [theme.fg("customMessageText", text)], width, padding, theme);
+  }
+
+  const markdown = new Markdown(
+    component.message.summary,
+    0,
+    0,
+    component.markdownTheme ?? getMarkdownTheme(),
+    { color: (text) => theme.fg("customMessageText", text) },
+  );
+  return outlinedBox(title, markdown.render(bodyWidth), width, padding, theme);
+}
+
+function renderUserMessageBox(
+  body: string[],
+  width: number,
+  theme: ThemeLike,
+): string[] {
+  if (width < 4) return body.map((line) => truncateToWidth(line, width, ""));
+
+  const zoneStart = "\x1b]133;A\x07";
+  const zoneEnd = "\x1b]133;B\x07\x1b]133;C\x07";
+  const stripNativeChrome = (line: string) => line
+    .replaceAll("\x1b]133;A\x07", "")
+    .replaceAll("\x1b]133;B\x07", "")
+    .replaceAll("\x1b]133;C\x07", "")
+    .replace(/\x1b\[(?:4[0-9]|10[0-7])m/g, "")
+    .replace(/\x1b\[48;(?:2;\d+;\d+;\d+|5;\d+)m/g, "");
+  const border = (text: string) => theme.fg("accent", text);
+  const innerWidth = width - 2;
+  const title = ` ${theme.bold(theme.fg("accent", "YOU"))} `;
+  const fill = Math.max(0, innerWidth - visibleWidth(title));
+  const lines = [
+    `${zoneStart}${border("┏")}${border("━")}${title}${border("━".repeat(Math.max(0, fill - 1)))}${border("┓")}`,
+  ];
+
+  const contentLines = body.length >= 3 ? body.slice(1, -1) : body;
+  for (const rawLine of contentLines) {
+    const clipped = truncateToWidth(stripNativeChrome(rawLine), innerWidth, "");
+    const remainder = Math.max(0, innerWidth - visibleWidth(clipped));
+    lines.push(
+      `${border("┃")}${clipped}${" ".repeat(remainder)}${border("┃")}`,
+    );
+  }
+
+  lines.push(
+    `${border("┗")}${border("━".repeat(innerWidth))}${border("┛")}${zoneEnd}`,
+  );
   return lines;
 }
 
@@ -400,7 +559,14 @@ function installRenderPatch(
   if (globalWithPatch[PATCH_KEY]) return undefined;
 
   const originalContainerRender = Container.prototype.render;
+  const compactionPrototype = CompactionSummaryMessageComponent.prototype as unknown as SummaryPrototype;
+  const branchPrototype = BranchSummaryMessageComponent.prototype as unknown as SummaryPrototype;
+  const userMessagePrototype = UserMessageComponent.prototype as unknown as UserMessagePrototype;
+  const originalCompactionRender = compactionPrototype.render;
+  const originalBranchRender = branchPrototype.render;
+  const originalUserMessageRender = userMessagePrototype.render;
   const seenTools = new Set<ToolComponentLike>();
+  const seenSummaries = new Set<SummaryComponentLike>();
   const pendingExpansion = new WeakSet<ToolComponentLike>();
   let latestPadding: 0 | 1 = 1;
   let requestRender: (() => void) | undefined;
@@ -416,13 +582,42 @@ function installRenderPatch(
     });
   };
 
+  compactionPrototype.render = function outlinedCompactionRender(width: number): string[] {
+    const theme = getTheme();
+    if (!theme) return originalCompactionRender.call(this, width);
+    seenSummaries.add(this);
+    return renderSummaryBox(this, "compaction", width, latestPadding, theme);
+  };
+
+  branchPrototype.render = function outlinedBranchRender(width: number): string[] {
+    const theme = getTheme();
+    if (!theme) return originalBranchRender.call(this, width);
+    seenSummaries.add(this);
+    return renderSummaryBox(this, "branch", width, latestPadding, theme);
+  };
+
+  userMessagePrototype.render = function outlinedUserMessageRender(width: number): string[] {
+    const theme = getTheme();
+    if (!theme || width < 4) return originalUserMessageRender.call(this, width);
+    return renderUserMessageBox(
+      originalUserMessageRender.call(this, width - 2),
+      width,
+      theme,
+    );
+  };
+
   Container.prototype.render = function groupedContainerRender(width: number): string[] {
     const theme = getTheme();
     const children = this.children;
     const configuredPadding = outputPadding(children);
     if (configuredPadding !== undefined) latestPadding = configuredPadding;
     const hasTools = children.some(isToolComponent);
-    if (!theme || !hasTools) return originalContainerRender.call(this, width);
+    if (!theme || !hasTools) {
+      const rendered = originalContainerRender.call(this, width);
+      return theme
+        ? specialPanelOutline(rendered, width, latestPadding, theme) ?? rendered
+        : rendered;
+    }
 
     const lines: string[] = [];
     let pendingTools: ToolComponentLike[] = [];
@@ -454,7 +649,8 @@ function installRenderPatch(
         continue;
       }
 
-      const childLines = child.render(width);
+      let childLines = child.render(width);
+      childLines = specialPanelOutline(childLines, width, latestPadding, theme) ?? childLines;
       if (pendingTools.length > 0 && childLines.length === 0) {
         // A tool-only assistant message renders no lines. Ignore it so calls on
         // either side remain one group until visible assistant text appears.
@@ -469,15 +665,25 @@ function installRenderPatch(
     return lines;
   };
 
-  globalWithPatch[PATCH_KEY] = { owner, originalContainerRender };
+  globalWithPatch[PATCH_KEY] = {
+    owner,
+    originalContainerRender,
+    originalCompactionRender,
+    originalBranchRender,
+    originalUserMessageRender,
+  };
 
   return {
     dispose() {
       const current = globalWithPatch[PATCH_KEY];
       if (current?.owner !== owner) return;
       Container.prototype.render = current.originalContainerRender;
+      compactionPrototype.render = current.originalCompactionRender;
+      branchPrototype.render = current.originalBranchRender;
+      userMessagePrototype.render = current.originalUserMessageRender;
       delete globalWithPatch[PATCH_KEY];
       seenTools.clear();
+      seenSummaries.clear();
       requestRender = undefined;
     },
     requestRender() {
@@ -485,6 +691,7 @@ function installRenderPatch(
     },
     setExpanded(expanded: boolean) {
       for (const tool of seenTools) tool.setExpanded(expanded);
+      for (const summary of seenSummaries) summary.setExpanded(expanded);
     },
   };
 }
@@ -540,7 +747,7 @@ export default function toolCallGroups(pi: ExtensionAPI): void {
   const decoratedSchemas = new WeakSet<object>();
   const schemasWithInjectedDisplayText = new WeakSet<object>();
   const decoratedSchemaByToolName = new Map<string, object>();
-  let activeTheme: ThemeLike | undefined;
+  let getActiveTheme: (() => ThemeLike) | undefined;
   let expansionLevel = 0;
 
   const decorateKnownTools = (): void => {
@@ -571,7 +778,7 @@ export default function toolCallGroups(pi: ExtensionAPI): void {
 
   const renderPatch = installRenderPatch(
     owner,
-    () => activeTheme,
+    () => getActiveTheme?.(),
     () => expansionLevel,
     completedCalls,
   );
@@ -582,9 +789,9 @@ export default function toolCallGroups(pi: ExtensionAPI): void {
       render(width: number): string[] {
         const display = workflowResultDisplay(content, theme as unknown as ThemeLike);
         const padding = options.outputPad === 0 ? 0 : 1;
-        return plainBlock(
+        return outlinedBox(
           display.title,
-          wrapPlainBody(display.lines, width, padding),
+          wrapOutlinedBody(display.lines, width, padding),
           width,
           padding,
           theme as unknown as ThemeLike,
@@ -634,7 +841,7 @@ export default function toolCallGroups(pi: ExtensionAPI): void {
   });
 
   pi.on("session_start", async (_event, ctx) => {
-    activeTheme = ctx.ui.theme as unknown as ThemeLike;
+    getActiveTheme = () => ctx.ui.theme as unknown as ThemeLike;
     completedCalls.clear();
     decorateKnownTools();
   });
@@ -674,7 +881,7 @@ export default function toolCallGroups(pi: ExtensionAPI): void {
   pi.on("session_shutdown", async () => {
     renderPatch?.dispose();
     restoreSchemas(snapshots);
-    activeTheme = undefined;
+    getActiveTheme = undefined;
     completedCalls.clear();
   });
 }

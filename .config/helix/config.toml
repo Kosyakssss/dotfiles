@@ -1,6 +1,6 @@
 [theme]
-dark = "acid"
-light = "papercolor-light"
+dark = "flexoki_dark"
+light = "flexoki_light"
 
 [editor]
 true-color = true
@@ -65,7 +65,7 @@ A-c = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "change_selecti
 w = ":write"
 q = ":quit"
 d = ":bc"
-D = ":wbc"
+D = "diagnostics_picker"
 p = ":lsp-workspace-command"
 y = [
   ':sh rm -f /tmp/unique-file',

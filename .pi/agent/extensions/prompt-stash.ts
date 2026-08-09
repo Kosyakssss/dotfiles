@@ -120,11 +120,18 @@ function relativeTime(createdAt: string): string {
   return `${days}d`;
 }
 
-function fittedLine(left: string, right: string, width: number): string {
+function framedLine(
+  left: string,
+  right: string,
+  width: number,
+  border: (text: string) => string,
+): string {
+  if (width < 2) return truncateToWidth(`${left}${right}`, width, "");
+  const innerWidth = width - 2;
   const rightWidth = visibleWidth(right);
-  const fittedLeft = truncateToWidth(left, Math.max(0, width - rightWidth), "");
-  const gap = Math.max(0, width - visibleWidth(fittedLeft) - rightWidth);
-  return `${fittedLeft}${" ".repeat(gap)}${right}`;
+  const fittedLeft = truncateToWidth(left, Math.max(0, innerWidth - rightWidth), "");
+  const gap = Math.max(0, innerWidth - visibleWidth(fittedLeft) - rightWidth);
+  return `${border("│")}${fittedLeft}${" ".repeat(gap)}${right}${border("│")}`;
 }
 
 class StashPicker implements Component {
@@ -142,12 +149,22 @@ class StashPicker implements Component {
 
   render(width: number): string[] {
     if (width < 4) return [truncateToWidth("Stashed prompts", width, "")];
-    const title = this.theme.fg("accent", this.theme.bold(`Stashed prompts · ${this.entries.length}`));
-    const lines = [title, ""];
+    const border = (text: string) => this.theme.fg("text", text);
+    const innerWidth = width - 2;
+    const title = this.theme.fg("accent", ` Stashed prompts · ${this.entries.length} `);
+    const titleWidth = visibleWidth(title);
+    const lines = [
+      `${border("╭")}${title}${border("─".repeat(Math.max(0, innerWidth - titleWidth)))}${border("╮")}`,
+    ];
 
     if (this.entries.length === 0) {
       lines.push(
-        fittedLine(this.theme.fg("muted", "  Nothing stashed"), "", width),
+        framedLine(
+          this.theme.fg("muted", "  Nothing stashed"),
+          "",
+          width,
+          border,
+        ),
       );
     } else {
       for (const [index, entry] of this.entries.entries()) {
@@ -156,13 +173,14 @@ class StashPicker implements Component {
           ? this.theme.fg("accent", " → ")
           : "   ";
         const age = this.theme.fg("muted", ` ${relativeTime(entry.createdAt)} `);
-        const available = Math.max(0, width - visibleWidth(prefix) - visibleWidth(age));
+        const available = Math.max(0, innerWidth - visibleWidth(prefix) - visibleWidth(age));
         const text = truncateToWidth(snippet(entry.prompt), available, "…");
         lines.push(
-          fittedLine(
+          framedLine(
             `${prefix}${selected ? this.theme.fg("text", text) : this.theme.fg("muted", text)}`,
             age,
             width,
+            border,
           ),
         );
       }
@@ -171,7 +189,10 @@ class StashPicker implements Component {
     const help = this.entries.length > 0
       ? " Enter restore · Ctrl+D delete · Esc close "
       : " Esc close ";
-    lines.push("", truncateToWidth(this.theme.fg("muted", help.trim()), width, ""));
+    const fittedHelp = truncateToWidth(this.theme.fg("muted", help), innerWidth, "");
+    lines.push(
+      `${border("╰")}${fittedHelp}${border("─".repeat(Math.max(0, innerWidth - visibleWidth(fittedHelp))))}${border("╯")}`,
+    );
     return lines;
   }
 

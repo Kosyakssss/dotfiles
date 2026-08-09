@@ -1,9 +1,12 @@
+[language-server.typos-lsp]
+command = "typos-lsp"
+
 [[language]]
 name = "markdown"
-language-servers = ["markdown-oxide"]
+workspace-lsp-roots = ["."]
+language-servers = ["markdown-oxide", "typos-lsp"]
 formatter = { command = "dprint", args = ["fmt", "--stdin", "md"] }
 auto-format = false
-comment-tokens = ["-", "+", "*", "- [ ]", ">"]
 
 [[language]]
 name = "typst"

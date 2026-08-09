@@ -1,8 +1,8 @@
 {
-  "lastChangelogVersion": "0.83.0",
+  "lastChangelogVersion": "0.84.1",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-luna",
-  "defaultThinkingLevel": "high",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "medium",
   "enabledModels": [
     "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-5.6-luna"
@@ -24,5 +24,7 @@
   "outputPad": 1,
   "editorPaddingX": 1,
   "quietStartup": true,
-  "theme": "flexoki-light/flexoki-dark"
+  "theme": "flexoki-light/flexoki-dark",
+  "fullscreenScrollbar": "always",
+  "tuiMode": "fullscreen"
 }
