@@ -12,7 +12,9 @@ npm outdated -g
 npm update -g
 rustup update
 pi update --all
+uv python upgrade
 curl -fsSL https://raw.githubusercontent.com/VictorTaelin/OptMem/main/install.sh | sh
+curl -fsSL https://cua.ai/driver/install.sh | bash
 ```
 
 Do not update apps or project dependencies. Report results and failures.

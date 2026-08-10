@@ -1,6 +1,8 @@
 eval (/opt/homebrew/bin/brew shellenv fish)
 
 fish_add_path --global --move \
+    /opt/homebrew/bin \
+    /opt/homebrew/sbin \
     "$HOME/.local/bin" \
     "$HOME/.cargo/bin" \
     "$HOME/.optmem"
@@ -103,6 +105,3 @@ if status is-interactive
     type --query zoxide; and zoxide init fish | source
     type --query fzf; and fzf --fish | source
 end
-
-# Hermes Agent — ensure ~/.local/bin is on PATH
-fish_add_path "$HOME/.local/bin"
