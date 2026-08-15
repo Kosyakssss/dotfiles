@@ -2,9 +2,9 @@
   "name": "pi-extensions",
   "private": true,
   "dependencies": {
-    "@narumitw/pi-usage": "^0.50.0",
+    "@narumitw/pi-usage": "^0.51.0",
     "@quintinshaw/pi-dynamic-workflows": "^3.5.1",
-    "pi-mcp-adapter": "^2.21.1",
-    "pi-web-access": "^0.19.0"
+    "pi-mcp-adapter": "^2.26.0",
+    "pi-web-access": "^0.23.0"
   }
 }

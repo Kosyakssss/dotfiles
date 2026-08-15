@@ -94,7 +94,7 @@ export default function fastMode(pi: ExtensionAPI): void {
     },
   });
 
-  pi.registerShortcut("ctrl+shift+f", {
+  pi.registerShortcut("ctrl+f", {
     description: "Toggle OpenAI fast mode",
     handler: async (ctx) => {
       enabled = !enabled;

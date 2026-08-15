@@ -1,5 +1,6 @@
 {
   "tui.editor.cursorLeft": ["left"],
+  "tui.editor.cursorRight": ["right"],
   "tui.select.up": ["up", "ctrl+p"],
   "tui.select.down": ["down", "ctrl+n"],
   "app.model.cycleForward": ["ctrl+p"],

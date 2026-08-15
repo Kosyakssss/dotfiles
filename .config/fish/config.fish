@@ -105,3 +105,6 @@ if status is-interactive
     type --query zoxide; and zoxide init fish | source
     type --query fzf; and fzf --fish | source
 end
+
+# Hermes Agent — ensure ~/.local/bin is on PATH
+fish_add_path "$HOME/.local/bin"
