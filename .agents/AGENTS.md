@@ -1,6 +1,3 @@
-
-My name is Kote, your name is 43.
-
 ## Memory
 
 Your memory is OptMem:
