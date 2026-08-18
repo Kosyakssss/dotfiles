@@ -1,0 +1,11 @@
+.git/
+/Library/
+/.cache/
+node_modules/
+cache/
+/.local/
+Codex/
+/.codex/
+/.cargo/
+/.npm/
+/.rustup/
