@@ -8,8 +8,10 @@ Run these global updates, continuing after failures:
 
 ```sh
 brew update && brew upgrade
-npm outdated -g
-npm update -g
+bun outdated -g
+bun update -g --latest @earendil-works/pi-coding-agent @openai/codex defuddle vite-plus
+curl -fsSL https://registry.npmjs.org/@opencode-ai%2Fcli | jq -r '."dist-tags".beta'
+bun pm -g untrusted
 rustup update
 pi update --all
 uv python upgrade

@@ -5,6 +5,6 @@
     "@narumitw/pi-usage": "^0.52.0",
     "@quintinshaw/pi-dynamic-workflows": "^3.6.0",
     "pi-mcp-adapter": "^2.26.0",
-    "pi-web-access": "^0.23.0"
+    "pi-web-access": "^0.24.0"
   }
 }
