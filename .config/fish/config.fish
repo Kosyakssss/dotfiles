@@ -106,5 +106,5 @@ if status is-interactive
     type --query fzf; and fzf --fish | source
 end
 
-# Hermes Agent — ensure ~/.local/bin is on PATH
-fish_add_path "$HOME/.local/bin"
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH

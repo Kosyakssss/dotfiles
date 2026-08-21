@@ -7,6 +7,7 @@ workspace-lsp-roots = ["."]
 language-servers = ["markdown-oxide", "typos-lsp"]
 formatter = { command = "dprint", args = ["fmt", "--stdin", "md"] }
 auto-format = false
+comment-tokens = ["-", "+", "*", "- [ ]", ">"]
 
 [[language]]
 name = "typst"

@@ -8,12 +8,9 @@ Run these global updates, continuing after failures:
 
 ```sh
 brew update && brew upgrade
-bun outdated -g
-bun update -g --latest @earendil-works/pi-coding-agent @openai/codex defuddle vite-plus
-curl -fsSL https://registry.npmjs.org/@opencode-ai%2Fcli | jq -r '."dist-tags".beta'
-bun pm -g untrusted
+bun update -g
+bun pm untrusted -g
 rustup update
-pi update --all
 uv python upgrade
 curl -fsSL https://raw.githubusercontent.com/VictorTaelin/OptMem/main/install.sh | sh
 curl -fsSL https://cua.ai/driver/install.sh | bash
