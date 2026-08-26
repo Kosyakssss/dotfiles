@@ -12,7 +12,6 @@ bun update -g
 bun pm untrusted -g
 rustup update
 uv python upgrade
-curl -fsSL https://raw.githubusercontent.com/VictorTaelin/OptMem/main/install.sh | sh
 curl -fsSL https://cua.ai/driver/install.sh | bash
 ```
 

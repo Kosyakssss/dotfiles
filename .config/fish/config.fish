@@ -4,8 +4,7 @@ fish_add_path --global --move \
     /opt/homebrew/bin \
     /opt/homebrew/sbin \
     "$HOME/.local/bin" \
-    "$HOME/.cargo/bin" \
-    "$HOME/.optmem"
+    "$HOME/.cargo/bin"
 
 set -g fish_transient_prompt 1
 set --global --export EDITOR hx
