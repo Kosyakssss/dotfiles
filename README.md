@@ -1,13 +1,9 @@
 # Dotfiles
 
-Public, reviewable configuration for macOS.
+Personal macOS configuration, managed with GNU Stow.
 
-Fish is the login and interactive shell. Its full tracked setup lives in `.config/fish/config.fish`; other Fish files are ignored. Standalone shell scripts use portable POSIX `sh` by default and Bash only when needed. Fish is not used for scripts.
-
-Apply the configuration from the repository root with GNU Stow:
+From the repository root:
 
 ```sh
 stow --target="$HOME" .
 ```
-
-Portable Pi configuration is tracked under `.pi/agent/` and selected files in `.pi/workflows/`. Credentials, memory, sessions, workflow runs, caches, generated dependencies, and other machine-local state remain outside this public repository.
