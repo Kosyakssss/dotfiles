@@ -19,8 +19,6 @@ if status is-interactive
 
     abbr --add v nvim
     abbr --add ls eza
-    abbr --add --command git lg 'log --oneline --graph'
-    abbr --add --command git st 'status -sb'
 
     # Keep the complete Git segment on the right side of the prompt.
     set -g __fish_git_prompt_showdirtystate yes

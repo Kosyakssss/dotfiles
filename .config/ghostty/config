@@ -12,4 +12,4 @@ theme = dark:Flexoki Dark,light:Flexoki Light
 
 background-blur = true
 
-auto-update-channel = tip
+auto-update-channel = stable
