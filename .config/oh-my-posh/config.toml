@@ -1,0 +1,51 @@
+version = 4
+final_space = false
+
+[palette]
+black = '#100F0F'
+gray = '#6F6E69'
+green = '#879A39'
+red = '#AF3029'
+yellow = '#AD8301'
+
+[secondary_prompt]
+template = '> '
+foreground = 'p:green'
+background = 'transparent'
+
+[transient_prompt]
+template = '{{ .Folder }}> '
+foreground = 'p:green'
+background = 'transparent'
+
+[[blocks]]
+type = 'prompt'
+alignment = 'left'
+
+[[blocks.segments]]
+type = 'session'
+style = 'plain'
+template = '<p:green>{{ .UserName }}</><p:gray>@{{ .HostName }} </>'
+
+[[blocks.segments]]
+type = 'path'
+style = 'plain'
+template = '<p:green>{{ path .Path .Location }}></> '
+
+[blocks.segments.options]
+style = 'full'
+
+[[blocks]]
+type = 'rprompt'
+
+[[blocks.segments]]
+type = 'jujutsu'
+style = 'plain'
+template = '{{ if .ClosestBookmarks }}<({{ .ClosestBookmarks }}){{ else }}<{{ end }} {{ .ChangeID }}{{ if .Working.Changed }} {{ .Working.String }}{{ end }}'
+foreground = 'p:green'
+foreground_templates = ['{{ if .Working.Changed }}p:yellow{{ end }}']
+
+[blocks.segments.options]
+change_id_min_len = 8
+fetch_status = true
+ignore_working_copy = true
