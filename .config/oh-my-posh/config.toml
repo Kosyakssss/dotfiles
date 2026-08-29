@@ -69,4 +69,4 @@ newline = true
 [[blocks.segments]]
 type = 'text'
 style = 'plain'
-template = '<p:green>></> '
+template = '{{ if gt .Code 0 }}<p:red>[{{ .Code }}]></>{{ else }}<p:green>></>{{ end }} '
