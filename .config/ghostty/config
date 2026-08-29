@@ -1,6 +1,6 @@
 shell-integration = fish
 
-font-size = 16
+font-size = 18
 font-family = "Iosevka Term"
 
 macos-titlebar-style = transparent
