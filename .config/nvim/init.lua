@@ -35,6 +35,8 @@ opt.laststatus = 2
 opt.showtabline = 0
 opt.fixendofline = true
 
+require("vim._core.ui2").enable()
+
 -- ── Mutable state ──────────────────────────────────────────
 local state_dir = vim.fn.stdpath("state")
 local undo_dir = state_dir .. "/undo"
@@ -48,7 +50,7 @@ vim.fn.mkdir(undo_dir, "p")
 vim.api.nvim_create_user_command("Fmt", function()
     local path = vim.api.nvim_buf_get_name(0)
     if path == "" or vim.bo.buftype ~= "" then
-        vim.notify("Fmt requires a file-backed buffer", vim.log.levels.WARN)
+        vim.notify("fmt requires a file-backed buffer", vim.log.levels.WARN)
         return
     end
 
@@ -228,7 +230,7 @@ vim.pack.add({
 -- ╚══════════════════════════════════════════════════════════════════╝
 
 -- ── Theme ────────────────────────────────────────────────────────
-vim.cmd.colorscheme "flexoki" -- or "default"
+vim.cmd.colorscheme "flexoki"
 require("theme").apply()
 
 local function is_writing_file(buf)
@@ -571,25 +573,6 @@ map("n", "<leader>d", ":bdelete<CR>", { desc = "Close buffer" })
 map({"n", "v"}, "j", "mode() ==# 'V' ? 'j' : (v:count == 0 ? 'gj' : 'j')", { expr = true, desc = "Down (wrap-aware)" })
 map({"n", "v"}, "k", "mode() ==# 'V' ? 'k' : (v:count == 0 ? 'gk' : 'k')", { expr = true, desc = "Up (wrap-aware)" })
 
-
--- ── Templates ────────────────────────────────────────────────────
-local templates_dir = vim.fn.expand("~/Notes/Templates")
-
-map("n", "<leader>t", function()
-    require("fzf-lua").files({
-        prompt = "Template ❯ ",
-        cwd = templates_dir,
-        file_icons = false,
-        actions = {
-            ["default"] = function(selected)
-                if not selected or not selected[1] then return end
-                local lines = vim.fn.readfile(templates_dir .. "/" .. selected[1])
-                local row = vim.api.nvim_win_get_cursor(0)[1]
-                vim.api.nvim_buf_set_lines(0, row-1, row-1, false, lines)
-            end,
-        },
-    })
-end, { desc = "Insert template above" })
 
 
 -- ── Insert helpers ───────────────────────────────────────────────
