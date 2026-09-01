@@ -13,6 +13,8 @@ opt.tabstop = 4
 opt.softtabstop = 4
 opt.shiftwidth = 4
 opt.shiftround = true
+opt.list = true
+opt.listchars = { leadmultispace = "╎   ", tab = "  " }
 opt.number = true
 opt.relativenumber = true
 opt.numberwidth = 3
@@ -215,7 +217,7 @@ vim.pack.add({
     'https://github.com/neovim/nvim-lspconfig',
     'https://github.com/mason-org/mason.nvim',
     'https://github.com/mason-org/mason-lspconfig.nvim',
-    { src = 'https://github.com/Saghen/blink.cmp', version = 'v1.*' },
+    { src = 'https://github.com/Saghen/blink.cmp', version = 'v1' },
     'https://github.com/echasnovski/mini.pairs',
     'https://github.com/nvim-mini/mini.surround',
 })
@@ -226,7 +228,8 @@ vim.pack.add({
 -- ╚══════════════════════════════════════════════════════════════════╝
 
 -- ── Theme ────────────────────────────────────────────────────────
-vim.cmd.colorscheme "stargazing-grey-fruit-light"
+vim.cmd.colorscheme "flexoki" -- or "default"
+require("theme").apply()
 
 local function is_writing_file(buf)
     return vim.tbl_contains({ "asciidoc", "gitcommit", "markdown", "rst", "text" }, vim.bo[buf or 0].filetype)
@@ -234,17 +237,17 @@ end
 
 -- ── Native statusline and bufferline ─────────────────────────────
 local mode_styles = {
-    n = { "NOR", "StargazingModeNormal" },
-    i = { "INS", "StargazingModeInsert" },
-    R = { "REP", "StargazingModeInsert" },
-    v = { "SEL", "StargazingModeSelect" },
-    V = { "SEL", "StargazingModeSelect" },
-    ["\22"] = { "SEL", "StargazingModeSelect" },
-    s = { "SEL", "StargazingModeSelect" },
-    S = { "SEL", "StargazingModeSelect" },
-    ["\19"] = { "SEL", "StargazingModeSelect" },
-    c = { "CMD", "StargazingModeNormal" },
-    t = { "TER", "StargazingModeNormal" },
+    n = { "NOR", "CustomModeNormal" },
+    i = { "INS", "CustomModeInsert" },
+    R = { "REP", "CustomModeInsert" },
+    v = { "SEL", "CustomModeSelect" },
+    V = { "SEL", "CustomModeSelect" },
+    ["\22"] = { "SEL", "CustomModeSelect" },
+    s = { "SEL", "CustomModeSelect" },
+    S = { "SEL", "CustomModeSelect" },
+    ["\19"] = { "SEL", "CustomModeSelect" },
+    c = { "CMD", "CustomModeNormal" },
+    t = { "TER", "CustomModeNormal" },
 }
 
 local function status_filename(buf)
@@ -259,8 +262,13 @@ local function statusline_buffer()
     return vim.api.nvim_get_current_buf()
 end
 
-function _G.stargazing_statusline()
+function _G.custom_statusline()
     local buf = statusline_buffer()
+    local win = tonumber(vim.g.statusline_winid)
+    if win and vim.api.nvim_win_is_valid(win) and win ~= vim.api.nvim_get_current_win() then
+        return "%#StatusLineNC# " .. status_filename(buf) .. " %="
+    end
+
     local mode = vim.api.nvim_get_mode().mode:sub(1, 1)
     local style = mode_styles[mode] or mode_styles.n
     local modified = vim.bo[buf].modified and " [+]" or ""
@@ -288,38 +296,27 @@ function _G.stargazing_statusline()
         style[2], style[1], status_filename(buf), modified, diag, right)
 end
 
-function _G.stargazing_inactive_statusline()
-    return "%#StatusLineNC# " .. status_filename(statusline_buffer()) .. " %="
-end
+vim.opt.statusline = "%!v:lua.custom_statusline()"
 
-vim.opt.statusline = "%!v:lua.stargazing_statusline()"
-vim.opt_local.statusline = "%!v:lua.stargazing_statusline()"
-vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
-    callback = function() vim.wo.statusline = "%!v:lua.stargazing_statusline()" end,
-})
-vim.api.nvim_create_autocmd("WinLeave", {
-    callback = function() vim.wo.statusline = "%!v:lua.stargazing_inactive_statusline()" end,
-})
-
-function _G.stargazing_select_buffer(minwid)
+function _G.custom_select_buffer(minwid)
     if vim.api.nvim_buf_is_valid(minwid) then vim.api.nvim_set_current_buf(minwid) end
 end
 
-function _G.stargazing_tabline()
+function _G.custom_tabline()
     local buffers = vim.fn.getbufinfo({ buflisted = 1 })
     local current = vim.api.nvim_get_current_buf()
     local parts = { "%#TabLineFill#" }
     for _, info in ipairs(buffers) do
         local group = info.bufnr == current and "TabLineSel" or "TabLine"
         local changed = info.changed == 1 and " [+]" or ""
-        parts[#parts + 1] = string.format("%%%d@v:lua.stargazing_select_buffer@%%#%s# %s%s %%X",
+        parts[#parts + 1] = string.format("%%%d@v:lua.custom_select_buffer@%%#%s# %s%s %%X",
             info.bufnr, group, status_filename(info.bufnr), changed)
     end
     parts[#parts + 1] = "%#TabLineFill#%="
     return table.concat(parts)
 end
 
-vim.opt.tabline = "%!v:lua.stargazing_tabline()"
+vim.opt.tabline = "%!v:lua.custom_tabline()"
 local function update_tabline_visibility()
     vim.opt.showtabline = #vim.fn.getbufinfo({ buflisted = 1 }) > 1 and 2 or 0
 end
@@ -606,9 +603,7 @@ map("n", "<leader>P", ":FzfLua diagnostics_workspace<CR>", { desc = "Diagnostics
 
 
 
--- ── Generated key tree and LSP commands ──────────────────────────
-local keytree = require("stargazing.keytree")
-
+-- ── LSP commands ─────────────────────────────────────────────────
 map("n", "<leader>p", function()
     local commands = {}
     for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
@@ -648,46 +643,6 @@ map("n", "<leader>p", function()
     )
 end, { desc = "LSP workspace commands" })
 
-map("n", "<leader>?", keytree.pick, { desc = "Command palette" })
-keytree.setup()
-
-
--- ── Indent guides ────────────────────────────────────────────────
-local indent_namespace = vim.api.nvim_create_namespace("stargazing_indent_guides")
-local indent_pending = {}
-
-local function refresh_indent_guides(buf)
-    if not vim.api.nvim_buf_is_valid(buf) or vim.bo[buf].buftype ~= "" then return end
-    vim.api.nvim_buf_clear_namespace(buf, indent_namespace, 0, -1)
-    local width = vim.bo[buf].shiftwidth > 0 and vim.bo[buf].shiftwidth or vim.bo[buf].tabstop
-    if width < 1 then return end
-    for row, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
-        local leading = line:match("^( +)")
-        if leading then
-            for col = width, #leading - 1, width do
-                vim.api.nvim_buf_set_extmark(buf, indent_namespace, row - 1, col, {
-                    virt_text = { { "╎", "IndentGuide" } },
-                    virt_text_pos = "overlay",
-                    hl_mode = "combine",
-                    priority = 1,
-                })
-            end
-        end
-    end
-end
-
-local function schedule_indent_guides(buf)
-    if indent_pending[buf] then return end
-    indent_pending[buf] = true
-    vim.defer_fn(function()
-        indent_pending[buf] = nil
-        refresh_indent_guides(buf)
-    end, 80)
-end
-
-vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "TextChangedI", "BufWritePost" }, {
-    callback = function(args) schedule_indent_guides(args.buf) end,
-})
 
 -- ── Helix-style save cleanup ─────────────────────────────────────
 local function cleanup_buffer(buf)
