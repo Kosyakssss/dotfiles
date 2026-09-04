@@ -182,11 +182,6 @@ function M.apply()
     hl("Error", { fg = c.re })
     hl("Todo", { fg = c.ma, bg = c.bg_2 })
 
-    -- Spell and diagnostics use curls without diagnostic background fills.
-    hl("SpellBad", { sp = c.re, undercurl = true })
-    hl("SpellCap", { sp = c.ye, undercurl = true })
-    hl("SpellLocal", { sp = c.gr, undercurl = true })
-    hl("SpellRare", { sp = c.pu, undercurl = true })
     hl("DiagnosticError", { fg = c.re, bold = true })
     hl("DiagnosticWarn", { fg = c.or_, bold = true })
     hl("DiagnosticInfo", { fg = c.ye, bold = true })
