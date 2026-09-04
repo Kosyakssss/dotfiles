@@ -48,7 +48,7 @@ foreground_templates = ['{{ if .Working.Changed }}p:yellow{{ end }}']
 [blocks.segments.options]
 change_id_min_len = 8
 fetch_status = true
-ignore_working_copy = true
+ignore_working_copy = false
 
 [[blocks.segments]]
 type = 'git'
