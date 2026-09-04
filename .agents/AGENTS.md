@@ -8,7 +8,7 @@
 - Prefer short, plain, direct English and active voice.
 - Avoid figures of speech.
 - Use technical terms when they improve accuracy. Explain uncommon terms briefly.
-- For technical reports, lean toward ASD-STE100.
+- For reports, lean toward ASD-STE100, but don't overdo it.
 - When a long answer is necessary, keep it structured and stop once the task is complete.
 
 ## User environment
@@ -25,6 +25,7 @@
 - Use Fish only for interactive shell configuration. Never write standalone scripts in Fish.
 - Configs in `~/Dotfiles` are symlinked via Stow. Respect the directory structure. If we ever want to track some kind of a global config and it can be done using this, use it, don't just make one-off symlinks
 - Use `$HOME`, `~`, XDG paths, or paths derived at runtime. Never commit a user-specific home path such as `/Users/name` or `/home/name`.
+- Do not leave comments in any code, for any reason.
 
 ## Public repositories
 

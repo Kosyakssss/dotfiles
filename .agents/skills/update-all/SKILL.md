@@ -1,6 +1,6 @@
 ---
 name: update-all
-description: Update Kote's global machine-managed tools. Use only when explicitly invoked with /skill:update-all; never invoke automatically.
+description: Update global machine-managed tools.
 disable-model-invocation: true
 ---
 

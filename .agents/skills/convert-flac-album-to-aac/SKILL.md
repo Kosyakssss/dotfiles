@@ -1,6 +1,7 @@
 ---
 name: convert-flac-album-to-aac
 description: Convert a downloaded FLAC album to a clean AAC-LC M4A album in the user's Music AAC library, repairing metadata and artwork when needed.
+disable-model-invocation: true
 ---
 
 # Convert a FLAC album to AAC
