@@ -8,8 +8,6 @@ color-modes = true
 scrolloff = 4
 scroll-lines = 1
 line-number = "relative"
-mouse-yank-register = "+"
-default-yank-register = "+"
 cursorline = true
 bufferline = "multiple"
 trim-final-newlines = true
@@ -33,8 +31,8 @@ focus-lost = true
 
 [editor.indent-guides]
 render = true
-character = "╎"
-skip-levels = 1
+character = "|"
+skip-levels = 0
 
 [editor.soft-wrap]
 enable = true
@@ -48,9 +46,17 @@ S-tab = ":bp"
 "}" = "goto_next_paragraph"
 "{" = "goto_prev_paragraph"
 C-r = ":reload"
-C-S-r = ":config-reload"
 w = "@miw"
 W = "@miW"
+C-y = [
+  ':sh rm -f /tmp/unique-file',
+  ':insert-output env -u YAZI_CONFIG_HOME yazi "%{buffer_name}" --chooser-file=/tmp/unique-file',
+  ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+  ':open %sh{cat /tmp/unique-file}',
+  ':redraw',
+  ":set mouse false",
+  ":set mouse true"
+]
 
 i = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "insert_mode"]
 I = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "insert_at_line_start"]
@@ -64,26 +70,7 @@ A-c = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "change_selecti
 [keys.normal.space]
 w = ":write"
 q = ":quit"
-d = ":bc"
-D = "diagnostics_picker"
-p = ":lsp-workspace-command"
-y = [
-  ':sh rm -f /tmp/unique-file',
-  ':insert-output env -u YAZI_CONFIG_HOME yazi "%{buffer_name}" --chooser-file=/tmp/unique-file',
-  ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
-  ':open %sh{cat /tmp/unique-file}',
-  ':redraw',
-  ":set mouse false",
-  ":set mouse true"
-]
-S = [
-  ":write-all",
-  ":insert-output scooter --no-stdin >/dev/tty",
-  ":redraw",
-  ":reload-all",
-  ":set mouse false",
-  ":set mouse true"
-]
+tab = ":bc"
 
 [keys.select]
 "}" = "goto_next_paragraph"
