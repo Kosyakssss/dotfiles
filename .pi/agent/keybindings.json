@@ -3,7 +3,8 @@
   "tui.editor.cursorRight": ["right"],
   "tui.select.up": ["up", "ctrl+p"],
   "tui.select.down": ["down", "ctrl+n"],
-  "app.model.cycleForward": ["ctrl+p"],
-  "app.model.cycleBackward": ["ctrl+shift+p"],
+  "app.model.select": [],
+  "app.model.cycleForward": [],
+  "app.model.cycleBackward": [],
   "app.thinking.cycle": []
 }

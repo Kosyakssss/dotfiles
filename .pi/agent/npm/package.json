@@ -3,8 +3,9 @@
   "private": true,
   "dependencies": {
     "@narumitw/pi-usage": "^0.52.0",
-    "@quintinshaw/pi-dynamic-workflows": "^3.6.0",
+    "pi-control-chrome": "^0.5.5",
     "pi-mcp-adapter": "^2.26.0",
-    "pi-web-access": "^0.24.0"
+    "pi-web-access": "^0.24.0",
+    "ws": "^8.18.0"
   }
 }

@@ -1,26 +1,5 @@
 {
   "providers": {
-    "openai-codex": {
-      "modelOverrides": {
-        "gpt-5.6-sol": {
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": null,
-            "xhigh": null,
-            "max": null
-          }
-        },
-        "gpt-5.6-luna": {
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": null,
-            "low": null,
-            "xhigh": "xhigh",
-            "max": null
-          }
-        }
-      }
-    },
     "opencode": {
       "modelOverrides": {
         "deepseek-v4-flash-free": {

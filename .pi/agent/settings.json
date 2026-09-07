@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.84.4",
+  "lastChangelogVersion": "0.85.1",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "medium",
@@ -7,9 +7,9 @@
     "bun"
   ],
   "enabledModels": [
+    "openai-codex/gpt-6-astra",
     "openai-codex/gpt-5.6-sol",
-    "openai-codex/gpt-5.6-luna",
-    "opencode/deepseek-v4-flash-free"
+    "openai-codex/gpt-5.6-luna"
   ],
   "terminal": {
     "showTerminalProgress": true
@@ -19,16 +19,17 @@
     "git:github.com/tmustier/pi-queue-steer@50e7db60d7f9f2b9a8c9a42e9e151a976137f13b",
     "npm:pi-web-access",
     "npm:@narumitw/pi-usage",
-    "npm:@quintinshaw/pi-dynamic-workflows",
     {
       "source": "npm:pi-mcp-adapter",
       "skills": []
-    }
+    },
+    "npm:pi-control-chrome"
   ],
   "outputPad": 1,
   "editorPaddingX": 1,
-  "quietStartup": true,
+  "quietStartup": false,
   "theme": "flexoki-light/flexoki-dark",
+  "treeFilterMode": "no-tools",
   "fullscreenScrollbar": "always",
   "tuiMode": "fullscreen",
   "showCacheMissNotices": false
