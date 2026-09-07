@@ -1,5 +1,9 @@
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type {
+  ExtensionAPI,
+  ExtensionContext,
+} from "@earendil-works/pi-coding-agent";
 import { execFile } from "node:child_process";
+import { basename } from "node:path";
 
 /**
  * Native terminal notifications for Pi.
@@ -10,7 +14,41 @@ import { execFile } from "node:child_process";
  *   Windows Terminal/WSL (Windows toast).
  */
 
-const TITLE = "Pi";
+function promptSubject(text: string): string {
+  const withoutAttachment = text
+    .replace(/^\[image #\d+\]\s*/u, "")
+    .replace(/^(?:\/|~\/).+?\.(?:avif|bmp|gif|jpe?g|png|webp)\s*/iu, "")
+    .trim();
+  const subject = withoutAttachment || "Untitled chat";
+  return subject.length <= 72 ? subject : `${subject.slice(0, 71).trimEnd()}…`;
+}
+
+function notificationTitle(
+  pi: ExtensionAPI,
+  fallback: string,
+): string {
+  return pi.getSessionName()?.trim() || promptSubject(fallback);
+}
+
+function cleanTabTitle(ctx: ExtensionContext): string {
+  return `π - ${basename(ctx.cwd) || "pi"}`;
+}
+
+function contentText(message: unknown): string {
+  if (!message || typeof message !== "object") return "";
+  const content = (message as { content?: unknown }).content;
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) return "";
+  return content
+    .flatMap((part) => {
+      if (!part || typeof part !== "object") return [];
+      const block = part as { type?: string; text?: string };
+      return block.type === "text" && block.text ? [block.text] : [];
+    })
+    .join(" ")
+    .replace(/\s+/gu, " ")
+    .trim();
+}
 
 function clean(value: string): string {
   // OSC payloads must not contain control characters or field delimiters.
@@ -81,14 +119,50 @@ function notify(title: string, body: string): void {
 }
 
 export default function (pi: ExtensionAPI) {
+  let finalResponse = "";
+  let latestPrompt = "";
+
+  const sendNotification = (ctx: ExtensionContext, body: string): void => {
+    ctx.ui.setTitle(cleanTabTitle(ctx));
+    notify(notificationTitle(pi, latestPrompt), body);
+  };
+
+  pi.on("session_start", () => {
+    finalResponse = "";
+    latestPrompt = "";
+  });
+
+  pi.on("message_end", (event) => {
+    if (event.message.role === "user") {
+      latestPrompt = contentText(event.message);
+      return;
+    }
+    if (event.message.role !== "assistant") return;
+    const text = contentText(event.message);
+    const hasTools = event.message.content.some((block) => block.type === "toolCall");
+    if (text && !hasTools) finalResponse = text;
+  });
+
   pi.on("tool_execution_start", async (event, ctx) => {
     if (ctx.mode !== "tui" || event.toolName !== "ask_user") return;
-    notify(TITLE, "Your decision is required");
+    const question = typeof event.args?.question === "string"
+      ? event.args.question
+      : "Your decision is required.";
+    sendNotification(ctx, `Input needed: ${question}`);
   });
 
   pi.on("agent_settled", async (_event, ctx) => {
     if (ctx.mode !== "tui" || !ctx.isIdle()) return;
-    notify(TITLE, "Turn complete — ready for input");
+    sendNotification(
+      ctx,
+      finalResponse || "Ready for your next message.",
+    );
+    finalResponse = "";
+  });
+
+  pi.on("session_shutdown", () => {
+    finalResponse = "";
+    latestPrompt = "";
   });
 
   pi.registerCommand("notify-test", {
@@ -109,7 +183,10 @@ export default function (pi: ExtensionAPI) {
       const timer = setTimeout(() => {
         // Include a timestamp so Ghostty's identical-notification rate limiter
         // does not suppress repeated tests within five seconds.
-        notify(TITLE, `Terminal notifications are working (${new Date().toLocaleTimeString()})`);
+        sendNotification(
+          ctx,
+          `Terminal notifications are working (${new Date().toLocaleTimeString()})`,
+        );
       }, delaySeconds * 1000);
       timer.unref();
     },
