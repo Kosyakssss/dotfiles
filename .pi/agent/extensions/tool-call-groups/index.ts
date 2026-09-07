@@ -1,6 +1,6 @@
-import { homedir } from "node:os";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import {
+  AssistantMessageComponent,
   BranchSummaryMessageComponent,
   CompactionSummaryMessageComponent,
   getMarkdownTheme,
@@ -84,12 +84,26 @@ type UserMessagePrototype = {
   render(this: object, width: number): string[];
 };
 
+type AssistantMessageLike = {
+  lastMessage?: {
+    content: Array<{ type: string; text?: string }>;
+    [key: string]: unknown;
+  };
+  isStreaming: boolean;
+  updateContent(message: AssistantMessageLike["lastMessage"], isStreaming?: boolean): void;
+};
+
+type AssistantMessagePrototype = {
+  render(this: AssistantMessageLike, width: number): string[];
+};
+
 type PatchState = {
   owner: object;
   originalContainerRender: (this: Container, width: number) => string[];
   originalCompactionRender: SummaryPrototype["render"];
   originalBranchRender: SummaryPrototype["render"];
   originalUserMessageRender: UserMessagePrototype["render"];
+  originalAssistantMessageRender: AssistantMessagePrototype["render"];
 };
 
 type GlobalWithPatch = typeof globalThis & {
@@ -173,6 +187,33 @@ function resultText(result: ToolResultLike | undefined): string {
 
 function toolTitle(component: ToolComponentLike, theme: ThemeLike): string {
   return `${statusFor(component, theme)} ${theme.fg("toolTitle", displayTextFor(component))}`;
+}
+
+function finalAssistants(children: Component[]): Set<Component> {
+  const visible = new Set<Component>();
+  let segmentStart = 0;
+
+  const finishSegment = (segmentEnd: number): void => {
+    const assistants: Array<{ component: Component; index: number }> = [];
+    let lastToolIndex = -1;
+    for (let index = segmentStart; index < segmentEnd; index++) {
+      const child = children[index];
+      if (!child) continue;
+      if (child instanceof AssistantMessageComponent) assistants.push({ component: child, index });
+      if (isToolComponent(child)) lastToolIndex = index;
+    }
+    const final = lastToolIndex < 0
+      ? assistants.at(-1)
+      : assistants.filter((assistant) => assistant.index > lastToolIndex).at(-1);
+    if (final) visible.add(final.component);
+  };
+
+  for (let index = 0; index <= children.length; index++) {
+    if (index < children.length && !(children[index] instanceof UserMessageComponent)) continue;
+    finishSegment(index);
+    segmentStart = index;
+  }
+  return visible;
 }
 
 function isToolComponent(component: Component): component is Component & ToolComponentLike {
@@ -260,10 +301,6 @@ function plainText(text: string): string {
   return text.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
 }
 
-function isWorkflowPanel(lines: string[]): boolean {
-  return lines.some((line) => plainText(line).trimStart().startsWith("Workflows running ("));
-}
-
 function isWebActivityPanel(lines: string[]): boolean {
   return lines.some((line) => plainText(line).includes("Web Search Activity"));
 }
@@ -287,15 +324,6 @@ function specialPanelOutline(
   theme: ThemeLike,
 ): string[] | undefined {
   if (isAlreadyOutlined(lines)) return undefined;
-  if (isWorkflowPanel(lines)) {
-    return outlinedBox(
-      theme.fg("customMessageLabel", "◆ workflows"),
-      wrapOutlinedBody(lines, width, padding),
-      width,
-      padding,
-      theme,
-    );
-  }
   if (isWebActivityPanel(lines)) {
     return outlinedBox(
       theme.fg("customMessageLabel", "◆ web search activity"),
@@ -372,25 +400,31 @@ function wrapOutlinedBody(lines: string[], width: number, padding: 0 | 1): strin
   return lines.flatMap((line) => line ? wrapTextWithAnsi(line, contentWidth) : [""]);
 }
 
-function workflowResultDisplay(content: string, theme: ThemeLike): { title: string; lines: string[] } {
-  const normalized = content.replaceAll(homedir(), "~");
-  const match = normalized.match(/^✓ Background workflow "([^"]+)" finished \(([^)]+)\)\.\s*/);
-  const name = (match?.[1] ?? "completed").replaceAll("_", " ");
-  const title = `${theme.fg("success", "✓")} ${theme.fg("customMessageLabel", `workflow · ${name}`)}`;
-  const rest = match ? normalized.slice(match[0].length).trim() : normalized.trim();
-  const lines = rest.split("\n").map((line) => {
-    if (line.startsWith("↳ Full result:")) return theme.fg("dim", line);
-    return theme.fg("customMessageText", line);
-  });
-  if (match?.[2]) lines.unshift(theme.fg("dim", match[2]), "");
-  return { title, lines };
-}
+type ExpandedBodyCacheEntry = {
+  width: number;
+  args: Record<string, unknown>;
+  result: ToolResultLike | undefined;
+  resultRendererComponent: Component | undefined;
+  theme: ThemeLike;
+  lines: string[];
+};
 
 function expandedToolBody(
   component: ToolComponentLike,
   width: number,
   theme: ThemeLike,
+  cache: WeakMap<object, ExpandedBodyCacheEntry>,
 ): string[] {
+  const cached = cache.get(component);
+  if (
+    cached?.width === width &&
+    cached.args === component.args &&
+    cached.result === component.result &&
+    cached.resultRendererComponent === component.resultRendererComponent &&
+    cached.theme === theme
+  ) {
+    return cached.lines;
+  }
   const content = new Container();
   const args = { ...component.args };
   delete args[DISPLAY_TEXT];
@@ -422,7 +456,16 @@ function expandedToolBody(
       );
     }
   }
-  return content.render(width);
+  const lines = content.render(width);
+  cache.set(component, {
+    width,
+    args: component.args,
+    result: component.result,
+    resultRendererComponent: component.resultRendererComponent,
+    theme,
+    lines,
+  });
+  return lines;
 }
 
 function renderToolGroup(
@@ -432,10 +475,13 @@ function renderToolGroup(
   completedCalls: Set<string>,
   theme: ThemeLike,
   padding: 0 | 1,
+  expandedBodyCache: WeakMap<object, ExpandedBodyCacheEntry>,
 ): string[] {
   const lines: string[] = [""];
 
-  if (level === 0) {
+  if (level === 0) return [];
+
+  if (level === 1) {
     return [
       "",
       ...outlinedBox(
@@ -452,7 +498,7 @@ function renderToolGroup(
     if (index > 0) lines.push("");
     const bodyWidth = Math.max(1, width - 2 - padding * 2);
     let body: string[];
-    if (level === 1) {
+    if (level === 2) {
       const complete = isComplete(component, completedCalls);
       const detail = complete
         ? `${component.toolName} · ${summarizeArguments(component.args)}`
@@ -460,12 +506,12 @@ function renderToolGroup(
       const output = oneLine(resultText(component.result), 160);
       body = [theme.fg("dim", detail + (output ? ` · ${output}` : ""))];
     } else {
-      body = expandedToolBody(component, bodyWidth, theme);
+      body = expandedToolBody(component, bodyWidth, theme, expandedBodyCache);
     }
 
     lines.push(...outlinedBox(toolTitle(component, theme), body, width, padding, theme));
 
-    if (level === 2) {
+    if (level === 3) {
       for (const image of component.imageComponents ?? []) {
         lines.push("", ...image.render(width));
       }
@@ -562,12 +608,15 @@ function installRenderPatch(
   const compactionPrototype = CompactionSummaryMessageComponent.prototype as unknown as SummaryPrototype;
   const branchPrototype = BranchSummaryMessageComponent.prototype as unknown as SummaryPrototype;
   const userMessagePrototype = UserMessageComponent.prototype as unknown as UserMessagePrototype;
+  const assistantMessagePrototype = AssistantMessageComponent.prototype as unknown as AssistantMessagePrototype;
   const originalCompactionRender = compactionPrototype.render;
   const originalBranchRender = branchPrototype.render;
   const originalUserMessageRender = userMessagePrototype.render;
+  const originalAssistantMessageRender = assistantMessagePrototype.render;
   const seenTools = new Set<ToolComponentLike>();
   const seenSummaries = new Set<SummaryComponentLike>();
   const pendingExpansion = new WeakSet<ToolComponentLike>();
+  const expandedBodyCache = new WeakMap<object, ExpandedBodyCacheEntry>();
   let latestPadding: 0 | 1 = 1;
   let requestRender: (() => void) | undefined;
 
@@ -576,7 +625,7 @@ function installRenderPatch(
     pendingExpansion.add(tool);
     queueMicrotask(() => {
       pendingExpansion.delete(tool);
-      if (getLevel() !== 2 || tool.expanded) return;
+      if (getLevel() !== 3 || tool.expanded) return;
       tool.setExpanded(true);
       tool.ui?.requestRender();
     });
@@ -606,6 +655,23 @@ function installRenderPatch(
     );
   };
 
+  assistantMessagePrototype.render = function filteredAssistantRender(width: number): string[] {
+    const message = this.lastMessage;
+    if (getLevel() !== 0 || !message) {
+      return originalAssistantMessageRender.call(this, width);
+    }
+    const content = message.content.filter((block) => block.type !== "thinking");
+    if (content.length === message.content.length) {
+      return originalAssistantMessageRender.call(this, width);
+    }
+    this.updateContent({ ...message, content }, this.isStreaming);
+    try {
+      return originalAssistantMessageRender.call(this, width);
+    } finally {
+      this.updateContent(message, this.isStreaming);
+    }
+  };
+
   Container.prototype.render = function groupedContainerRender(width: number): string[] {
     const theme = getTheme();
     const children = this.children;
@@ -620,6 +686,8 @@ function installRenderPatch(
     }
 
     const lines: string[] = [];
+    const level = getLevel();
+    const visibleAssistants = level === 0 ? finalAssistants(children) : undefined;
     let pendingTools: ToolComponentLike[] = [];
 
     const flushTools = (): void => {
@@ -628,10 +696,11 @@ function installRenderPatch(
         ...renderToolGroup(
           pendingTools,
           width,
-          getLevel(),
+          level,
           completedCalls,
           theme,
           latestPadding,
+          expandedBodyCache,
         ),
       );
       pendingTools = [];
@@ -642,20 +711,32 @@ function installRenderPatch(
         const tool = child;
         pendingTools.push(tool);
         seenTools.add(tool);
-        if (getLevel() === 2) expandAfterRender(tool);
+        if (level === 3) expandAfterRender(tool);
         if (tool.ui?.requestRender) {
           requestRender = () => tool.ui?.requestRender();
         }
         continue;
       }
 
-      let childLines = child.render(width);
-      childLines = specialPanelOutline(childLines, width, latestPadding, theme) ?? childLines;
-      if (pendingTools.length > 0 && childLines.length === 0) {
-        // A tool-only assistant message renders no lines. Ignore it so calls on
-        // either side remain one group until visible assistant text appears.
+      if (
+        level === 0 &&
+        child instanceof AssistantMessageComponent &&
+        !visibleAssistants?.has(child)
+      ) {
         continue;
       }
+      if (
+        level === 0 &&
+        pendingTools.length > 0 &&
+        !visibleAssistants?.has(child) &&
+        !(child instanceof UserMessageComponent)
+      ) {
+        continue;
+      }
+
+      let childLines = child.render(width);
+      childLines = specialPanelOutline(childLines, width, latestPadding, theme) ?? childLines;
+      if (pendingTools.length > 0 && childLines.length === 0) continue;
 
       flushTools();
       lines.push(...childLines);
@@ -671,6 +752,7 @@ function installRenderPatch(
     originalCompactionRender,
     originalBranchRender,
     originalUserMessageRender,
+    originalAssistantMessageRender,
   };
 
   return {
@@ -681,6 +763,7 @@ function installRenderPatch(
       compactionPrototype.render = current.originalCompactionRender;
       branchPrototype.render = current.originalBranchRender;
       userMessagePrototype.render = current.originalUserMessageRender;
+      assistantMessagePrototype.render = current.originalAssistantMessageRender;
       delete globalWithPatch[PATCH_KEY];
       seenTools.clear();
       seenSummaries.clear();
@@ -690,8 +773,12 @@ function installRenderPatch(
       requestRender?.();
     },
     setExpanded(expanded: boolean) {
-      for (const tool of seenTools) tool.setExpanded(expanded);
-      for (const summary of seenSummaries) summary.setExpanded(expanded);
+      for (const tool of seenTools) {
+        if (tool.expanded !== expanded) tool.setExpanded(expanded);
+      }
+      for (const summary of seenSummaries) {
+        if (summary.expanded !== expanded) summary.setExpanded(expanded);
+      }
     },
   };
 }
@@ -783,24 +870,6 @@ export default function toolCallGroups(pi: ExtensionAPI): void {
     completedCalls,
   );
 
-  pi.registerMessageRenderer("workflow-result", (message, options, theme) => {
-    const content = typeof message.content === "string" ? message.content : "";
-    return {
-      render(width: number): string[] {
-        const display = workflowResultDisplay(content, theme as unknown as ThemeLike);
-        const padding = options.outputPad === 0 ? 0 : 1;
-        return outlinedBox(
-          display.title,
-          wrapOutlinedBody(display.lines, width, padding),
-          width,
-          padding,
-          theme as unknown as ThemeLike,
-        );
-      },
-      invalidate() {},
-    };
-  });
-
   for (const customType of [
     "web-search-results",
     "web-search-content-ready",
@@ -825,8 +894,10 @@ export default function toolCallGroups(pi: ExtensionAPI): void {
   pi.registerShortcut("alt+o", {
     description: "Expand grouped tool calls",
     handler: async () => {
-      expansionLevel = Math.min(2, expansionLevel + 1);
-      renderPatch?.setExpanded(expansionLevel === 2);
+      const nextLevel = Math.min(3, expansionLevel + 1);
+      if (nextLevel === expansionLevel) return;
+      expansionLevel = nextLevel;
+      renderPatch?.setExpanded(expansionLevel === 3);
       renderPatch?.requestRender();
     },
   });
@@ -834,8 +905,10 @@ export default function toolCallGroups(pi: ExtensionAPI): void {
   pi.registerShortcut("alt+i", {
     description: "Collapse grouped tool calls",
     handler: async () => {
-      expansionLevel = Math.max(0, expansionLevel - 1);
-      renderPatch?.setExpanded(expansionLevel === 2);
+      const nextLevel = Math.max(0, expansionLevel - 1);
+      if (nextLevel === expansionLevel) return;
+      expansionLevel = nextLevel;
+      renderPatch?.setExpanded(expansionLevel === 3);
       renderPatch?.requestRender();
     },
   });
