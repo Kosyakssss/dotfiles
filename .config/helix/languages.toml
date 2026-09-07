@@ -1,11 +1,15 @@
 [[language]]
 name = "markdown"
 workspace-lsp-roots = ["."]
-language-servers = ["markdown-oxide"]
+language-servers = ["markdown-oxide", "typos"]
 formatter = { command = "dprint", args = ["fmt", "--stdin", "md"] }
 auto-format = false
 comment-tokens = ["-", "+", "*", "- [ ]", ">"]
 
 [[language]]
 name = "typst"
-language-servers = ["tinymist"]
+language-servers = ["tinymist", "typos"]
+
+[language-server.typos]
+command = "typos-lsp"
+config.config = "~/.config/typos/typos.toml"
