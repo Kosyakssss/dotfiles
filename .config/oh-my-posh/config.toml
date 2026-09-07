@@ -24,11 +24,6 @@ alignment = 'left'
 newline = true
 
 [[blocks.segments]]
-type = 'session'
-style = 'plain'
-template = '<p:green>{{ .UserName }}</><p:gray>@{{ .HostName }} </>'
-
-[[blocks.segments]]
 type = 'path'
 style = 'plain'
 template = '<p:green>{{ path .Path .Location }}</> '
