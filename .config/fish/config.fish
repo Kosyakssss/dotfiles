@@ -17,8 +17,9 @@ if status is-interactive
         echo ☁️
     end
 
-    abbr --add v nvim
     abbr --add ls eza
+    abbr --add --command git lg 'log --oneline --graph'
+    abbr --add --command git st 'status -sb'
 
     function n
         cd "$HOME/Notes"; and hx
