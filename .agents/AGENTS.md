@@ -14,7 +14,7 @@
 ## User environment
 
 - Interactive and login shell: Fish
-- Version control: Git
+- Version control: JJ (jujutsu)
 - Notes: `~/Notes`
 - Everything related to code: `~/Code/`
 - Everything related to non-code projects: `~/Projects/` (if a project needs some code, make a matching folder in ~/Code/)
@@ -26,6 +26,8 @@
 - Configs in `~/Dotfiles` are symlinked via Stow. Respect the directory structure. If we ever want to track some kind of a global config and it can be done using this, use it, don't just make one-off symlinks
 - Use `$HOME`, `~`, XDG paths, or paths derived at runtime. Never commit a user-specific home path such as `/Users/name` or `/home/name`.
 - Do not leave comments in any code, for any reason.
+- New test files are opt-in. Do not create unit, integration, end-to-end, or spec files, or new test-only helpers/fixtures, unless the user explicitly requests their creation or approves it first. A request to implement, fix, test, or verify something does not by itself authorize new test files. Assume no by default; ask only when creating them has a concrete benefit, not as a routine step.
+- Prefer running existing tests and direct browser/runtime checks without adding test files. Where test changes are in scope, exercise observable behavior rather than asserting source-code strings, implementation shapes, or that tests exist.
 
 ## Public repositories
 
@@ -36,3 +38,9 @@ Treat committed data as public.
 - Run a wider secret and history check only when changes involve auth, private URLs, generated files, large data, Git history, or other sensitive content.
 - Never push, create a public remote, rewrite shared history, or change repository visibility without explicit approval.
 - If you cannot tell whether data is safe to publish, stop and ask.
+
+# When using Bend:
+- run `bend guide` to learn it
+- use `LAWS.bend` to keep important rules
+- run `bend PROOF.bend` before committing
+- parallelize the code whenever possible
