@@ -7,10 +7,9 @@ fish_add_path --global --move \
     "$HOME/.cargo/bin" \
     "$BUN_INSTALL/bin"
 
-set --global --export EDITOR hx
-set --global --export VISUAL hx
+set --global --export EDITOR nvim
+set --global --export VISUAL nvim
 set --global --export RIPGREP_CONFIG_PATH "$HOME/.config/.ripgreprc"
-set --global --export DPRINT_CONFIG_DIR "$HOME/.config/dprint"
 
 if status is-interactive
     function fish_greeting
@@ -18,15 +17,16 @@ if status is-interactive
     end
 
     abbr --add ls eza
+    abbr --add v nvim
     abbr --add --command git lg 'log --oneline --graph'
     abbr --add --command git st 'status -sb'
 
     function n
-        cd "$HOME/Notes"; and hx
+        cd "$HOME/Notes"; and nvim
     end
 
     function dot
-        cd "$HOME/Dotfiles"; and hx
+        cd "$HOME/Dotfiles"; and nvim
     end
 
     function y

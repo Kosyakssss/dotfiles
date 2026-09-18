@@ -16,6 +16,7 @@ popup-border = "all"
 rainbow-brackets = true
 mouse-yank-register = "+"
 default-yank-register = "+"
+gutters = ["diff"]
 
 [editor.statusline]
 left = ["mode", "spinner", "file-base-name", "file-modification-indicator"]

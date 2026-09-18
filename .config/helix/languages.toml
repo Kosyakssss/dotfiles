@@ -1,9 +1,7 @@
 [[language]]
 name = "markdown"
 workspace-lsp-roots = ["."]
-language-servers = ["markdown-oxide", "typos"]
-formatter = { command = "dprint", args = ["fmt", "--stdin", "md"] }
-auto-format = false
+language-servers = ["marksman", "typos"]
 comment-tokens = ["-", "+", "*", "- [ ]", ">"]
 
 [[language]]
