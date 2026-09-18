@@ -4,3 +4,12 @@
 --glob=!**/Library/**
 --glob=!**/node_modules/**
 --glob=!**/.git/**
+--glob=!**/.cache/**
+--glob=!**/cache/**
+--glob=!**/.local/**
+--glob=!**/Codex/**
+--glob=!**/.codex/**
+--glob=!**/.cargo/**
+--glob=!**/.npm/**
+--glob=!**/.rustup/**
+--glob=!**/.obsidian/**

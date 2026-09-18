@@ -9,3 +9,4 @@ Codex/
 /.cargo/
 /.npm/
 /.rustup/
+.obsidian/
