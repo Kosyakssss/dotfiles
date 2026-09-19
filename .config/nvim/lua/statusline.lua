@@ -12,58 +12,67 @@ local modes = {
     ["\19"] = { "SEL", "StlModeSEL" },
 }
 
-local jj_template = [[if(current_working_copy, "change=" ++ change_id.shortest(8) ++ "\n" ++ diff.summary() ++ "\n", "") ++ if(bookmarks, "bookmark=" ++ bookmarks.join(",") ++ "\n", "")]]
+local wordy = { markdown = true, text = true, gitcommit = true, typst = true }
+
+local jj_template =
+[[if(current_working_copy, "change=" ++ change_id.shortest(8) ++ "\n" ++ diff.summary() ++ "\n", "") ++ if(bookmarks, "bookmark=" ++ bookmarks.join(",") ++ "\n", "")]]
+
+local count_order = { "untracked", "added", "modified", "deleted", "moved", "unmerged" }
+local count_signs = { untracked = "?", added = "+", modified = "~", deleted = "-", moved = ">", unmerged = "x" }
+local jj_codes = { A = "added", C = "added", M = "modified", D = "deleted", R = "moved" }
+local git_codes = { ["?"] = "untracked", A = "added", D = "deleted", U = "unmerged", M = "modified", R = "modified", C =
+"modified", m = "modified" }
 
 local function new_counts()
-    return { added = 0, modified = 0, deleted = 0, moved = 0, untracked = 0, unmerged = 0 }
+    return { untracked = 0, added = 0, modified = 0, deleted = 0, moved = 0, unmerged = 0 }
+end
+
+local function bump(counts, codes, code)
+    local field = codes[code]
+    if field then
+        counts[field] = counts[field] + 1
+    end
 end
 
 local function format_diff_counts(counts)
     local parts = {}
-    if counts.untracked > 0 then parts[#parts + 1] = "?" .. counts.untracked end
-    if counts.added > 0 then parts[#parts + 1] = "+" .. counts.added end
-    if counts.modified > 0 then parts[#parts + 1] = "~" .. counts.modified end
-    if counts.deleted > 0 then parts[#parts + 1] = "-" .. counts.deleted end
-    if counts.moved > 0 then parts[#parts + 1] = ">" .. counts.moved end
-    if counts.unmerged > 0 then parts[#parts + 1] = "x" .. counts.unmerged end
+    for _, key in ipairs(count_order) do
+        if counts[key] > 0 then
+            parts[#parts + 1] = count_signs[key] .. counts[key]
+        end
+    end
     if #parts == 0 then return nil end
     return table.concat(parts, " ")
 end
 
 local function buf_cwd(buf)
     local name = vim.api.nvim_buf_get_name(buf)
-    if name ~= "" then
-        return vim.fn.fnamemodify(name, ":p:h")
-    end
-    return vim.uv.cwd()
+    return name ~= "" and vim.fn.fnamemodify(name, ":p:h") or vim.uv.cwd()
+end
+
+local function run(cmd, dir)
+    local ok, result = pcall(vim.system, cmd, { cwd = dir, text = true })
+    if not ok then return nil end
+    local completed = result:wait()
+    if completed.code ~= 0 then return nil end
+    return completed.stdout or ""
 end
 
 local function update_jj(buf, dir)
-    local ok, result = pcall(vim.system, {
+    local stdout = run({
         "jj", "log", "--no-pager", "--color", "never",
         "-r", "latest(ancestors(@) & bookmarks(), 1) | @",
         "--no-graph", "-T", jj_template,
-    }, { cwd = dir, text = true })
-    if not ok then return false end
-    local completed = result:wait()
-    if completed.code ~= 0 then return false end
+    }, dir)
+    if stdout == nil then return false end
     local fields = {}
     local counts = new_counts()
-    for line in (completed.stdout or ""):gmatch("[^\n]+") do
+    for line in stdout:gmatch("[^\n]+") do
         local key, value = line:match("^([^=]+)=(.*)$")
         if key then
             fields[key] = value
         else
-            local code = line:sub(1, 1)
-            if code == "A" or code == "C" then
-                counts.added = counts.added + 1
-            elseif code == "M" then
-                counts.modified = counts.modified + 1
-            elseif code == "D" then
-                counts.deleted = counts.deleted + 1
-            elseif code == "R" then
-                counts.moved = counts.moved + 1
-            end
+            bump(counts, jj_codes, line:sub(1, 1))
         end
     end
     if fields.change then
@@ -75,43 +84,24 @@ local function update_jj(buf, dir)
     return true
 end
 
-local function add_git_status(counts, code)
-    if code == "?" then
-        counts.untracked = counts.untracked + 1
-    elseif code == "A" then
-        counts.added = counts.added + 1
-    elseif code == "D" then
-        counts.deleted = counts.deleted + 1
-    elseif code == "U" then
-        counts.unmerged = counts.unmerged + 1
-    elseif code == "M" or code == "R" or code == "C" or code == "m" then
-        counts.modified = counts.modified + 1
-    end
-end
-
 local function update_git(buf, dir)
-    local ok, result = pcall(vim.system, {
+    local stdout = run({
         "git", "--no-optional-locks", "-c", "core.quotepath=false", "-c", "color.status=false",
         "status", "--untracked-files=normal", "--branch", "--porcelain=2",
-    }, { cwd = dir, text = true })
-    if not ok then return false end
-    local completed = result:wait()
-    if completed.code ~= 0 then return false end
+    }, dir)
+    if stdout == nil then return false end
     local working = new_counts()
     local staging = new_counts()
     local branch = nil
-    for line in (completed.stdout or ""):gmatch("[^\n]+") do
+    for line in stdout:gmatch("[^\n]+") do
         local head = line:match("^# branch.head (.+)$")
         if head then
             branch = head
         elseif line:sub(1, 2) == "? " then
             working.untracked = working.untracked + 1
-        else
-            local kind = line:sub(1, 1)
-            if kind == "1" or kind == "2" or kind == "u" then
-                add_git_status(staging, line:sub(3, 3))
-                add_git_status(working, line:sub(4, 4))
-            end
+        elseif line:sub(1, 1) == "1" or line:sub(1, 1) == "2" or line:sub(1, 1) == "u" then
+            bump(staging, git_codes, line:sub(3, 3))
+            bump(working, git_codes, line:sub(4, 4))
         end
     end
     if branch and branch ~= "(detached)" then
@@ -131,11 +121,12 @@ end
 
 local function update_vcs(buf)
     if not vim.api.nvim_buf_is_valid(buf) then return end
+    local dir = buf_cwd(buf)
     if vim.fs.root(buf, ".jj") ~= nil then
-        if update_jj(buf, buf_cwd(buf)) then return end
+        if update_jj(buf, dir) then return end
     end
     if vim.fs.root(buf, ".git") ~= nil then
-        if update_git(buf, buf_cwd(buf)) then return end
+        if update_git(buf, dir) then return end
     end
     vim.b[buf].vcs_revision = nil
     vim.b[buf].vcs_diff = nil
@@ -181,8 +172,12 @@ function _G._statusline()
     if (counts[2] or 0) > 0 then
         right_parts[#right_parts + 1] = "%#DiagnosticWarn#W" .. counts[2] .. "%*"
     end
-    right_parts[#right_parts + 1] = "%l:%c"
-    right_parts[#right_parts + 1] = "%L"
+    if wordy[vim.bo.filetype] then
+        right_parts[#right_parts + 1] = vim.fn.wordcount().words .. " words"
+    else
+        right_parts[#right_parts + 1] = "%l:%c"
+        right_parts[#right_parts + 1] = "%L"
+    end
     return " " .. table.concat(left_parts, " | ") .. "%=" .. table.concat(right_parts, " | ") .. " "
 end
 
