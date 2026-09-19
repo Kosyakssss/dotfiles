@@ -62,6 +62,11 @@ alignment = 'left'
 newline = true
 
 [[blocks.segments]]
+type = 'session'
+style = 'plain'
+template = '<p:green>{{ .UserName }}</><p:gray>@{{ .HostName }} </>'
+
+[[blocks.segments]]
 type = 'text'
 style = 'plain'
 template = '{{ if gt .Code 0 }}<p:red>[{{ .Code }}]></>{{ else }}<p:green>></>{{ end }} '
