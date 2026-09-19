@@ -14,7 +14,7 @@
 ## User environment
 
 - Interactive and login shell: Fish
-- Version control: JJ (jujutsu)
+- Version control: JJ (jujutsu). When working in a repo where jj is already initialized or creating a new one, always use jj for everything, including commits and pushes
 - Notes: `~/Notes`
 - Everything related to code: `~/Code/`
 - Everything related to non-code projects: `~/Projects/` (if a project needs some code, make a matching folder in ~/Code/)
