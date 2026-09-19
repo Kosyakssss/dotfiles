@@ -19,10 +19,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
-vim.lsp.config('marksman', {
-    cmd = { 'marksman', 'server' },
+vim.lsp.config('markdown_oxide', {
+    cmd = { 'markdown-oxide' },
     filetypes = { 'markdown' },
-    root_markers = { '.marksman.toml', '.obsidian', '.git' },
+    root_markers = { '.obsidian', '.moxide.toml', '.git' },
+    capabilities = {
+        workspace = {
+            didChangeWatchedFiles = {
+                dynamicRegistration = true,
+            },
+        },
+    },
 })
 vim.lsp.config('typos', {
     cmd = { 'typos-lsp' },
@@ -52,7 +59,7 @@ vim.lsp.config('tinymist', {
     filetypes = { 'typst' },
     root_markers = { '.git' },
 })
-vim.lsp.enable({ 'marksman', 'typos', 'lua_ls', 'rust_analyzer', 'tinymist' })
+vim.lsp.enable({ 'markdown_oxide', 'typos', 'lua_ls', 'rust_analyzer', 'tinymist' })
 
 vim.api.nvim_create_autocmd("BufWritePre", {
     group = vim.api.nvim_create_augroup("lsp_format", {}),

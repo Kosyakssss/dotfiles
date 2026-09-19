@@ -1,12 +1,15 @@
 [[language]]
 name = "markdown"
 workspace-lsp-roots = ["."]
-language-servers = ["marksman", "typos"]
+language-servers = ["markdown-oxide", "typos"]
 comment-tokens = ["-", "+", "*", "- [ ]", ">"]
 
 [[language]]
 name = "typst"
 language-servers = ["tinymist", "typos"]
+
+[language-server.markdown-oxide]
+command = "markdown-oxide"
 
 [language-server.typos]
 command = "typos-lsp"
