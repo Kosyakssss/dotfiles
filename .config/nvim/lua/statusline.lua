@@ -140,6 +140,13 @@ vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "BufWritePost" }, {
     end,
 })
 
+vim.api.nvim_create_autocmd("DiagnosticChanged", {
+    group = vim.api.nvim_create_augroup("diagnostic_statusline", {}),
+    callback = function()
+        vim.cmd("redrawstatus!")
+    end,
+})
+
 function _G._statusline()
     local mode = modes[vim.fn.mode()] or { vim.fn.mode():upper(), "StlModeNOR" }
     local name = vim.fn.expand("%:t")
@@ -171,6 +178,12 @@ function _G._statusline()
     end
     if (counts[2] or 0) > 0 then
         right_parts[#right_parts + 1] = "%#DiagnosticWarn#W" .. counts[2] .. "%*"
+    end
+    if (counts[3] or 0) > 0 then
+        right_parts[#right_parts + 1] = "%#DiagnosticInfo#I" .. counts[3] .. "%*"
+    end
+    if (counts[4] or 0) > 0 then
+        right_parts[#right_parts + 1] = "%#DiagnosticHint#H" .. counts[4] .. "%*"
     end
     if wordy[vim.bo.filetype] then
         right_parts[#right_parts + 1] = vim.fn.wordcount().words .. " words"
