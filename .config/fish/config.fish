@@ -7,8 +7,8 @@ fish_add_path --global --move \
     "$HOME/.cargo/bin" \
     "$BUN_INSTALL/bin"
 
-set --global --export EDITOR nvim
-set --global --export VISUAL nvim
+set --global --export EDITOR hx
+set --global --export VISUAL hx
 set --global --export RIPGREP_CONFIG_PATH "$HOME/.config/.ripgreprc"
 
 if status is-interactive
@@ -22,11 +22,11 @@ if status is-interactive
     abbr --add --command git st 'status -sb'
 
     function n
-        cd "$HOME/Notes"; and nvim
+        cd "$HOME/Notes"; and hx
     end
 
     function dot
-        cd "$HOME/Dotfiles"; and nvim
+        cd "$HOME/Dotfiles"; and hx
     end
 
     function y
