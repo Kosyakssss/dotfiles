@@ -1,15 +1,16 @@
+auto-update-channel = stable
 shell-integration = fish
 
 font-size = 18
 font-family = "Iosevka Term"
-
-macos-titlebar-style = transparent
-macos-option-as-alt = true
-
+theme = dark:Apple System Colors,light:Apple System Colors Light
+# theme = dark:Flexoki Dark,light:Flexoki Light
 notify-on-command-finish = unfocused
 
-theme = dark:Flexoki Dark,light:Flexoki Light
+macos-titlebar-style = native
+macos-option-as-alt = true
 
-background-blur = true
-
-auto-update-channel = stable
+keybind = global:cmd+backquote=toggle_quick_terminal
+quick-terminal-position = center
+quick-terminal-size = 40%,72%
+quick-terminal-animation-duration = 0

@@ -1,16 +1,3 @@
-## Writing
-
-- Use the shortest complete answer.
-- Base response length on what the task requires, not on the length of the user's message.
-- Treat background, thinking aloud, and transcripts as context. Do not repeat, summarize, or answer each part unless asked.
-- Address the request and key decisions only. Do not turn a narrow question into a report.
-- Cut introductions, recaps, repetition, stock phrases, and needless examples.
-- Prefer short, plain, direct English and active voice.
-- Avoid figures of speech.
-- Use technical terms when they improve accuracy. Explain uncommon terms briefly.
-- For reports, lean toward ASD-STE100, but don't overdo it.
-- When a long answer is necessary, keep it structured and stop once the task is complete.
-
 ## User environment
 
 - Interactive and login shell: Fish
@@ -38,9 +25,3 @@ Treat committed data as public.
 - Run a wider secret and history check only when changes involve auth, private URLs, generated files, large data, Git history, or other sensitive content.
 - Never push, create a public remote, rewrite shared history, or change repository visibility without explicit approval.
 - If you cannot tell whether data is safe to publish, stop and ask.
-
-# When using Bend:
-- run `bend guide` to learn it
-- use `LAWS.bend` to keep important rules
-- run `bend PROOF.bend` before committing
-- parallelize the code whenever possible

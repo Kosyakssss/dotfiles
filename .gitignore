@@ -42,3 +42,6 @@ id_ed25519
 qBittorrent/
 raycast/
 linearmouse/
+
+# Claude-managed synced skills
+.agents/skills/synced/

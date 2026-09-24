@@ -5,10 +5,11 @@ set --global --export BUN_INSTALL "$HOME/.bun"
 fish_add_path --global --move \
     "$HOME/.local/bin" \
     "$HOME/.cargo/bin" \
-    "$BUN_INSTALL/bin"
+    "$BUN_INSTALL/bin" \
+    "$HOME/.config/emacs/bin"
 
-set --global --export EDITOR nvim
-set --global --export VISUAL nvim
+set --global --export EDITOR hx
+set --global --export VISUAL hx
 set --global --export RIPGREP_CONFIG_PATH "$HOME/.config/.ripgreprc"
 
 if status is-interactive
@@ -17,16 +18,23 @@ if status is-interactive
     end
 
     abbr --add ls eza
-    abbr --add v nvim
     abbr --add --command git lg 'log --oneline --graph'
     abbr --add --command git st 'status -sb'
 
     function n
-        cd "$HOME/Notes"; and nvim
+        cd "$HOME/Notes"; and hx
     end
 
     function dot
-        cd "$HOME/Dotfiles"; and nvim
+        cd "$HOME/Dotfiles"; and hx
+    end
+
+    function doom
+        set --local gccs /opt/homebrew/opt/gcc/bin/gcc-*
+        set --local gcc (string match --regex '.*/gcc-\d+$' $gccs)[1]
+        set --local libs /opt/homebrew/lib/gcc/current /opt/homebrew/opt/libgccjit/lib/gcc/current /opt/homebrew/lib
+        test -n "$gcc"; and set --prepend libs (path dirname ($gcc -print-file-name=libemutls_w.a))
+        LIBRARY_PATH=(string join : $libs) command doom $argv
     end
 
     function y

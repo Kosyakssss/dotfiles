@@ -26,3 +26,4 @@ node_modules
 ^/CONTEXT\.md$
 ^/docs
 ^/manifests
+^/\.agents/skills/synced$

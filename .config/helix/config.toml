@@ -1,6 +1,6 @@
 [theme]
-dark = "flexoki_dark"
-light = "flexoki_light"
+dark = "catppuccin_mocha"
+light = "catppuccin_latte"
 
 [editor]
 true-color = true
