@@ -1,12 +1,22 @@
-eval (/opt/homebrew/bin/brew shellenv fish)
+set --global --export HOMEBREW_PREFIX /opt/homebrew
+set --global --export HOMEBREW_CELLAR "$HOMEBREW_PREFIX/Cellar"
+set --global --export HOMEBREW_REPOSITORY "$HOMEBREW_PREFIX"
 
 set --global --export BUN_INSTALL "$HOME/.bun"
+set --global --export JAVA_HOME "$HOMEBREW_PREFIX/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
+set --global --export ANDROID_HOME "$HOME/Library/Android/sdk"
 
-fish_add_path --global --move \
-    "$HOME/.local/bin" \
+fish_add_path --global --move --path \
     "$HOME/.cargo/bin" \
+    "$HOMEBREW_PREFIX/bin" \
+    "$HOMEBREW_PREFIX/sbin" \
+    "$HOME/.local/bin" \
+    "$HOME/.optmem" \
     "$BUN_INSTALL/bin" \
-    "$HOME/.config/emacs/bin"
+    "$JAVA_HOME/bin" \
+    "$ANDROID_HOME/platform-tools" \
+    "$ANDROID_HOME/emulator" \
+    "$ANDROID_HOME/cmdline-tools/latest/bin"
 
 set --global --export EDITOR hx
 set --global --export VISUAL hx
@@ -18,6 +28,7 @@ if status is-interactive
     end
 
     abbr --add ls eza
+    abbr --add cc 'claude --dangerously-skip-permissions'
     abbr --add --command git lg 'log --oneline --graph'
     abbr --add --command git st 'status -sb'
 
@@ -27,14 +38,6 @@ if status is-interactive
 
     function dot
         cd "$HOME/Dotfiles"; and hx
-    end
-
-    function doom
-        set --local gccs /opt/homebrew/opt/gcc/bin/gcc-*
-        set --local gcc (string match --regex '.*/gcc-\d+$' $gccs)[1]
-        set --local libs /opt/homebrew/lib/gcc/current /opt/homebrew/opt/libgccjit/lib/gcc/current /opt/homebrew/lib
-        test -n "$gcc"; and set --prepend libs (path dirname ($gcc -print-file-name=libemutls_w.a))
-        LIBRARY_PATH=(string join : $libs) command doom $argv
     end
 
     function y

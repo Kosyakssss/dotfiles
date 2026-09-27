@@ -2,15 +2,8 @@ auto-update-channel = stable
 shell-integration = fish
 
 font-size = 18
-font-family = "Iosevka Term"
-theme = dark:Apple System Colors,light:Apple System Colors Light
-# theme = dark:Flexoki Dark,light:Flexoki Light
+font-family = "IBM Plex Mono"
+theme = dark:Flexoki Dark,light:Flexoki Light
 notify-on-command-finish = unfocused
 
-macos-titlebar-style = native
 macos-option-as-alt = true
-
-keybind = global:cmd+backquote=toggle_quick_terminal
-quick-terminal-position = center
-quick-terminal-size = 40%,72%
-quick-terminal-animation-duration = 0

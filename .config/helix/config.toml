@@ -1,14 +1,14 @@
 [theme]
-dark = "catppuccin_mocha"
-light = "catppuccin_latte"
+dark = "flexoki_dark"
+light = "flexoki_light"
 
 [editor]
 true-color = true
 color-modes = true
-scrolloff = 4
+scrolloff = 2
 scroll-lines = 1
 line-number = "relative"
-cursorline = true
+cursorline = false
 bufferline = "multiple"
 trim-final-newlines = true
 trim-trailing-whitespace = true
@@ -34,7 +34,7 @@ focus-lost = true
 [editor.indent-guides]
 render = true
 character = "|"
-skip-levels = 0
+skip-levels = 1
 
 [editor.soft-wrap]
 enable = true

@@ -1,16 +1,3 @@
 [[language]]
-name = "markdown"
-workspace-lsp-roots = ["."]
-language-servers = ["markdown-oxide", "typos"]
-comment-tokens = ["-", "+", "*", "- [ ]", ">"]
-
-[[language]]
 name = "typst"
-language-servers = ["tinymist", "typos"]
-
-[language-server.markdown-oxide]
-command = "markdown-oxide"
-
-[language-server.typos]
-command = "typos-lsp"
-config.config = "~/.config/typos/typos.toml"
+language-servers = ["tinymist"]
