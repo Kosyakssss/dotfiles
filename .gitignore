@@ -45,3 +45,5 @@ linearmouse/
 
 # Claude-managed synced skills
 .agents/skills/synced/
+
+.agents/skills/tldraw-offline/
