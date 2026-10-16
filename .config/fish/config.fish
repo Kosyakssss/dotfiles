@@ -36,10 +36,6 @@ if status is-interactive
         cd "$HOME/Notes"; and hx
     end
 
-    function dot
-        cd "$HOME/Dotfiles"; and hx
-    end
-
     function y
         set --local tmp (mktemp -t yazi-cwd.XXXXXX); or return
         command yazi $argv --cwd-file="$tmp"
@@ -52,5 +48,4 @@ if status is-interactive
 
     type --query zoxide; and zoxide init fish | source
     type --query fzf; and fzf --fish | source
-    oh-my-posh init fish --strict --config "$HOME/.config/oh-my-posh/config.toml" | source
 end
