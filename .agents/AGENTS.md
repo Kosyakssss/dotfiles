@@ -41,15 +41,20 @@ A subagent is not: it must never run `memo`, because it cannot judge what
 is already known, and its notes would arrive duplicated and incorrectly.
 When you spawn one, write: `You are a subagent. Don't run memo.`
 
-## User environment
+# Writing
+
+When saying everything, including replying to me, try to be as non-verbose as possible. Lean closer to ASD-STE-100 simplified english. We are going to be talking, discussing, working, you are going to be explaining a lot of stuff, and under no circumstance are you to forget about this rule. This rule is as paramount to your existence as
+
+# User environment
 
 - Interactive and login shell: Fish
-- Version control: Git
+- Version control: JJ (Jujutsu) colocated with Git. For every operation that can be done with jj-use jj. Just don't make a normal repo that is not mine into a jj repo and then try to commit that, that's impolite.
+- Main chromium browser on this machine: Helium
 - Notes: `~/Notes`
 - Everything related to code: `~/Code/`
 - Everything related to non-code projects: `~/Projects/` (if a project needs some code, make a matching folder in ~/Code/)
 
-## Conventions
+# Conventions
 
 - Keep all tracked Fish setup in `.config/fish/config.fish`; do not create tracked Fish functions, snippets, or generated state.
 - Use Fish only for interactive shell configuration. Never write standalone scripts in Fish.
@@ -59,7 +64,7 @@ When you spawn one, write: `You are a subagent. Don't run memo.`
 - New test files are opt-in. Do not create unit, integration, end-to-end, or spec files, or new test-only helpers/fixtures, unless the user explicitly requests their creation or approves it first. A request to implement, fix, test, or verify something does not by itself authorize new test files. Assume no by default; ask only when creating them has a concrete benefit, not as a routine step.
 - Prefer running existing tests and direct browser/runtime checks without adding test files. Where test changes are in scope, exercise observable behavior rather than asserting source-code strings, implementation shapes, or that tests exist.
 
-## Public repositories
+# Public repositories
 
 Treat committed data as public.
 
