@@ -1,0 +1,7 @@
+[mode]
+normal_main = { fg = "16", bg = "blue", bold = true }
+normal_alt  = { fg = "blue", bg = "235" }
+select_main = { fg = "16", bg = "red", bold = true }
+select_alt  = { fg = "red", bg = "235" }
+unset_main  = { fg = "16", bg = "red", bold = true }
+unset_alt   = { fg = "red", bg = "235" }
