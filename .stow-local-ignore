@@ -13,6 +13,7 @@ _darcs
 \.hg
 
 \.git
+\.jj
 \.gitignore
 \.gitmodules
 \.DS_Store

@@ -1,4 +1,5 @@
 .git/
+.jj/
 /Library/
 /.cache/
 node_modules/
