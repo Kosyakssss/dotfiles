@@ -1,11 +1,11 @@
 [theme]
-dark = "flexoki_dark"
-light = "flexoki_light"
+dark = "flx-c-d"
+light = "flx-c-l"
 
 [editor]
 true-color = true
 color-modes = true
-scrolloff = 2
+scrolloff = 4
 scroll-lines = 1
 line-number = "relative"
 cursorline = false
