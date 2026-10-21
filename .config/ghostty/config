@@ -2,7 +2,7 @@ auto-update-channel = stable
 shell-integration = fish
 
 font-size = 18
-font-family = "IBM Plex Mono"
+font-family = "Iosevka Term"
 theme = dark:Flexoki Dark,light:Flexoki Light
 notify-on-command-finish = unfocused
 
