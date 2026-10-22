@@ -1,3 +1,8 @@
 inherits = "flexoki_dark"
 
 "ui.bufferline.active" = { fg = "ye", bg = "bg-2", underline = { style= "line" } }
+"markup.bold" = { fg = "tx", modifiers = ["bold"] }
+"markup.italic" = { fg = "tx", modifiers = ["italic"] }
+"markup.link.url" = "tx"
+"markup.link.label" = "tx"
+"markup.list" = "tx"

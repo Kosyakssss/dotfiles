@@ -39,8 +39,14 @@ if status is-interactive
         printf ' (%s)' (string join ' ' $parts)
     end
 
-    function n
+    function notes
         cd "$HOME/Notes"; and hx
+    end
+    function code
+        cd "$HOME/Code"
+    end
+    function dot
+        cd "$HOME/Dotfiles"
     end
 
     function y
@@ -53,6 +59,5 @@ if status is-interactive
         end
     end
 
-    type --query zoxide; and zoxide init fish | source
     type --query fzf; and fzf --fish | source
 end

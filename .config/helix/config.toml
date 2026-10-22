@@ -13,7 +13,6 @@ bufferline = "multiple"
 trim-final-newlines = true
 trim-trailing-whitespace = true
 popup-border = "all"
-rainbow-brackets = true
 mouse-yank-register = "+"
 default-yank-register = "+"
 
