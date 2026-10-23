@@ -39,25 +39,28 @@ if status is-interactive
         printf ' (%s)' (string join ' ' $parts)
     end
 
+    abbr --add cc claude --dangerously-skip-permissions
+
     function notes
-        cd "$HOME/Notes"; and hx
+        cd "$HOME/notes"; and y
     end
     function code
-        cd "$HOME/Code"
+        cd "$HOME/code"
     end
     function dot
-        cd "$HOME/Dotfiles"
+        cd "$HOME/dotfiles"
     end
+    abbr
 
     function y
-        set --local tmp (mktemp -t yazi-cwd.XXXXXX); or return
+        set tmp (mktemp -t "yazi-cwd.XXXXXX")
         command yazi $argv --cwd-file="$tmp"
-        set --local cwd (command cat -- "$tmp")
-        command rm -f -- "$tmp"
-        if test -n "$cwd"; and test "$cwd" != "$PWD"
+        if read -z cwd <"$tmp"; and [ "$cwd" != "$PWD" ]; and test -d "$cwd"
             builtin cd -- "$cwd"
         end
+        command rm -f -- "$tmp"
     end
 
+    zoxide init fish | source
     type --query fzf; and fzf --fish | source
 end

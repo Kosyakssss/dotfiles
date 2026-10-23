@@ -1,7 +1,3 @@
 [[language]]
 name = "typst"
 language-servers = ["tinymist"]
-
-[[language]]
-name = "markdown"
-comment-tokens = ["-", "+", "*", "- [ ]", ">"]

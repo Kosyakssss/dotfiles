@@ -50,15 +50,15 @@ When saying everything, including replying to me, try to be as non-verbose as po
 - Interactive and login shell: Fish
 - Version control: JJ (Jujutsu) colocated with Git. For every operation that can be done with jj-use jj. Just don't make a normal repo that is not mine into a jj repo and then try to commit that, that's impolite.
 - Main chromium browser on this machine: Helium
-- Notes: `~/Notes`
-- Everything related to code: `~/Code/`
-- Everything related to non-code projects: `~/Projects/` (if a project needs some code, make a matching folder in ~/Code/)
+- Notes: `~/notes`
+- Everything related to code: `~/code/`
+- Everything related to non-code projects: `~/projects/` (if a project needs some code, make a matching folder in ~/code/)
 
 # Conventions
 
 - Keep all tracked Fish setup in `.config/fish/config.fish`; do not create tracked Fish functions, snippets, or generated state.
 - Use Fish only for interactive shell configuration. Never write standalone scripts in Fish.
-- Configs in `~/Dotfiles` are symlinked via Stow. Respect the directory structure. If we ever want to track some kind of a global config and it can be done using this, use it, don't just make one-off symlinks
+- Configs in `~/dotfiles` are symlinked via Stow. Respect the directory structure. If we ever want to track some kind of a global config and it can be done using this, use it, don't just make one-off symlinks
 - Use `$HOME`, `~`, XDG paths, or paths derived at runtime. Never commit a user-specific home path such as `/Users/name` or `/home/name`.
 - Do not leave comments in any code, for any reason.
 - New test files are opt-in. Do not create unit, integration, end-to-end, or spec files, or new test-only helpers/fixtures, unless the user explicitly requests their creation or approves it first. A request to implement, fix, test, or verify something does not by itself authorize new test files. Assume no by default; ask only when creating them has a concrete benefit, not as a routine step.

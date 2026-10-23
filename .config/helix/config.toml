@@ -65,7 +65,7 @@ q = ":quit"
 tab = ":bc"
 y = [
   ':sh rm -f /tmp/unique-file',
-  ':insert-output env -u YAZI_CONFIG_HOME yazi "%{buffer_name}" --chooser-file=/tmp/unique-file',
+  ':insert-output printf "\x1b[>0u" > /dev/tty; env -u YAZI_CONFIG_HOME yazi "%{buffer_name}" --chooser-file=/tmp/unique-file </dev/tty; printf "\x1b[<u" > /dev/tty',
   ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
   ':open %sh{cat /tmp/unique-file}',
   ':redraw',
