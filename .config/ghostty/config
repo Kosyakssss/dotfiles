@@ -2,8 +2,10 @@ auto-update-channel = stable
 shell-integration = fish
 
 font-size = 16
-font-family = "Iosevka Term"
-theme = dark:Flexoki Dark,light:Flexoki Light
+font-family = "IBM Plex Mono"
+theme = dark:Apple System Colors,light:Apple System Colors Light
+# theme = dark:Flexoki Dark,light:Flexoki Light
 notify-on-command-finish = unfocused
 
 macos-option-as-alt = true
+macos-titlebar-style = tabs

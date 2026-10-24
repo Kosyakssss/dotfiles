@@ -1,13 +1,13 @@
 [theme]
-dark = "flx-c-d"
-light = "flx-c-l"
+dark = "wolf-alabaster-dark"
+light = "wolf-alabaster-light-bg"
 
 [editor]
 true-color = true
 color-modes = true
 scrolloff = 4
 scroll-lines = 1
-line-number = "relative"
+line-number = "absolute"
 cursorline = false
 bufferline = "multiple"
 trim-final-newlines = true
@@ -17,7 +17,7 @@ mouse-yank-register = "+"
 default-yank-register = "+"
 
 [editor.statusline]
-left = ["mode", "spinner", "file-base-name", "file-modification-indicator"]
+left = ["mode", "file-base-name", "file-modification-indicator", "spinner"]
 center = []
 right = ["diagnostics", "position", "total-line-numbers"]
 separator = "|"
@@ -63,10 +63,11 @@ A-c = [":sh ~/.config/helix/input-source enter >/dev/null 2>&1", "change_selecti
 w = ":write"
 q = ":quit"
 tab = ":bc"
+F = "file_picker_in_current_buffer_directory"
 y = [
   ':sh rm -f /tmp/unique-file',
   ':insert-output printf "\x1b[>0u" > /dev/tty; env -u YAZI_CONFIG_HOME yazi "%{buffer_name}" --chooser-file=/tmp/unique-file </dev/tty; printf "\x1b[<u" > /dev/tty',
-  ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+  ':sh printf "\x1b[?1049h\x1b[?2004h\x1b[?2031h\x1b[?996n" > /dev/tty',
   ':open %sh{cat /tmp/unique-file}',
   ':redraw',
   ":set mouse false",

@@ -1,8 +1,42 @@
 inherits = "flexoki_dark"
 
 "ui.bufferline.active" = { fg = "ye", bg = "bg-2", underline = { style= "line" } }
-"markup.bold" = { fg = "tx", modifiers = ["bold"] }
-"markup.italic" = { fg = "tx", modifiers = ["italic"] }
-"markup.link.url" = "tx"
-"markup.link.label" = "tx"
-"markup.list" = "tx"
+"ui.virtual.indent-guide" = "tx-3"
+
+# "markup.bold" = { fg = "tx", modifiers = ["bold"] }
+# "markup.italic" = { fg = "tx", modifiers = ["italic"] }
+# "markup.strikethrough" = { fg = "tx", modifiers = ["crossed_out"] }
+# "markup.link.url" = { fg = "tx", underline = { style= "line" } }
+# "markup.link.label" = { fg = "tx", underline = { style= "line" } }
+# "markup.link.text" = "tx"
+# "markup.list" = "tx"
+# "markup.heading" = { fg = "tx", modifiers = ["bold"] }
+# "markup.raw.block" = "tx"
+# "markup.quote" = "tx"
+# "markup.raw" = "tx"
+
+# "attribute" = "tx"
+# "type" = "tx"
+# "constructor" = "tx"
+# "constant" = "tx"
+# "constant.builtin" = "tx"
+# "string" = "tx"
+# "string.regexp" = "tx"
+# "string.special" = "tx"
+# "comment" = "tx-3"
+# "variable" = "tx"
+# "variable.builtin" = "tx"
+# "variable.other" = "tx"
+# "punctuation" = "tx-2"
+# "keyword" = "tx"
+# "keyword.control" = "tx"
+# "keyword.control.conditional" = "tx"
+# "keyword.control.import" = "tx"
+# "keyword.control.return" = "tx"
+# "keyword.function" = "tx"
+# "keyword.storage.type" = "tx"
+# "keyword.storage.modifier" = "tx"
+# "operator" = "tx-2"
+# "function" = "tx"
+# "tag" = "tx"
+# "namespace" = "tx"

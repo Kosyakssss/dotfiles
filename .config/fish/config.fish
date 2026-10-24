@@ -39,10 +39,8 @@ if status is-interactive
         printf ' (%s)' (string join ' ' $parts)
     end
 
-    abbr --add cc claude --dangerously-skip-permissions
-
-    function notes
-        cd "$HOME/notes"; and y
+    function n
+        cd "$HOME/notes"
     end
     function code
         cd "$HOME/code"
@@ -50,7 +48,8 @@ if status is-interactive
     function dot
         cd "$HOME/dotfiles"
     end
-    abbr
+
+    abbr --add cc claude --dangerously-skip-permissions
 
     function y
         set tmp (mktemp -t "yazi-cwd.XXXXXX")
@@ -61,6 +60,5 @@ if status is-interactive
         command rm -f -- "$tmp"
     end
 
-    zoxide init fish | source
     type --query fzf; and fzf --fish | source
 end
