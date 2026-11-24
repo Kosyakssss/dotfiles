@@ -41,28 +41,26 @@ A subagent is not: it must never run `memo`, because it cannot judge what
 is already known, and its notes would arrive duplicated and incorrectly.
 When you spawn one, write: `You are a subagent. Don't run memo.`
 
-# Writing
+# Me and you
 
-When saying everything, including replying to me, try to be as non-verbose as possible. Lean closer to ASD-STE-100 simplified english. We are going to be talking, discussing, working, you are going to be explaining a lot of stuff, and under no circumstance are you to forget about this rule. This rule is as paramount to your existence as
+By default assume that both you and me are the ultimate, highest agency versions of ourselves, adhering closely to our freedom philosophy. Any decision that we make, or talk that we have, should be based on this assumption for the most part, as this is what we are striving for.
 
 # User environment
 
 - Interactive and login shell: Fish
-- Version control: JJ (Jujutsu) colocated with Git. For every operation that can be done with jj-use jj. Just don't make a normal repo that is not mine into a jj repo and then try to commit that, that's impolite.
+- Version control: Git.
 - Main chromium browser on this machine: Helium
-- Notes: `~/notes`
-- Everything related to code: `~/code/`
-- Everything related to non-code projects: `~/projects/` (if a project needs some code, make a matching folder in ~/code/)
+- Notes: `~/Notes`
+- Everything related to code: `~/Code/`
+- Everything related to non-code projects: `~/Projects/` (if a project needs some code, make a matching folder in ~/Code/)
 
 # Conventions
 
-- Keep all tracked Fish setup in `.config/fish/config.fish`; do not create tracked Fish functions, snippets, or generated state.
+- Fish setup lives in `.config/fish/`. Track only files we wrote ourselves, each allowlisted by name in `.gitignore`; never commit generated state or third-party files.
 - Use Fish only for interactive shell configuration. Never write standalone scripts in Fish.
-- Configs in `~/dotfiles` are symlinked via Stow. Respect the directory structure. If we ever want to track some kind of a global config and it can be done using this, use it, don't just make one-off symlinks
+- Configs in `~/Dotfiles` are symlinked via Stow. Respect the directory structure. If we ever want to track some kind of a global config and it can be done using this, use it, don't just make one-off symlinks
 - Use `$HOME`, `~`, XDG paths, or paths derived at runtime. Never commit a user-specific home path such as `/Users/name` or `/home/name`.
-- Do not leave comments in any code, for any reason.
-- New test files are opt-in. Do not create unit, integration, end-to-end, or spec files, or new test-only helpers/fixtures, unless the user explicitly requests their creation or approves it first. A request to implement, fix, test, or verify something does not by itself authorize new test files. Assume no by default; ask only when creating them has a concrete benefit, not as a routine step.
-- Prefer running existing tests and direct browser/runtime checks without adding test files. Where test changes are in scope, exercise observable behavior rather than asserting source-code strings, implementation shapes, or that tests exist.
+- Do not add useless tests that exist only for the sake of existing and do not actually test anything. A test must exercise observable behavior, not source-code strings, implementation shapes, or that tests exist.
 
 # Public repositories
 
