@@ -1,0 +1,103 @@
+# name: flx-c
+
+[light]
+# preferred_background: FFFCF0
+fish_color_normal 100F0F
+fish_color_command 100F0F
+fish_color_keyword 100F0F
+fish_color_param 100F0F
+fish_color_option 100F0F
+fish_color_quote 24837B
+fish_color_escape AD8301
+fish_color_comment B7B5AC
+fish_color_autosuggestion B7B5AC
+fish_color_operator 6F6E69
+fish_color_redirection 6F6E69
+fish_color_end 6F6E69
+fish_color_error AF3029
+fish_color_status AF3029
+fish_color_cwd 205EA6
+fish_color_cwd_root AF3029
+fish_color_user 100F0F
+fish_color_host 100F0F
+fish_color_host_remote AD8301
+fish_color_cancel --reverse
+fish_color_valid_path --underline
+fish_color_history_current --bold
+fish_color_selection --background=DAD8CE
+fish_color_search_match --background=DAD8CE
+fish_color_jj 5E409D
+fish_color_jj_base 6F6E69
+fish_pager_color_prefix --bold --underline
+fish_pager_color_completion 100F0F
+fish_pager_color_description 6F6E69
+fish_pager_color_progress 6F6E69
+fish_pager_color_selected_background --background=E6E4D9
+
+[dark]
+# preferred_background: 100F0F
+fish_color_normal CECDC3
+fish_color_command CECDC3
+fish_color_keyword CECDC3
+fish_color_param CECDC3
+fish_color_option CECDC3
+fish_color_quote 3AA99F
+fish_color_escape D0A215
+fish_color_comment 575653
+fish_color_autosuggestion 575653
+fish_color_operator 878580
+fish_color_redirection 878580
+fish_color_end 878580
+fish_color_error D14D41
+fish_color_status D14D41
+fish_color_cwd 4385BE
+fish_color_cwd_root D14D41
+fish_color_user CECDC3
+fish_color_host CECDC3
+fish_color_host_remote D0A215
+fish_color_cancel --reverse
+fish_color_valid_path --underline
+fish_color_history_current --bold
+fish_color_selection --background=343331
+fish_color_search_match --background=343331
+fish_color_jj 8B7EC8
+fish_color_jj_base 878580
+fish_pager_color_prefix --bold --underline
+fish_pager_color_completion CECDC3
+fish_pager_color_description 878580
+fish_pager_color_progress 878580
+fish_pager_color_selected_background --background=282726
+
+# Terminals that do not report their colors: use the terminal's own palette.
+[unknown]
+fish_color_normal --reset
+fish_color_command --reset
+fish_color_keyword --reset
+fish_color_param --reset
+fish_color_option --reset
+fish_color_quote cyan
+fish_color_escape yellow
+fish_color_comment brblack
+fish_color_autosuggestion brblack
+fish_color_operator white
+fish_color_redirection white
+fish_color_end white
+fish_color_error red
+fish_color_status red
+fish_color_cwd blue
+fish_color_cwd_root red
+fish_color_user --reset
+fish_color_host --reset
+fish_color_host_remote yellow
+fish_color_cancel --reverse
+fish_color_valid_path --underline
+fish_color_history_current --bold
+fish_color_selection --reverse
+fish_color_search_match --reverse
+fish_color_jj magenta
+fish_color_jj_base white
+fish_pager_color_prefix --bold --underline
+fish_pager_color_completion --reset
+fish_pager_color_description white
+fish_pager_color_progress white
+fish_pager_color_selected_background --reverse

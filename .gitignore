@@ -37,6 +37,17 @@ id_ed25519
 # Fish configuration is allowlisted; all generated and local state stays private.
 .config/fish/*
 !.config/fish/config.fish
+!.config/fish/conf.d/
+.config/fish/conf.d/*
+!.config/fish/conf.d/flx-c.fish
+!.config/fish/conf.d/prompt.fish
+!.config/fish/functions/
+.config/fish/functions/*
+!.config/fish/functions/fish_jj_prompt.fish
+!.config/fish/functions/fish_prompt.fish
+!.config/fish/themes/
+.config/fish/themes/*
+!.config/fish/themes/flx-c.theme
 
 # Applications whose configuration is private or runtime-heavy
 qBittorrent/
