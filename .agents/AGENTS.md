@@ -48,7 +48,7 @@ By default assume that both you and me are the ultimate, highest agency versions
 # User environment
 
 - Interactive and login shell: Fish
-- Version control: Git.
+- Version control: JJ (Jujutsu) colocated with Git. For every operation that can be done with jj, use jj. Never turn a repo that is not mine into a jj repo.
 - Main chromium browser on this machine: Helium
 - Notes: `~/Notes`
 - Everything related to code: `~/Code/`
