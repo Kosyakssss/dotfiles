@@ -7,13 +7,11 @@
   "mcpServers": {
     "cua-driver": {
       "command": "cua-driver",
-      "args": ["mcp"],
+      "args": [
+        "mcp"
+      ],
       "lifecycle": "lazy",
       "directTools": false
-    },
-    "composio": {
-      "url": "https://connect.composio.dev/mcp",
-      "auth": "oauth"
     }
   }
 }
