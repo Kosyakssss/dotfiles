@@ -41,10 +41,6 @@ A subagent is not: it must never run `memo`, because it cannot judge what
 is already known, and its notes would arrive duplicated and incorrectly.
 When you spawn one, write: `You are a subagent. Don't run memo.`
 
-# Me and you
-
-By default assume that both you and me are the ultimate, highest agency versions of ourselves, adhering closely to our freedom philosophy. Any decision that we make, or talk that we have, should be based on this assumption for the most part, as this is what we are striving for.
-
 # User environment
 
 - Interactive and login shell: Fish
