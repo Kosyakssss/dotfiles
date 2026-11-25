@@ -12,8 +12,8 @@ fish_add_path --global --move --path \
     "$HOME/.optmem" \
     "$BUN_INSTALL/bin"
 
-set --global --export EDITOR hx
-set --global --export VISUAL hx
+set --global --export EDITOR nvim
+set --global --export VISUAL nvim
 set --global --export RIPGREP_CONFIG_PATH "$HOME/.config/.ripgreprc"
 
 if status is-interactive
@@ -31,9 +31,9 @@ if status is-interactive
         cd "$HOME/Dotfiles"
     end
 
-    abbr --add cc claude --dangerously-skip-permissions
     abbr --add --command git lg 'log --oneline --graph'
     abbr --add --command git st 'status -sb'
+    abbr --add vim nvim
 
     function y
         set tmp (mktemp -t "yazi-cwd.XXXXXX")
