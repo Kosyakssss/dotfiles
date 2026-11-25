@@ -34,6 +34,7 @@ if status is-interactive
     abbr --add --command git lg 'log --oneline --graph'
     abbr --add --command git st 'status -sb'
     abbr --add vim nvim
+    abbr --add v nvim
 
     function y
         set tmp (mktemp -t "yazi-cwd.XXXXXX")
